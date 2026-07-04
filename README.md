@@ -123,11 +123,16 @@ Pin the exact checkpoint for each model. A different checkpoint produces differe
 
 ## Data
 
-Obtain each cohort from its source under that source's terms. This repo does not redistribute them.
+The three cohorts come from CZ CELLxGENE. This repo ships download commands, not the files, since CELLxGENE redistributes them under their own licenses. `fetch_data.sh` pulls all three into `data/`.
 
-- ILD: [FILL: source and access]
-- CRC: [FILL: source and access]
-- AIDA: [FILL: source and access]
+- ILD: Natri et al. 2024, Nature Genetics. GEO GSE227136, doi 10.1038/s41588-024-01702-0.
+  https://datasets.cellxgene.cziscience.com/c3d9262e-0dc5-4eca-bf20-56e6d96d0306.h5ad
+- CRC: Moorman et al. 2024, Nature. doi 10.1038/s41586-024-08560-0, epithelial compartment.
+  https://datasets.cellxgene.cziscience.com/66cadf3b-4c71-4930-8add-fa748745704d.h5ad
+- AIDA: Kock et al. 2025, Cell. Phase 1 Data Freeze v2.
+  https://datasets.cellxgene.cziscience.com/f89a12c2-7a3b-415b-ab87-bbc550fe17f4.h5ad
+
+These URLs point at the raw published objects. The pipeline filters them, so the raw cell counts do not match the post-QC counts in the paper. The raw AIDA v2 object holds 1,265,624 cells; the pipeline uses 1,165,872. Each dataset keeps its own CELLxGENE license, so check the terms before redistributing or publishing derived data.
 
 ## Input format
 
