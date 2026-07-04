@@ -186,13 +186,3 @@ The scripts are per-model copies, not a plugin interface. To audit a new model t
 
 - Ethnicity values are cased inconsistently across cohorts. Lowercase-normalize before any per-group count, or a group splits into two buckets.
 - `"nan"` (synthetic cells) and `"unknown"` (age workflow) are always exclusions, never a group.
-
-## Citation
-
-```
-[FILL: BibTeX]
-```
-
-## License
-
-[FILL: license for this code. It does not cover the datasets or model weights, which keep their own licenses.]
