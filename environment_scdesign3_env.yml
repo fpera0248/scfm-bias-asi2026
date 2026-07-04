@@ -1,0 +1,23 @@
+name: scdesign3_env
+channels:
+  - conda-forge
+dependencies:
+  - r-base=4.3
+  - r-devtools
+  - zlib
+  - r-ggplot2
+  - r-irlba
+  - r-mass
+  - r-matrix
+  - r-mgcv
+  - r-rcpp
+  - r-reticulate
+  - r-rspectra
+  - r-survival
+  - r-umap
+  - r-viridis
+  - xz
+  - r-cairo
+  - cudnn
+  - r-rhpcblasctl
+prefix: /users/fperalta/.conda/envs/scdesign3_env

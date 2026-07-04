@@ -1,0 +1,82 @@
+# Data & large binary formats
+*.h5ad
+*.h5
+*.hdf5
+*.loom
+*.mtx
+*.csv
+*.tsv
+# ...but keep R/conda package manifests (env specs, not data)
+!Rpackages_*.csv
+*.parquet
+*.feather
+*.npy
+*.npz
+
+# Model checkpoints / weights
+*.pt
+*.pth
+*.ckpt
+*.pkl
+*.joblib
+*.onnx
+
+# Figures / outputs
+*.png
+*.jpg
+*.jpeg
+*.svg
+*.pdf
+*.tif
+*.tiff
+
+# Archives
+*.zip
+*.tar
+*.gz
+*.bz2
+*.7z
+
+# Logs
+*.log
+logs/
+
+# Secrets / environment
+.env
+.env.*
+*.pem
+*.key
+credentials.json
+*.credentials
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+env/
+.ipynb_checkpoints/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# R
+.Rhistory
+.RData
+.Rproj.user/
+*.Rproj
+
+# SLURM job output
+slurm-*.out
+
+# IDE / OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db

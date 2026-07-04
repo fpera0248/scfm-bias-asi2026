@@ -1,0 +1,19 @@
+#!/bin/bash
+#SBATCH --job-name=CRC_eth_step4
+#SBATCH --partition=batch
+#SBATCH --nodes=1
+#SBATCH --cpus-per-task=4
+#SBATCH --mem=32G
+#SBATCH --time=4:00:00
+#SBATCH --output=/oscar/home/fperalta/data/fperalta/Geneformer/augmented_CRC/ethnicity_Geneformer_workflow/logs/CRC_eth_step4_%j.out
+#SBATCH --error=/oscar/home/fperalta/data/fperalta/Geneformer/augmented_CRC/ethnicity_Geneformer_workflow/logs/CRC_eth_step4_%j.err
+
+set -eo pipefail
+
+module purge
+module load miniforge3/25.3.0-3
+source activate geneformer310
+export PYTHONNOUSERSITE=1
+cd /oscar/home/fperalta/data/fperalta/Geneformer/augmented_CRC/ethnicity_Geneformer_workflow
+python step4_external_validation_geneformer_ethnicity.py
+echo "Exit: $?"

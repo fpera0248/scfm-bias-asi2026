@@ -1,0 +1,10 @@
+name: scfoundation_gpu
+channels:
+  - conda-forge
+dependencies:
+  - python=3.10
+  - numpy
+  - scanpy
+  - tqdm
+  - xgboost
+prefix: /users/fperalta/.conda/envs/scfoundation_gpu
