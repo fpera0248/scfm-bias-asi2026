@@ -20,4 +20,3 @@ dependencies:
   - r-cairo
   - cudnn
   - r-rhpcblasctl
-prefix: /users/fperalta/.conda/envs/scdesign3_env

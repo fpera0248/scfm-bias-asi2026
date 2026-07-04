@@ -311,4 +311,3 @@ dependencies:
       - werkzeug==3.1.3
       - xxhash==3.7.0
       - yarl==1.23.0
-prefix: /users/fperalta/.conda/envs/geneformer310

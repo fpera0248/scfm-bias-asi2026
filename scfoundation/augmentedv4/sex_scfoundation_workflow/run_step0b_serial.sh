@@ -8,7 +8,7 @@ set -euo pipefail
 cd /oscar/home/fperalta/data/fperalta/scfoundation/augmentedv4/sex_scfoundation_workflow
 mkdir -p logs
 
-EMAIL=fernando_peralta_castro@brown.edu
+EMAIL=your_email@example.com
 
 # 2 sex bins
 B1="female"

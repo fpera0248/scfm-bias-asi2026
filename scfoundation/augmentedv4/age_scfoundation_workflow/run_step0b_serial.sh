@@ -9,7 +9,7 @@ set -euo pipefail
 cd /oscar/home/fperalta/data/fperalta/scfoundation/augmentedv4/age_scfoundation_workflow
 mkdir -p logs
 
-EMAIL=fernando_peralta_castro@brown.edu
+EMAIL=your_email@example.com
 
 # ---- 7 age bins (line-by-line, no bash array) ----
 B1="10_19"

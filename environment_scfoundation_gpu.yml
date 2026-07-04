@@ -7,4 +7,3 @@ dependencies:
   - scanpy
   - tqdm
   - xgboost
-prefix: /users/fperalta/.conda/envs/scfoundation_gpu

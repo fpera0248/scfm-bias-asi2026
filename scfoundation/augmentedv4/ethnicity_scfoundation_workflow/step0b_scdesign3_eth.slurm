@@ -9,7 +9,7 @@
 #SBATCH --output=logs/step0b_scdesign3_eth_%j.out
 #SBATCH --error=logs/step0b_scdesign3_eth_%j.err
 #SBATCH --mail-type=END,FAIL
-#SBATCH --mail-user=fernando_peralta_castro@brown.edu
+#SBATCH --mail-user=your_email@example.com
 
 set -euo pipefail
 
