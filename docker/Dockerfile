@@ -35,12 +35,10 @@ COPY . /opt/scfm
 RUN bash install.sh "${ENV_NAME}"
 RUN bash fetch_weights.sh "${MODEL}" || echo "WARN: weights step incomplete for ${MODEL}; see CONTAINER.md."
 
-# BASE-path shim: mounted /data resolves the scripts' hardcoded Oscar roots
-# (see README "Running a workflow"). Verify BASE falls under these before relying on it.
-RUN mkdir -p /data /oscar/data/rsingh47 /oscar/home /users \
-    && ln -s /data /oscar/data/rsingh47/fperalta \
-    && ln -s /data /oscar/home/fperalta \
-    && ln -s /data /users/fperalta
+# Mount your data at /data and point each step script's BASE at /data
+# (the scripts hardcode an absolute input path — see README "Running a workflow").
+# No cluster-specific paths are baked into the image.
+RUN mkdir -p /data
 
 LABEL org.opencontainers.image.source="https://github.com/fpera0248/scfm-bias-asi2026" \
       description="Reproducible env (${MODEL}) for Demographic Bias in Single-Cell Foundation Models (ACM-BCB ASI 2026)"

@@ -39,14 +39,9 @@ RUN bash install.sh
 # if unset the build still succeeds and scGPT weights can be added at run time.
 RUN bash fetch_weights.sh || echo "WARN: fetch_weights.sh incomplete; see CONTAINER.md."
 
-# Optional turnkey path: make the scripts' hardcoded Oscar roots resolve to /data.
-# The step scripts hardcode absolute BASE paths (see README "Running a workflow").
-# These symlinks let you mount your data at /data without editing 555 files.
-# Verify the roots match your BASE values before relying on this.
-RUN mkdir -p /data \
-    && mkdir -p /oscar/data/rsingh47 /oscar/home /users \
-    && ln -s /data /oscar/data/rsingh47/fperalta \
-    && ln -s /data /oscar/home/fperalta \
-    && ln -s /data /users/fperalta
+# Mount your data at /data and set each step script's BASE to /data
+# (the scripts hardcode an absolute input path — see README "Running a workflow").
+# No cluster-specific paths are baked into the image.
+RUN mkdir -p /data
 
 CMD ["/bin/bash"]

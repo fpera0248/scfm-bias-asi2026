@@ -37,10 +37,9 @@ apptainer run --nv -B /path/to/your/data:/data scfm-scgpt.sif
 
 ## Bring your own data
 
-Mount your data at `/data`. The images symlink the scripts' hardcoded Oscar roots
-(`/oscar/data/rsingh47/fperalta`, `/oscar/home/fperalta`, `/users/fperalta`) to `/data`,
-so many hardcoded `BASE` paths resolve automatically. If a script's `BASE` points
-elsewhere, edit it to `/data/...` (see README "Running a workflow").
+Mount your data at `/data`, then set each step script's `BASE` variable to `/data`
+(the scripts hardcode an absolute input path near the top — see README "Running a
+workflow"). No cluster-specific paths are baked into the images.
 
 ---
 

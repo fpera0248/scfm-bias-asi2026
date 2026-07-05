@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Demographic Bias in Single-Cell Foundation Models</title>
+<style>
+  :root{
+    --ink:#1a2230; --muted:#5b6676; --line:#e4e8ef; --bg:#f7f9fc;
+    --accent:#2f7d84; --accent2:#3b4a8c; --code:#0f1626; --codeink:#e7edf6;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    color:var(--ink);background:var(--bg);-webkit-font-smoothing:antialiased}
+  a{color:var(--accent);text-decoration:none}
+  a:hover{text-decoration:underline}
+  .wrap{max-width:860px;margin:0 auto;padding:0 20px}
+  header{background:linear-gradient(135deg,var(--accent2),var(--accent));color:#fff;padding:56px 0 40px}
+  header .wrap{max-width:860px}
+  .eyebrow{text-transform:uppercase;letter-spacing:.08em;font-size:12.5px;opacity:.85;margin:0 0 10px}
+  h1{margin:0 0 12px;font-size:32px;line-height:1.25;font-weight:700}
+  .sub{font-size:17px;opacity:.95;margin:0 0 22px;max-width:620px}
+  .links{display:flex;flex-wrap:wrap;gap:10px}
+  .btn{display:inline-block;padding:9px 15px;border-radius:8px;font-size:14px;font-weight:600;
+    background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.35)}
+  .btn:hover{background:rgba(255,255,255,.25);text-decoration:none}
+  .btn.solid{background:#fff;color:var(--accent2);border-color:#fff}
+  section{padding:38px 0;border-bottom:1px solid var(--line)}
+  h2{font-size:22px;margin:0 0 14px}
+  h3{font-size:16px;margin:0 0 6px}
+  p{margin:0 0 14px;color:var(--ink)}
+  .muted{color:var(--muted)}
+  pre{background:var(--code);color:var(--codeink);padding:14px 16px;border-radius:10px;overflow-x:auto;
+    font:13.5px/1.55 "SFMono-Regular",Menlo,Consolas,monospace;margin:0 0 14px}
+  code{font:13.5px/1.5 "SFMono-Regular",Menlo,Consolas,monospace}
+  p code,li code{background:#eceff5;padding:1px 6px;border-radius:5px;font-size:13px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px;margin:6px 0 4px}
+  .card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:16px}
+  .card h3{display:flex;align-items:center;gap:8px}
+  .tag{font-size:11px;font-weight:700;color:#fff;background:var(--accent);border-radius:20px;padding:2px 9px}
+  .tag.cpu{background:var(--muted)}
+  .card p{font-size:13.5px;margin:0 0 10px;color:var(--muted)}
+  .card pre{font-size:12px;padding:10px 12px;margin:0}
+  ul{margin:0 0 14px;padding-left:20px}
+  li{margin:0 0 7px}
+  .note{background:#fff;border-left:3px solid var(--accent);border-radius:0 8px 8px 0;
+    padding:12px 16px;margin:0 0 14px;font-size:14.5px}
+  footer{padding:30px 0 60px;color:var(--muted);font-size:13.5px}
+  .cohorts{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+  .cohort{background:#fff;border:1px solid var(--line);border-radius:10px;padding:13px 15px}
+  .cohort b{display:block;margin-bottom:3px}
+  .cohort span{font-size:13px;color:var(--muted)}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <p class="eyebrow">ACM-BCB · ASI 2026 Workshop</p>
+    <h1>Demographic Bias in Single-Cell Foundation Models</h1>
+    <p class="sub">Evaluation and mitigation across models and cohorts — reproduce every
+      result on your own GPU with prebuilt containers.</p>
+    <div class="links">
+      <a class="btn solid" href="https://github.com/fpera0248/scfm-bias-asi2026">Code on GitHub</a>
+      <a class="btn" href="https://github.com/fpera0248/scfm-bias-asi2026/blob/main/CONTAINER.md">Container guide</a>
+      <a class="btn" href="https://github.com/fpera0248/scfm-bias-asi2026/blob/main/README.md">Full README</a>
+    </div>
+  </div>
+</header>
+
+<section>
+  <div class="wrap">
+    <h2>What this is</h2>
+    <p>We measure how well <b>scFoundation</b>, <b>Geneformer</b>, and <b>scGPT</b> recover
+      cell types for underrepresented demographic groups, and test scDesign3 synthetic
+      augmentation as a mitigation. Three cohorts (interstitial lung disease, colorectal
+      cancer, and the Asian Immune Diversity Atlas), three demographic axes (ethnicity,
+      sex, age), measured with iLISI and worst-group cell-type macro-F1.</p>
+    <p class="muted">This page points you at the code and the ready-to-run containers.
+      The datasets and model weights keep their own licenses and are downloaded separately.</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Reproduce on your own GPU</h2>
+    <p>Each model ships as a public Docker image. Pull the one you want, mount your own
+      <code>.h5ad</code> data, and run — nothing to build.</p>
+
+    <div class="grid">
+      <div class="card">
+        <h3>scFoundation <span class="tag">GPU</span></h3>
+        <p>Embedding + evaluation.</p>
+        <pre>docker pull ghcr.io/fpera0248/scfm-scfoundation:latest</pre>
+      </div>
+      <div class="card">
+        <h3>Geneformer <span class="tag">GPU</span></h3>
+        <p>Embedding + evaluation.</p>
+        <pre>docker pull ghcr.io/fpera0248/scfm-geneformer:latest</pre>
+      </div>
+      <div class="card">
+        <h3>scGPT <span class="tag">GPU</span></h3>
+        <p>Embedding + evaluation.</p>
+        <pre>docker pull ghcr.io/fpera0248/scfm-scgpt:latest</pre>
+      </div>
+      <div class="card">
+        <h3>scDesign3 <span class="tag cpu">CPU</span></h3>
+        <p>Synthetic augmentation (R).</p>
+        <pre>docker pull ghcr.io/fpera0248/scfm-scdesign3:latest</pre>
+      </div>
+    </div>
+
+    <h3 style="margin-top:22px">Run one</h3>
+    <pre>docker run --gpus all -it -v /path/to/your/data:/data \
+    ghcr.io/fpera0248/scfm-scgpt:latest
+
+# inside the container:
+conda run -n scgpt310 python step2a_embed_scgpt_ethnicity.py</pre>
+
+    <div class="note">On HPC without Docker, the same images run under Apptainer:
+      <code>apptainer pull scfm-scgpt.sif docker://ghcr.io/fpera0248/scfm-scgpt:latest</code>
+      then <code>apptainer run --nv -B /path/to/data:/data scfm-scgpt.sif</code>.</div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>What you need</h2>
+    <ul>
+      <li><b>Docker</b> and the <b>NVIDIA Container Toolkit</b> on your machine.</li>
+      <li><b>An NVIDIA GPU + driver ≥ 520</b> — the images are CUDA 11.8 and carry their
+        own CUDA libraries; the driver is the only host-side piece. The scDesign3 image
+        is CPU-only.</li>
+      <li>Your own <code>.h5ad</code> data with an expression matrix, a
+        <code>cell_type</code> column, and a demographic column
+        (<code>self_reported_ethnicity</code>, <code>sex</code>, or age).</li>
+    </ul>
+    <p class="muted">Mount your data at <code>/data</code> and point each step script's
+      <code>BASE</code> variable at <code>/data</code>.</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Datasets</h2>
+    <p>Downloaded from CZ CELLxGENE with <code>fetch_data.sh</code> (each keeps its own
+      license):</p>
+    <div class="cohorts">
+      <div class="cohort"><b>ILD</b><span>Natri et al. 2024, Nature Genetics · GSE227136</span></div>
+      <div class="cohort"><b>CRC</b><span>Moorman et al. 2024, Nature · epithelial compartment</span></div>
+      <div class="cohort"><b>AIDA</b><span>Kock et al. 2025, Cell · Phase 1 Data Freeze v2</span></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p>Reproduction code for <i>Demographic Bias in Single-Cell Foundation Models:
+      Evaluation and Mitigation Across Models and Cohorts</i> (ACM-BCB ASI 2026 workshop).
+      Code, containers, and environment specs on
+      <a href="https://github.com/fpera0248/scfm-bias-asi2026">GitHub</a>.</p>
+  </div>
+</footer>
+
+</body>
+</html>
