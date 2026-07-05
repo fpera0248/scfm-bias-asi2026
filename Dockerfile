@@ -30,9 +30,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 WORKDIR /opt/scfm
 COPY . /opt/scfm
 
-# Heavy layer 1: build all four conda envs from the slim specs (mamba solver).
-# Use --full to pin every transitive dep to the original Linux/CUDA build instead.
-RUN bash install.sh
+# Heavy layer 1: build all four conda envs from the fully pinned specs (mamba solver).
+RUN bash install.sh --full
 
 # Heavy layer 2: model code + weights (Geneformer clone+install, scFoundation cache,
 # scGPT checkpoint). scGPT weights need SCGPT_CKPT_URL or a reachable Drive link;

@@ -32,14 +32,29 @@ want () { for e in "${ENVS[@]}"; do [ "$e" = "$1" ] && return 0; done; return 1;
 env_exists () { conda env list | awk '{print $1}' | grep -qx "$1"; }
 
 create_env () {
-  local name="$1" spec="environment_$1${SUFFIX}.yml"
+  local name="$1" spec="environment_$1${SUFFIX}.yml" build_spec
   echo "=== env: $name  (spec: $spec) ==="
   [ -f "$spec" ] || { echo "ERROR: spec not found: $spec" >&2; exit 1; }
   if env_exists "$name"; then
     echo "  '$name' already exists; skipping. Remove it (conda env remove -n $name) to rebuild."
-  else
-    "$SOLVER" env create -f "$spec"
+    return
   fi
+  build_spec="$spec"
+  if [ "$SUFFIX" = ".full" ]; then
+    # The .full specs come from `conda env export`, which isn't directly replayable:
+    #   - the pip section pins torch==...+cu118 wheels hosted on PyTorch's index, and
+    #   - geneformer is a source/editable install (fetch_weights.sh), not on PyPI.
+    # Sanitize into a temp spec: add PyTorch's extra index, drop the geneformer self-pin.
+    build_spec="/tmp/spec_${name}.yml"
+    awk '
+      /^[[:space:]]*-[[:space:]]*geneformer(==| @)/ { next }
+      { print }
+      /^[[:space:]]*-[[:space:]]*pip:[[:space:]]*$/ {
+        print "      - --extra-index-url https://download.pytorch.org/whl/cu118"
+      }
+    ' "$spec" > "$build_spec"
+  fi
+  "$SOLVER" env create -f "$build_spec"
 }
 
 for e in "${ENVS[@]}"; do create_env "$e"; done

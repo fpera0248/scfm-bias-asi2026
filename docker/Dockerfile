@@ -31,8 +31,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 WORKDIR /opt/scfm
 COPY . /opt/scfm
 
-# Build just this model's env, then fetch just its weights.
-RUN bash install.sh "${ENV_NAME}"
+# Build just this model's env (from the fully pinned spec), then fetch just its weights.
+RUN bash install.sh --full "${ENV_NAME}"
 RUN bash fetch_weights.sh "${MODEL}" || echo "WARN: weights step incomplete for ${MODEL}; see CONTAINER.md."
 
 # Mount your data at /data and point each step script's BASE at /data
