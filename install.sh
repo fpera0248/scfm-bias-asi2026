@@ -39,34 +39,36 @@ create_env () {
     echo "  '$name' already exists; skipping. Remove it (conda env remove -n $name) to rebuild."
     return
   fi
-  build_spec="$spec"
-  if [ "$SUFFIX" = ".full" ]; then
-    # The .full specs come from `conda env export`, which isn't directly replayable:
-    #   - the pip section pins torch==...+cu118 wheels hosted on PyTorch's index, and
-    #   - geneformer is a source/editable install (fetch_weights.sh), not on PyPI.
-    # Sanitize into a temp spec: add PyTorch's extra index, drop the geneformer self-pin.
-    build_spec="/tmp/spec_${name}.yml"
-    # Also drop over-pinned transitive infra (cloud storage, IO, serialization):
-    # the export captured versions that conflict with what datasets/census require,
-    # and pip 25.3 has no legacy resolver to force an inconsistent set. Unpinning lets
-    # pip pick compatible versions; none of these affect local model inference.
-    DROP='aiobotocore|botocore|boto3|s3fs|aioboto[a-z0-9-]*|fsspec|gcsfs|multiprocess|dill'
-    awk -v drop="$DROP" '
-      /^[[:space:]]*-[[:space:]]*geneformer(==| @)/ { next }
-      $0 ~ ("^[[:space:]]*-[[:space:]]*(" drop ")==") { next }
-      { print }
-      /^[[:space:]]*-[[:space:]]*pip:[[:space:]]*$/ {
-        print "      - --extra-index-url https://download.pytorch.org/whl/cu118"
-      }
-    ' "$spec" > "$build_spec"
+  if [ "$SUFFIX" != ".full" ]; then
+    "$SOLVER" env create -f "$spec"
+    return
   fi
-  "$SOLVER" env create -f "$build_spec"
+
+  # --- Robust replay of a `conda env export` (.full spec) ---
+  # The pip section is a complete, flattened, exact-pinned list, but its pins are
+  # internally inconsistent (the env was built up incrementally on the cluster with a
+  # permissive resolver), and pip 25.3 has no legacy resolver to force an inconsistent
+  # set. So: build the conda layer, then pip-install the exact pinned set with --no-deps
+  # (install every version as-is, no re-resolution -> no conflicts). torch==...+cu118
+  # wheels come from PyTorch's index; geneformer is installed from source separately
+  # (fetch_weights.sh), so drop its self-reference here.
+  local conda_yml="/tmp/conda_${name}.yml" pip_reqs="/tmp/pip_${name}.txt"
+  awk '/^[[:space:]]*-[[:space:]]*pip:[[:space:]]*$/ { exit } { print }' "$spec" > "$conda_yml"
+  awk '/^[[:space:]]*-[[:space:]]*pip:/ { p=1; next }
+       p && /^[[:space:]]+-[[:space:]]/ { sub(/^[[:space:]]+-[[:space:]]*/, ""); print }' "$spec" \
+     | grep -vE '^geneformer(==| @)' > "$pip_reqs"
+  "$SOLVER" env create -f "$conda_yml"
+  if [ -s "$pip_reqs" ]; then
+    conda run -n "$name" pip install --no-deps \
+      --extra-index-url https://download.pytorch.org/whl/cu118 -r "$pip_reqs"
+  fi
 }
 
 for e in "${ENVS[@]}"; do create_env "$e"; done
 
 # Extra step 1: scGPT is not on conda — install it into scgpt310 from pip.
-if want scgpt310; then
+# (Skipped for --full builds: scgpt is already in the pinned pip set installed above.)
+if want scgpt310 && [ "$SUFFIX" != ".full" ]; then
   echo "=== installing scgpt==0.2.1 into scgpt310 ==="
   conda run -n scgpt310 pip install "scgpt==0.2.1"
 fi

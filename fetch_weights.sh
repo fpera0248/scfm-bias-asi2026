@@ -29,7 +29,8 @@ if want geneformer; then
   fi
   git -C "$GF_DIR" fetch --all --quiet || true
   git -C "$GF_DIR" checkout "$GF_COMMIT"
-  conda run -n geneformer310 pip install -e "$GF_DIR"
+  # --no-deps: geneformer's deps are already installed at their pinned versions.
+  conda run -n geneformer310 pip install --no-deps -e "$GF_DIR"
   echo "  token dictionary: $GF_DIR/geneformer/token_dictionary_gc104M.pkl"
 fi
 
