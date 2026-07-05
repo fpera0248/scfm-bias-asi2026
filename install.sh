@@ -54,9 +54,11 @@ create_env () {
   # (fetch_weights.sh), so drop its self-reference here.
   local conda_yml="/tmp/conda_${name}.yml" pip_reqs="/tmp/pip_${name}.txt"
   awk '/^[[:space:]]*-[[:space:]]*pip:[[:space:]]*$/ { exit } { print }' "$spec" > "$conda_yml"
+  # (|| true: an env with no pip section yields empty input, and grep -v exits 1 on that,
+  #  which would otherwise trip `set -e -o pipefail`.)
   awk '/^[[:space:]]*-[[:space:]]*pip:/ { p=1; next }
        p && /^[[:space:]]+-[[:space:]]/ { sub(/^[[:space:]]+-[[:space:]]*/, ""); print }' "$spec" \
-     | grep -vE '^geneformer(==| @)' > "$pip_reqs"
+     | { grep -vE '^geneformer(==| @)' || true; } > "$pip_reqs"
   "$SOLVER" env create -f "$conda_yml"
   if [ -s "$pip_reqs" ]; then
     conda run -n "$name" pip install --no-deps \
