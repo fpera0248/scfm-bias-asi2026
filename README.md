@@ -84,40 +84,18 @@ Ethnicity workflows produce the main-text results. Sex and age workflows produce
 
 ## Model setup
 
-Four conda environments are used: one per model, plus one for the scDesign3 synthetic-cell generation (the R `step0b`). Their dependencies conflict, so keep them separate.
+The pipeline uses four conda environments: `scfoundation_gpu`, `geneformer310`, `scgpt310`, and `scdesign3_env` (the R-based scDesign3 stage). Their dependencies conflict, so keep them separate.
 
-Each environment ships as two files:
+**`ENVIRONMENTS.md`** is the full rebuild guide: installing conda if you do not have it, creating each environment from its spec (slim `environment_<name>.yml` or fully pinned `environment_<name>.full.yml`), and the two that need an extra step — scGPT installs from pip (`scgpt==0.2.1`), and scDesign3 installs from source (version 1.5.0, via `devtools`). **`install.sh`** runs the whole thing in one pass:
+```
+bash install.sh          # slim specs (recommended)
+bash install.sh --full   # fully pinned specs, exact Linux/CUDA reproduction
+```
 
-- `environment_<name>.yml` — a slim, curated spec listing the top-level dependencies. Solves fastest; recommended starting point.
-- `environment_<name>.full.yml` — the exact `conda env export` with every transitive dependency and build string pinned. Use it to reproduce the original Linux/CUDA environment down to the build. It is platform-specific and may not solve on non-Linux machines.
-
-For cross-checking, `piplist_<name>.txt` records the exact `pip list` output for each environment, capturing pip-installed packages that the conda export may not fully pin.
-
-Create from the slim spec (swap in the matching `.full.yml` for exact pinning):
-
-scFoundation
-```
-conda env create -f environment_scfoundation_gpu.yml
-```
-Model code and weights: [FILL: scFoundation source and checkpoint version]
-
-Geneformer
-```
-conda env create -f environment_geneformer310.yml
-```
-Model code and weights: [FILL: Geneformer source and checkpoint version]
-
-scGPT
-```
-conda env create -f environment_scgpt310.yml
-```
-Model code and weights: [FILL: scGPT source and checkpoint version]
-
-scDesign3 (synthetic augmentation, the R `step0b`; R 4.3)
-```
-conda env create -f environment_scdesign3_env.yml
-```
-scDesign3 itself is installed from source into this environment with `devtools`: [FILL: scDesign3 source and version].
+The environments provide the code to run each model. The pretrained model **weights** are separate downloads with their own licenses and are not in this repo:
+- scFoundation: [FILL: source and checkpoint version]
+- Geneformer: [FILL: source and checkpoint version]
+- scGPT: [FILL: source and checkpoint version] — the scGPT package itself is pinned to `scgpt==0.2.1`
 
 Pin the exact checkpoint for each model. A different checkpoint produces different embeddings and will not reproduce the reported numbers.
 
