@@ -24,7 +24,7 @@ import scipy.sparse as sp
 print(f"Python: {sys.executable}", flush=True)
 print(f"Script: STEP 2a AGE -- scFoundation embed", flush=True)
 
-BASE   = pathlib.Path("/oscar/home/fperalta/data/fperalta/scfoundation/augmentedv4/age_scfoundation_workflow")  # [AGE 1]
+BASE   = pathlib.Path("/data/scfoundation/augmentedv4/age_scfoundation_workflow")  # [AGE 1]
 INDIR  = BASE
 OUTDIR = BASE / "step2a_embeddings"                                                                              # [AGE 2]
 OUTDIR.mkdir(exist_ok=True)

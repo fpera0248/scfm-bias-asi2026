@@ -31,7 +31,7 @@ from sklearn.preprocessing import StandardScaler
 warnings.filterwarnings("ignore")
 
 BASE = pathlib.Path(
-    "/oscar/home/fperalta/data/fperalta/Geneformer/augmented_AIDA/age_Geneformer_workflow"
+    "/data/Geneformer/augmented_AIDA/age_Geneformer_workflow"
 )
 
 LABELED_DIR = BASE

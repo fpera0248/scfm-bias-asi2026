@@ -26,7 +26,7 @@ import scanpy as sc
 # ============================================================
 
 BASE = Path(
-    "/oscar/data/rsingh47/fperalta/Geneformer/augmented_AIDA/ethnicity_Geneformer_workflow"
+    "/data/Geneformer/augmented_AIDA/ethnicity_Geneformer_workflow"
 )
 
 SOURCE_H5AD = BASE / "AIDA_RawCounts_ETHNICITY_900k.h5ad"

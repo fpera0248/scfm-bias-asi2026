@@ -10,7 +10,7 @@ import pandas as pd
 import numpy as np
 import re
 
-INPUT_H5AD  = "/oscar/home/fperalta/data/fperalta/scfoundation/augmented_AIDA/ethnicity_scfoundation_workflow/AIDA_RawCounts_ETHNICITY_900k.h5ad"
+INPUT_H5AD  = "/data/scfoundation/augmented_AIDA/ethnicity_scfoundation_workflow/AIDA_RawCounts_ETHNICITY_900k.h5ad"
 OUT_RAW     = "AIDA_RawCounts_AGE.h5ad"
 OUT_VAL     = "AIDA_Age_External_Validation_10000.h5ad"
 VAL_N       = 10000   # similar scale to ILD's 10,500 age val

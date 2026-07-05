@@ -26,7 +26,7 @@ from sklearn.metrics import accuracy_score, f1_score, balanced_accuracy_score
 warnings.filterwarnings("ignore")
 
 BASE = pathlib.Path(
-    "/oscar/home/fperalta/data/fperalta/scGPT/augmented_CRC/age_scGPT_workflow"
+    "/data/scGPT/augmented_CRC/age_scGPT_workflow"
 )
 
 LABELED_DIR = BASE / "step3b_labeled"

@@ -5,8 +5,8 @@ Run on Oscar: python3 generate_CRC_age_scGPT_steps3to9.py
 """
 import os, subprocess
 
-BASE_ILD = "/oscar/home/fperalta/data/fperalta/scGPT/age_scGPT_workflow"
-BASE_CRC = "/oscar/home/fperalta/data/fperalta/scGPT/augmented_CRC/age_scGPT_workflow"
+BASE_ILD = "/data/scGPT/age_scGPT_workflow"
+BASE_CRC = "/data/scGPT/augmented_CRC/age_scGPT_workflow"
 OUTPUT_BASE = "CRC_Age_Pilot"
 VAL_FILE    = "CRC_Age_External_Validation_9402"
 
@@ -227,7 +227,7 @@ module load {MODULE}
 source activate {ENV}
 export PYTHONNOUSERSITE=1
 export CUDA_VISIBLE_DEVICES=""
-export LD_PRELOAD=/users/fperalta/.conda/envs/scgpt310/lib/libstdc++.so.6
+export LD_PRELOAD=/data/.conda/envs/scgpt310/lib/libstdc++.so.6
 cd {BASE_CRC}
 python {script}
 echo "Exit: $?"
@@ -269,7 +269,7 @@ echo "Job chain:"
 echo "  step4  : $J4    step4a : $J4A   step4b : $J4B"
 echo "  step5  : $J5    step6  : $J6    step7  : $J7    step8 : $J8"
 echo "  step9  : $J9  (after all)"
-echo "Monitor: squeue -u fperalta"
+echo "Monitor: squeue -u $USER"
 """
 with open(f"{BASE_CRC}/submit_CRC_age_scGPT_steps.sh", "w") as f:
     f.write(submit)

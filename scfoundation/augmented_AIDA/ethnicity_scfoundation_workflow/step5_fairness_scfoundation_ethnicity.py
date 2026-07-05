@@ -11,7 +11,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score, balanced_accuracy_score, f1_score, silhouette_score
 
 warnings.filterwarnings("ignore")
-BASE = pathlib.Path("/oscar/home/fperalta/data/fperalta/scfoundation/augmented_AIDA/ethnicity_scfoundation_workflow")
+BASE = pathlib.Path("/data/scfoundation/augmented_AIDA/ethnicity_scfoundation_workflow")
 LABELED_DIR = BASE / "step3b_labeled"
 OUTDIR = BASE / "step5_outputs_scfoundation_ethnicity"; OUTDIR.mkdir(exist_ok=True)
 

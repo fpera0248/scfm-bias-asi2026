@@ -10,7 +10,7 @@ import pathlib, time
 import scipy.sparse as sp
 from scib_metrics.benchmark import Benchmarker, BioConservation, BatchCorrection
 
-BASE   = pathlib.Path("/oscar/home/fperalta/data/fperalta/scGPT/age_scGPT_workflow")
+BASE   = pathlib.Path("/data/scGPT/age_scGPT_workflow")
 EMBDIR = BASE / "step2a_embeddings"
 OUTDIR = BASE / "benchmark_outputs_scgpt_age"
 OUTDIR.mkdir(exist_ok=True)

@@ -23,7 +23,7 @@ from sklearn.preprocessing import StandardScaler
 
 warnings.filterwarnings("ignore")
 
-BASE = pathlib.Path("/oscar/home/fperalta/data/fperalta/scGPT/augmented_AIDA/ethnicity_scGPT_workflow")
+BASE = pathlib.Path("/data/scGPT/augmented_AIDA/ethnicity_scGPT_workflow")
 
 LABELED_DIR = BASE / "step2a_embeddings"
 OUTDIR      = BASE / "step7_representation_diagnostics_scgpt_ethnicity"

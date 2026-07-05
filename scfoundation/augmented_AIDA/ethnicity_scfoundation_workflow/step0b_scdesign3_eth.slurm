@@ -20,7 +20,7 @@ echo "cpus=${SLURM_CPUS_PER_TASK}"
 echo "mem=${SLURM_MEM_PER_NODE:-unknown}"
 echo "start=$(date -Iseconds)"
 
-cd /oscar/home/fperalta/data/fperalta/scfoundation/augmented_AIDA/ethnicity_scfoundation_workflow
+cd /data/scfoundation/augmented_AIDA/ethnicity_scfoundation_workflow
 
 module purge
 module load miniforge3/25.3.0-3

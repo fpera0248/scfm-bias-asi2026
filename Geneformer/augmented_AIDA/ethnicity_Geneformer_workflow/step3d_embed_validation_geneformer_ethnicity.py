@@ -32,7 +32,7 @@ from geneformer import TranscriptomeTokenizer, EmbExtractor
 # ============================================================
 
 BASE = pathlib.Path(
-    "/oscar/data/rsingh47/fperalta/Geneformer/augmented_AIDA/ethnicity_Geneformer_workflow"
+    "/data/Geneformer/augmented_AIDA/ethnicity_Geneformer_workflow"
 )
 
 IN_FILE  = BASE / "AIDA_Ethnicity_External_Validation_12500.h5ad"
@@ -42,7 +42,7 @@ TOKENIZE_DIR = BASE / "tokenized_datasets_validation"
 TOKENIZE_DIR.mkdir(exist_ok=True)
 
 GENEFORMER_MODEL = pathlib.Path(
-    "/oscar/home/fperalta/data/fperalta/Geneformer/geneformer_repo/Geneformer-V2-316M"
+    "/data/Geneformer/geneformer_repo/Geneformer-V2-316M"
 )
 
 # ============================================================

@@ -7,12 +7,12 @@ import pathlib
 import scipy.sparse as sp
 from geneformer import TranscriptomeTokenizer, EmbExtractor
 
-BASE   = pathlib.Path("/oscar/home/fperalta/data/fperalta/Geneformer/augmented_CRC/age_Geneformer_workflow")
+BASE   = pathlib.Path("/data/Geneformer/augmented_CRC/age_Geneformer_workflow")
 OUTDIR = BASE
 OUTDIR.mkdir(exist_ok=True)
 TOKENIZE_DIR = BASE / "tokenized_datasets"
 TOKENIZE_DIR.mkdir(exist_ok=True)
-GENEFORMER_MODEL = pathlib.Path("/oscar/home/fperalta/data/fperalta/Geneformer/geneformer_repo/Geneformer-V2-316M")
+GENEFORMER_MODEL = pathlib.Path("/data/Geneformer/geneformer_repo/Geneformer-V2-316M")
 RAW_COUNTS_PATH  = BASE / "ColorectalCancer_RawCounts_AGE.h5ad"
 OUTPUT_BASE      = "CRC_Age_Pilot"
 

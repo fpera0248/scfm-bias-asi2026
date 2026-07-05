@@ -10,7 +10,7 @@ from sklearn.neighbors import NearestNeighbors
 from sklearn.preprocessing import StandardScaler
 
 warnings.filterwarnings("ignore")
-BASE = pathlib.Path("/oscar/home/fperalta/data/fperalta/scfoundation/augmentedv4/sex_scfoundation_workflow")
+BASE = pathlib.Path("/data/scfoundation/augmentedv4/sex_scfoundation_workflow")
 LABELED_DIR = BASE / "step3b_labeled"
 OUTDIR = BASE / "step6_outputs_scfoundation_sex"; OUTDIR.mkdir(exist_ok=True)
 OUTPUT_BASE = "ILD_Sex_Pilot"

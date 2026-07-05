@@ -11,7 +11,7 @@ Changes vs step2a_age_embed_geneformer.py:
 All embedding logic (tokenize, EmbExtractor, re-sort, degenerate check)
 preserved verbatim from step2a_age_embed_geneformer.py.
 
-Checkpoint path: /oscar/home/fperalta/data/fperalta/geneformer/Geneformer-V2-316M
+Checkpoint path: /data/geneformer/Geneformer-V2-316M
 """
 
 import sys
@@ -33,7 +33,7 @@ from geneformer import TranscriptomeTokenizer, EmbExtractor
 # ============================================================
 
 BASE = pathlib.Path(
-    "/oscar/data/rsingh47/fperalta/Geneformer/augmented_AIDA/ethnicity_Geneformer_workflow"
+    "/data/Geneformer/augmented_AIDA/ethnicity_Geneformer_workflow"
 )
 INDIR  = BASE
 OUTDIR = BASE
@@ -43,7 +43,7 @@ TOKENIZE_DIR = BASE / "tokenized_datasets"
 TOKENIZE_DIR.mkdir(exist_ok=True)
 
 GENEFORMER_MODEL = pathlib.Path(
-    "/oscar/home/fperalta/data/fperalta/Geneformer/geneformer_repo/Geneformer-V2-316M"
+    "/data/Geneformer/geneformer_repo/Geneformer-V2-316M"
 )
 
 OUTPUT_BASE = "AIDA_Ethnicity_Pilot"  # [ETH 2]

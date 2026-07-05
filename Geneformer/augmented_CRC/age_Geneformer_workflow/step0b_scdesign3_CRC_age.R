@@ -65,8 +65,8 @@ PRIMARY_FORMULA_PARTS <- c("cell_type", BIN_COL, paste0("cell_type:", BIN_COL))
 SECONDARY_COVARIATES  <- c("sex", ETH_COL)
 
 COPY_DIRS <- c(
-  "/oscar/home/fperalta/data/fperalta/scGPT/augmented_CRC/age_scGPT_workflow",
-  "/oscar/home/fperalta/data/fperalta/scfoundation/augmented_CRC/age_scfoundation_workflow"
+  "/data/scGPT/augmented_CRC/age_scGPT_workflow",
+  "/data/scfoundation/augmented_CRC/age_scfoundation_workflow"
 )
 
 PROPORTIONAL_SIZE  <- 2000L

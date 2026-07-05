@@ -13,7 +13,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score, f1_score
 from sklearn.preprocessing import StandardScaler
 
-BASE = Path("/oscar/home/fperalta/data/fperalta/Geneformer/augmented_AIDA/age_Geneformer_workflow")
+BASE = Path("/data/Geneformer/augmented_AIDA/age_Geneformer_workflow")
 EMB_DIR = BASE
 OUTPUT_BASE = "AIDA_Age_Pilot"
 EMB_KEY = "X_geneformer"

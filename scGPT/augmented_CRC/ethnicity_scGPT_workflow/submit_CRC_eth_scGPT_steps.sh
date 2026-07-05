@@ -2,7 +2,7 @@
 # Submit CRC ethnicity scGPT steps 3a-9 with dependencies.
 # Usage: bash submit_CRC_eth_scGPT_steps.sh
 
-BASE=/oscar/home/fperalta/data/fperalta/scGPT/augmented_CRC/ethnicity_scGPT_workflow
+BASE=/data/scGPT/augmented_CRC/ethnicity_scGPT_workflow
 LOGS=$BASE/logs
 mkdir -p $LOGS
 
@@ -34,4 +34,4 @@ echo "  step4  : $J4  (after 3b+3d)"
 echo "  step4a : $J4A   step4b : $J4B   step5 : $J5"
 echo "  step6  : $J6    step7  : $J7    step8 : $J8"
 echo "  step9  : $J9  (after all)"
-echo "Monitor: squeue -u fperalta"
+echo "Monitor: squeue -u $USER"

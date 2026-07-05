@@ -5,8 +5,8 @@
 #SBATCH --cpus-per-task=8
 #SBATCH --mem=192G
 #SBATCH --time=06:00:00
-#SBATCH --output=/oscar/home/fperalta/data/fperalta/scfoundation/augmentedv4/sex_scfoundation_workflow/logs/sex_stage1_%j.out
-#SBATCH --error=/oscar/home/fperalta/data/fperalta/scfoundation/augmentedv4/sex_scfoundation_workflow/logs/sex_stage1_%j.err
+#SBATCH --output=/data/scfoundation/augmentedv4/sex_scfoundation_workflow/logs/sex_stage1_%j.out
+#SBATCH --error=/data/scfoundation/augmentedv4/sex_scfoundation_workflow/logs/sex_stage1_%j.err
 
 set -euo pipefail
 
@@ -25,7 +25,7 @@ set +u
 conda activate scdesign3_env
 set -u
 
-cd /oscar/home/fperalta/data/fperalta/scfoundation/augmentedv4/sex_scfoundation_workflow
+cd /data/scfoundation/augmentedv4/sex_scfoundation_workflow
 mkdir -p logs
 
 export OMP_NUM_THREADS=$SLURM_CPUS_PER_TASK

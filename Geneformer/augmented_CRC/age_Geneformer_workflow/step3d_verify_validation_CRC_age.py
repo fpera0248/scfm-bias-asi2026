@@ -7,7 +7,7 @@ import sys, pathlib, shutil
 import numpy as np
 import scanpy as sc
 
-BASE     = pathlib.Path("/oscar/home/fperalta/data/fperalta/Geneformer/augmented_CRC/age_Geneformer_workflow")
+BASE     = pathlib.Path("/data/Geneformer/augmented_CRC/age_Geneformer_workflow")
 EMB_KEY  = "X_geneformer"
 MIN_UNIQUE = 10
 

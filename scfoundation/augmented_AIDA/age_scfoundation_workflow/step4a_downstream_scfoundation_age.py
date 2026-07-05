@@ -14,7 +14,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, f1_score
 from sklearn.neighbors import NearestNeighbors
 
-BASE   = Path("/oscar/home/fperalta/data/fperalta/scfoundation/augmented_AIDA/age_scfoundation_workflow")
+BASE   = Path("/data/scfoundation/augmented_AIDA/age_scfoundation_workflow")
 OUTDIR = BASE / "step4a_downstream_scfoundation_age"
 OUTDIR.mkdir(exist_ok=True)
 OUTFILE_TXT = OUTDIR / "step4a_downstream_results_age_AR_EOS_scfoundation.txt"

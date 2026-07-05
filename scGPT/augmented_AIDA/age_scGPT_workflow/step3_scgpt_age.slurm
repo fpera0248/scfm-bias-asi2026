@@ -5,8 +5,8 @@
 #SBATCH --cpus-per-task=4
 #SBATCH --mem=64G
 #SBATCH --time=6:00:00
-#SBATCH --output=/oscar/home/fperalta/data/fperalta/scGPT/augmented_AIDA/age_scGPT_workflow/logs/scgpt_age_3_%j.out
-#SBATCH --error=/oscar/home/fperalta/data/fperalta/scGPT/augmented_AIDA/age_scGPT_workflow/logs/scgpt_age_3_%j.err
+#SBATCH --output=/data/scGPT/augmented_AIDA/age_scGPT_workflow/logs/scgpt_age_3_%j.out
+#SBATCH --error=/data/scGPT/augmented_AIDA/age_scGPT_workflow/logs/scgpt_age_3_%j.err
 
 set -euo pipefail
 module purge
@@ -19,6 +19,6 @@ export PYTHONNOUSERSITE=1
 export JAX_PLATFORM_NAME=cpu
 export JAX_PLATFORMS=cpu
 
-cd /oscar/home/fperalta/data/fperalta/scGPT/augmented_AIDA/age_scGPT_workflow
+cd /data/scGPT/augmented_AIDA/age_scGPT_workflow
 python step3a_benchmark_scgpt_age.py
 echo "Exit: $?"

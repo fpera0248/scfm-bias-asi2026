@@ -5,8 +5,8 @@
 #SBATCH --cpus-per-task=6
 #SBATCH --mem=192G
 #SBATCH --time=96:00:00
-#SBATCH --output=/oscar/data/rsingh47/fperalta/Geneformer/augmented_AIDA/ethnicity_Geneformer_workflow/logs/gf_eth_scib_step3a_%j.out
-#SBATCH --error=/oscar/data/rsingh47/fperalta/Geneformer/augmented_AIDA/ethnicity_Geneformer_workflow/logs/gf_eth_scib_step3a_%j.err
+#SBATCH --output=/data/Geneformer/augmented_AIDA/ethnicity_Geneformer_workflow/logs/gf_eth_scib_step3a_%j.out
+#SBATCH --error=/data/Geneformer/augmented_AIDA/ethnicity_Geneformer_workflow/logs/gf_eth_scib_step3a_%j.err
 
 set -euo pipefail
 
@@ -35,7 +35,7 @@ which python
 python --version
 echo "Conda env: $CONDA_PREFIX"
 
-BASE_DIR="/oscar/data/rsingh47/fperalta/Geneformer/augmented_AIDA/ethnicity_Geneformer_workflow"
+BASE_DIR="/data/Geneformer/augmented_AIDA/ethnicity_Geneformer_workflow"
 LOGDIR="$BASE_DIR/logs"
 
 mkdir -p "$LOGDIR"
@@ -57,7 +57,7 @@ export NUMEXPR_NUM_THREADS=$SLURM_CPUS_PER_TASK
 python - << 'EOF'
 import scanpy as sc, numpy as np, sys, pathlib
 
-BASE        = pathlib.Path("/oscar/data/rsingh47/fperalta/Geneformer/augmented_AIDA/ethnicity_Geneformer_workflow")
+BASE        = pathlib.Path("/data/Geneformer/augmented_AIDA/ethnicity_Geneformer_workflow")
 OUTPUT_BASE = "AIDA_Ethnicity_Pilot"
 EMB_KEY     = "X_geneformer"
 

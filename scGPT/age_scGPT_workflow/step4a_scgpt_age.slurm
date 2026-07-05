@@ -5,10 +5,10 @@
 #SBATCH --cpus-per-task=4
 #SBATCH --mem=64G
 #SBATCH --time=24:00:00
-#SBATCH --output=/oscar/home/fperalta/data/fperalta/scGPT/age_scGPT_workflow/logs/scgpt_age_4a_%j.out
-#SBATCH --error=/oscar/home/fperalta/data/fperalta/scGPT/age_scGPT_workflow/logs/scgpt_age_4a_%j.err
+#SBATCH --output=/data/scGPT/age_scGPT_workflow/logs/scgpt_age_4a_%j.out
+#SBATCH --error=/data/scGPT/age_scGPT_workflow/logs/scgpt_age_4a_%j.err
 
-BASE=/oscar/home/fperalta/data/fperalta/scGPT/age_scGPT_workflow
+BASE=/data/scGPT/age_scGPT_workflow
 module load miniforge3/25.3.0-3
 module purge
 module load miniforge3/25.3.0-3

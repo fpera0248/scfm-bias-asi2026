@@ -5,7 +5,7 @@ Run on Oscar: python3 generate_CRC_eth_geneformer_steps3to9.py
 """
 import os
 
-BASE_CRC = "/oscar/home/fperalta/data/fperalta/Geneformer/augmented_CRC/ethnicity_Geneformer_workflow"
+BASE_CRC = "/data/Geneformer/augmented_CRC/ethnicity_Geneformer_workflow"
 OUTPUT_BASE = "CRC_Eth_Pilot"
 VAL_FILE    = "CRC_Eth_External_Validation_8572"
 
@@ -15,7 +15,7 @@ os.makedirs(f"{BASE_CRC}/logs", exist_ok=True)
 # ── common substitution helper ─────────────────────────────────────────────
 def adapt(src: str) -> str:
     return (src
-        .replace("/oscar/data/rsingh47/fperalta/Geneformer/augmented/ethnicity_Geneformer_workflow",
+        .replace("/data/Geneformer/augmented/ethnicity_Geneformer_workflow",
                  BASE_CRC)
         .replace("ILD_Ethnicity_Pilot", OUTPUT_BASE)
         .replace("BalancedAugmented_2143Each", "BalancedAugmented_1504Each")
@@ -88,7 +88,7 @@ import time
 import scipy.sparse as sp
 from scib_metrics.benchmark import Benchmarker, BioConservation, BatchCorrection
 
-BASE   = pathlib.Path("/oscar/data/rsingh47/fperalta/Geneformer/augmented/ethnicity_Geneformer_workflow")
+BASE   = pathlib.Path("/data/Geneformer/augmented/ethnicity_Geneformer_workflow")
 INDIR  = BASE
 OUTDIR = BASE / "benchmark_outputs_geneformer_ethnicity"
 OUTDIR.mkdir(parents=True, exist_ok=True)
@@ -266,7 +266,7 @@ if __name__ == "__main__":
 ''')
 
 # ── step 3b ───────────────────────────────────────────────────────────────────
-step3b = adapt(open("/oscar/home/fperalta/data/fperalta/Geneformer/augmented/ethnicity_Geneformer_workflow/step3b_label_propagation_geneformer_ethnicity.py").read())
+step3b = adapt(open("/data/Geneformer/augmented/ethnicity_Geneformer_workflow/step3b_label_propagation_geneformer_ethnicity.py").read())
 
 # ── step 3d ───────────────────────────────────────────────────────────────────
 # For CRC, validation is already embedded by step2a. This step just verifies.
@@ -318,21 +318,21 @@ print("STEP 3d COMPLETE", flush=True)
 # ── steps 4 through 9 ─────────────────────────────────────────────────────────
 scripts = {
     "step4_external_validation_geneformer_ethnicity.py":
-        adapt(open("/oscar/home/fperalta/data/fperalta/Geneformer/augmented/ethnicity_Geneformer_workflow/step4_external_validation_geneformer_ethnicity.py").read()),
+        adapt(open("/data/Geneformer/augmented/ethnicity_Geneformer_workflow/step4_external_validation_geneformer_ethnicity.py").read()),
     "step4a_downstream_results_eth_AR_EOS_geneformer.py":
-        adapt(open("/oscar/home/fperalta/data/fperalta/Geneformer/augmented/ethnicity_Geneformer_workflow/step4a_downstream_results_eth_AR_EOS_geneformer.py").read()),
+        adapt(open("/data/Geneformer/augmented/ethnicity_Geneformer_workflow/step4a_downstream_results_eth_AR_EOS_geneformer.py").read()),
     "step4b_overfitting_stress_tests_geneformer.py":
-        adapt(open("/oscar/home/fperalta/data/fperalta/Geneformer/augmented/ethnicity_Geneformer_workflow/step4b_overfitting_stress_tests_geneformer.py").read()),
+        adapt(open("/data/Geneformer/augmented/ethnicity_Geneformer_workflow/step4b_overfitting_stress_tests_geneformer.py").read()),
     "step5_fairness_eth_geneformer.py":
-        adapt(open("/oscar/home/fperalta/data/fperalta/Geneformer/augmented/ethnicity_Geneformer_workflow/step5_fairness_eth_geneformer.py").read()),
+        adapt(open("/data/Geneformer/augmented/ethnicity_Geneformer_workflow/step5_fairness_eth_geneformer.py").read()),
     "step6_per_ethnicity_diagnostics_geneformer.py":
-        adapt(open("/oscar/home/fperalta/data/fperalta/Geneformer/augmented/ethnicity_Geneformer_workflow/step6_per_ethnicity_diagnostics_geneformer.py").read()),
+        adapt(open("/data/Geneformer/augmented/ethnicity_Geneformer_workflow/step6_per_ethnicity_diagnostics_geneformer.py").read()),
     "step7_representation_diagnostics_geneformer.py":
-        adapt(open("/oscar/home/fperalta/data/fperalta/Geneformer/augmented/ethnicity_Geneformer_workflow/step7_representation_diagnostics_geneformer.py").read()),
+        adapt(open("/data/Geneformer/augmented/ethnicity_Geneformer_workflow/step7_representation_diagnostics_geneformer.py").read()),
     "step8_eth_conditioned_disease_geneformer.py":
-        adapt(open("/oscar/home/fperalta/data/fperalta/Geneformer/augmented/ethnicity_Geneformer_workflow/step8_eth_conditioned_disease_geneformer.py").read()),
+        adapt(open("/data/Geneformer/augmented/ethnicity_Geneformer_workflow/step8_eth_conditioned_disease_geneformer.py").read()),
     "step9_visualizations_geneformer_ethnicity.py":
-        adapt(open("/oscar/home/fperalta/data/fperalta/Geneformer/augmented/ethnicity_Geneformer_workflow/step9_visualizations_geneformer_ethnicity.py").read()),
+        adapt(open("/data/Geneformer/augmented/ethnicity_Geneformer_workflow/step9_visualizations_geneformer_ethnicity.py").read()),
 }
 
 # step4 — also fix VALIDATION_FILE path to use step2a_embeddings output

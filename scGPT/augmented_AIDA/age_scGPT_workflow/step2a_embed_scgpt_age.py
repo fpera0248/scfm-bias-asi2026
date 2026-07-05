@@ -21,9 +21,9 @@ import scipy.sparse as sp
 
 warnings.filterwarnings("ignore")
 
-BASE        = pathlib.Path("/oscar/home/fperalta/data/fperalta/scGPT/augmented_AIDA/age_scGPT_workflow")  # [AGE 1]
+BASE        = pathlib.Path("/data/scGPT/augmented_AIDA/age_scGPT_workflow")  # [AGE 1]
 OUTDIR      = BASE / "step2a_embeddings"                                                    # [AGE 2]
-SCGPT_DIR   = pathlib.Path("/oscar/home/fperalta/data/fperalta/scGPT")
+SCGPT_DIR   = pathlib.Path("/data/scGPT")
 OUTDIR.mkdir(exist_ok=True)
 
 CHECKPOINT  = SCGPT_DIR / "scGPT_human"

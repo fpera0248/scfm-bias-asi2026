@@ -5,8 +5,8 @@
 #SBATCH --ntasks=2
 #SBATCH --mem=30G
 #SBATCH --time=64:00:00
-#SBATCH --output=/oscar/data/rsingh47/fperalta/Geneformer/augmented_AIDA/ethnicity_Geneformer_workflow/logs/eth_step7_gf_%j.out
-#SBATCH --error=/oscar/data/rsingh47/fperalta/Geneformer/augmented_AIDA/ethnicity_Geneformer_workflow/logs/eth_step7_gf_%j.err
+#SBATCH --output=/data/Geneformer/augmented_AIDA/ethnicity_Geneformer_workflow/logs/eth_step7_gf_%j.out
+#SBATCH --error=/data/Geneformer/augmented_AIDA/ethnicity_Geneformer_workflow/logs/eth_step7_gf_%j.err
 
 set -e
 set -o pipefail
@@ -20,7 +20,7 @@ export LD_LIBRARY_PATH="$CONDA_PREFIX/lib:${LD_LIBRARY_PATH:-}"
 export PYTHONNOUSERSITE=1
 set -u
 
-BASE_DIR="/oscar/data/rsingh47/fperalta/Geneformer/augmented_AIDA/ethnicity_Geneformer_workflow"
+BASE_DIR="/data/Geneformer/augmented_AIDA/ethnicity_Geneformer_workflow"
 mkdir -p "$BASE_DIR/logs"
 cd "$BASE_DIR"
 

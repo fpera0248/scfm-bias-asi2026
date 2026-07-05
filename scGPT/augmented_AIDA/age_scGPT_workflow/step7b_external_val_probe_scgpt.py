@@ -13,7 +13,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score, f1_score
 from sklearn.preprocessing import StandardScaler
 
-BASE = Path("/oscar/home/fperalta/data/fperalta/scGPT/augmented_AIDA/age_scGPT_workflow")
+BASE = Path("/data/scGPT/augmented_AIDA/age_scGPT_workflow")
 EMB_DIR = BASE / "step2a_embeddings"
 OUTPUT_BASE = "AIDA_Age_Pilot"
 EMB_KEY = "X_scGPT"

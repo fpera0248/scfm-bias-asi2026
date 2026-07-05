@@ -34,7 +34,7 @@ print(f"Script: STEP 2a FIXED v2 — fused batch embed, RAM-loaded matrix", flus
 # ============================================================
 
 BASE = pathlib.Path(
-    "/oscar/home/fperalta/data/fperalta/scfoundation/augmentedv4/sex_scfoundation_workflow"
+    "/data/scfoundation/augmentedv4/sex_scfoundation_workflow"
 )
 INDIR  = BASE
 OUTDIR = BASE

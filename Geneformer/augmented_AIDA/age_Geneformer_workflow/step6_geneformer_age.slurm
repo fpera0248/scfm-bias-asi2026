@@ -5,8 +5,8 @@
 #SBATCH --cpus-per-task=4
 #SBATCH --mem=64G
 #SBATCH --time=6:00:00
-#SBATCH --output=/oscar/home/fperalta/data/fperalta/Geneformer/augmented_AIDA/age_Geneformer_workflow/logs/gf_age_6_%j.out
-#SBATCH --error=/oscar/home/fperalta/data/fperalta/Geneformer/augmented_AIDA/age_Geneformer_workflow/logs/gf_age_6_%j.err
+#SBATCH --output=/data/Geneformer/augmented_AIDA/age_Geneformer_workflow/logs/gf_age_6_%j.out
+#SBATCH --error=/data/Geneformer/augmented_AIDA/age_Geneformer_workflow/logs/gf_age_6_%j.err
 
 set -eo pipefail
 module purge
@@ -17,6 +17,6 @@ conda activate geneformer310
 export LD_LIBRARY_PATH="$CONDA_PREFIX/lib:${LD_LIBRARY_PATH:-}"
 export PYTHONNOUSERSITE=1
 
-cd /oscar/home/fperalta/data/fperalta/Geneformer/augmented_AIDA/age_Geneformer_workflow
+cd /data/Geneformer/augmented_AIDA/age_Geneformer_workflow
 python step6_per_age_diagnostics_geneformer.py
 echo "Exit: $?"

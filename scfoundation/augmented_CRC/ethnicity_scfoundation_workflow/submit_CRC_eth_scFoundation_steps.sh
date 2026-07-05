@@ -3,7 +3,7 @@
 # Steps 3a, 3b, 3d must be run manually first.
 # Usage: bash submit_CRC_eth_scFoundation_steps.sh
 
-BASE=/oscar/home/fperalta/data/fperalta/scfoundation/augmented_CRC/ethnicity_scfoundation_workflow
+BASE=/data/scfoundation/augmented_CRC/ethnicity_scfoundation_workflow
 LOGS=$BASE/logs
 mkdir -p $LOGS
 
@@ -30,4 +30,4 @@ echo "Job chain:"
 echo "  step4  : $J4    step4a : $J4A   step4b : $J4B"
 echo "  step5  : $J5    step6  : $J6    step7  : $J7    step8 : $J8"
 echo "  step9  : $J9  (after all)"
-echo "Monitor: squeue -u fperalta"
+echo "Monitor: squeue -u $USER"

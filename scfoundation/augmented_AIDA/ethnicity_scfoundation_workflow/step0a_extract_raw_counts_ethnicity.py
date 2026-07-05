@@ -20,7 +20,7 @@ import sys
 # ============================================================
 # CONFIGURATION
 # ============================================================
-RAW_FILE        = "/oscar/home/fperalta/data/fperalta/scfoundation/aida_phase1_v2.h5ad"
+RAW_FILE        = "/data/scfoundation/aida_phase1_v2.h5ad"
 OUTPUT_FILE     = "AIDA_RawCounts_ETHNICITY.h5ad"
 VALIDATION_FILE = "AIDA_Ethnicity_External_Validation_12500.h5ad"
 GROUP_KEY       = "self_reported_ethnicity"

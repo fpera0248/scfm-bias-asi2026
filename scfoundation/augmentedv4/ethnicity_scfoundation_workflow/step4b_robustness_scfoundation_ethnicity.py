@@ -13,7 +13,7 @@ from sklearn.neural_network import MLPClassifier
 from sklearn.kernel_approximation import RBFSampler
 from sklearn.pipeline import make_pipeline
 
-BASE = pathlib.Path("/oscar/home/fperalta/data/fperalta/scfoundation/augmentedv4/ethnicity_scfoundation_workflow")
+BASE = pathlib.Path("/data/scfoundation/augmentedv4/ethnicity_scfoundation_workflow")
 OUTPUT_BASE = "ILD_Ethnicity_Pilot"; LABELED_DIR = BASE / "step3b_labeled"
 DATASETS = {
     "BalancedAugmented_2143Each": LABELED_DIR / f"{OUTPUT_BASE}_BalancedAugmented_2143Each_labeled_scfoundation.h5ad",

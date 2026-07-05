@@ -5,8 +5,8 @@
 #SBATCH --cpus-per-task=8
 #SBATCH --mem=128G
 #SBATCH --time=08:00:00
-#SBATCH --output=/oscar/data/rsingh47/fperalta/Geneformer/augmented_AIDA/ethnicity_Geneformer_workflow/logs/eth_step4_extval_gf_%j.out
-#SBATCH --error=/oscar/data/rsingh47/fperalta/Geneformer/augmented_AIDA/ethnicity_Geneformer_workflow/logs/eth_step4_extval_gf_%j.err
+#SBATCH --output=/data/Geneformer/augmented_AIDA/ethnicity_Geneformer_workflow/logs/eth_step4_extval_gf_%j.out
+#SBATCH --error=/data/Geneformer/augmented_AIDA/ethnicity_Geneformer_workflow/logs/eth_step4_extval_gf_%j.err
 
 set -euo pipefail
 
@@ -33,8 +33,8 @@ which python
 python --version
 echo "Conda env: $CONDA_PREFIX"
 
-BASE_DIR="/oscar/home/fperalta/data/fperalta/Geneformer/augmented_AIDA/ethnicity_Geneformer_workflow"
-LOGDIR="/oscar/data/rsingh47/fperalta/Geneformer/augmented_AIDA/ethnicity_Geneformer_workflow/logs"
+BASE_DIR="/data/Geneformer/augmented_AIDA/ethnicity_Geneformer_workflow"
+LOGDIR="/data/Geneformer/augmented_AIDA/ethnicity_Geneformer_workflow/logs"
 
 mkdir -p "$LOGDIR"
 mkdir -p "$BASE_DIR/step4_external_validation_geneformer"
@@ -50,7 +50,7 @@ export NUMEXPR_NUM_THREADS=$SLURM_CPUS_PER_TASK
 # Verify required input files exist
 python - << 'PYEOF'
 import sys, pathlib
-BASE = pathlib.Path("/oscar/home/fperalta/data/fperalta/Geneformer/augmented_AIDA/ethnicity_Geneformer_workflow")
+BASE = pathlib.Path("/data/Geneformer/augmented_AIDA/ethnicity_Geneformer_workflow")
 LABELED = BASE / "step3b_labeled"
 pilot_files = [
     "AIDA_Ethnicity_Pilot_BalancedAugmented_779Each_labeled_geneformer.h5ad",

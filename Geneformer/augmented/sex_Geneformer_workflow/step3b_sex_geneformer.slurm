@@ -5,8 +5,8 @@
 #SBATCH --cpus-per-task=4
 #SBATCH --mem=64G
 #SBATCH --time=02:00:00
-#SBATCH --output=/oscar/data/rsingh47/fperalta/Geneformer/augmented/sex_Geneformer_workflow/logs/sex_step3b_gf_%j.out
-#SBATCH --error=/oscar/data/rsingh47/fperalta/Geneformer/augmented/sex_Geneformer_workflow/logs/sex_step3b_gf_%j.err
+#SBATCH --output=/data/Geneformer/augmented/sex_Geneformer_workflow/logs/sex_step3b_gf_%j.out
+#SBATCH --error=/data/Geneformer/augmented/sex_Geneformer_workflow/logs/sex_step3b_gf_%j.err
 
 set -euo pipefail
 
@@ -24,7 +24,7 @@ set +u
 conda activate geneformer310
 set -u
 
-cd /oscar/home/fperalta/data/fperalta/Geneformer/augmented/sex_Geneformer_workflow
+cd /data/Geneformer/augmented/sex_Geneformer_workflow
 mkdir -p logs
 
 python step3b_label_propagation_geneformer_sex.py

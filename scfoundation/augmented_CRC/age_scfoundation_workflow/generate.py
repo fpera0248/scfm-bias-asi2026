@@ -5,8 +5,8 @@ Run on Oscar: python3 generate_CRC_age_scFoundation_steps3to9.py
 """
 import os, subprocess
 
-BASE_ILD = "/oscar/home/fperalta/data/fperalta/scfoundation/augmentedv4/age_scfoundation_workflow"
-BASE_CRC = "/oscar/home/fperalta/data/fperalta/scfoundation/augmented_CRC/age_scfoundation_workflow"
+BASE_ILD = "/data/scfoundation/augmentedv4/age_scfoundation_workflow"
+BASE_CRC = "/data/scfoundation/augmented_CRC/age_scfoundation_workflow"
 OUTPUT_BASE = "CRC_Age_Pilot"
 VAL_FILE    = "CRC_Age_External_Validation_9402"
 
@@ -269,7 +269,7 @@ echo "Job chain:"
 echo "  step4  : $J4    step4a : $J4A   step4b : $J4B"
 echo "  step5  : $J5    step6  : $J6    step7  : $J7    step8 : $J8"
 echo "  step9  : $J9  (after all)"
-echo "Monitor: squeue -u fperalta"
+echo "Monitor: squeue -u $USER"
 """
 with open(f"{BASE_CRC}/submit_CRC_age_scFoundation_steps.sh", "w") as f:
     f.write(submit)

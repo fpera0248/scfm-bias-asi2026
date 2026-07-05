@@ -31,7 +31,7 @@ warnings.filterwarnings("ignore")
 # ============================================================
 
 BASE = pathlib.Path(
-    "/oscar/data/rsingh47/fperalta/Geneformer/augmented_AIDA/ethnicity_Geneformer_workflow"
+    "/data/Geneformer/augmented_AIDA/ethnicity_Geneformer_workflow"
 )
 
 OUTDIR     = BASE / "step9_visualizations_ethnicity_geneformer"

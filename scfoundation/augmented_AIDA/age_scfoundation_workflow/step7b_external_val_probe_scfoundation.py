@@ -12,7 +12,7 @@ from sklearn.preprocessing import StandardScaler
 
 warnings.filterwarnings("ignore")
 
-BASE = pathlib.Path("/oscar/home/fperalta/data/fperalta/scfoundation/augmented_AIDA/age_scfoundation_workflow")
+BASE = pathlib.Path("/data/scfoundation/augmented_AIDA/age_scfoundation_workflow")
 OUTDIR = BASE / "step7b_external_val_scfoundation"
 OUTDIR.mkdir(exist_ok=True)
 

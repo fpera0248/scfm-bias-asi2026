@@ -21,7 +21,7 @@ import scipy.sparse as sp
 from scib_metrics.benchmark import Benchmarker, BioConservation, BatchCorrection
 
 BASE = pathlib.Path(
-    "/oscar/home/fperalta/data/fperalta/Geneformer/augmented/sex_Geneformer_workflow"
+    "/data/Geneformer/augmented/sex_Geneformer_workflow"
 )
 
 INDIR  = BASE

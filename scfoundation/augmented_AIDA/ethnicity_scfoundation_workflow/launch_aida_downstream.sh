@@ -1,6 +1,6 @@
 #!/bin/bash
 set -euo pipefail
-cd /oscar/home/fperalta/data/fperalta/scfoundation/augmented_AIDA/ethnicity_scfoundation_workflow
+cd /data/scfoundation/augmented_AIDA/ethnicity_scfoundation_workflow
 
 if [[ $# -eq 1 ]]; then
     DEP="--dependency=afterok:$1"

@@ -19,7 +19,7 @@ import pandas as pd
 import scanpy as sc
 
 BASE = Path(
-    "/oscar/data/rsingh47/fperalta/Geneformer/augmented/sex_Geneformer_workflow"
+    "/data/Geneformer/augmented/sex_Geneformer_workflow"
 )
 
 SOURCE_H5AD = BASE / "InterstitialLungDisease_RawCounts_SEX.h5ad"

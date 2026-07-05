@@ -11,7 +11,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, f1_score
 from sklearn.neighbors import NearestNeighbors
 
-BASE   = Path("/oscar/home/fperalta/data/fperalta/scGPT/augmented_CRC/age_scGPT_workflow")
+BASE   = Path("/data/scGPT/augmented_CRC/age_scGPT_workflow")
 OUTDIR = BASE / "step4a_downstream_scgpt_age"; OUTDIR.mkdir(exist_ok=True)
 OUTFILE_TXT = OUTDIR / "step4a_downstream_results_age_AR_EOS_scgpt.txt"
 OUTFILE_CSV = OUTDIR / "step4a_downstream_results_age_AR_EOS_scgpt.csv"

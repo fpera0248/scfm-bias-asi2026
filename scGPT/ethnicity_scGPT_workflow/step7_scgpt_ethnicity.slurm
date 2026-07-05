@@ -5,8 +5,8 @@
 #SBATCH --ntasks=8
 #SBATCH --mem=60G
 #SBATCH --time=24:00:00
-#SBATCH --output=/oscar/home/fperalta/data/fperalta/scGPT/ethnicity_scGPT_workflow/logs/eth_step7_scgpt_%j.out
-#SBATCH --error=/oscar/home/fperalta/data/fperalta/scGPT/ethnicity_scGPT_workflow/logs/eth_step7_scgpt_%j.err
+#SBATCH --output=/data/scGPT/ethnicity_scGPT_workflow/logs/eth_step7_scgpt_%j.out
+#SBATCH --error=/data/scGPT/ethnicity_scGPT_workflow/logs/eth_step7_scgpt_%j.err
 
 set -e
 set -o pipefail
@@ -23,6 +23,6 @@ export CUDA_VISIBLE_DEVICES=""
 export JAX_PLATFORMS=cpu
 export PYTHONNOUSERSITE=1
 
-cd /oscar/home/fperalta/data/fperalta/scGPT/ethnicity_scGPT_workflow
+cd /data/scGPT/ethnicity_scGPT_workflow
 python step7_representation_diagnostics_scgpt_ethnicity.py
 echo "Job finished at: $(date) | Exit: $?"

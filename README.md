@@ -147,7 +147,16 @@ Run the `step*.py` scripts in numerical order from inside a workflow folder. The
 
 This is the sequence in the reference workflow; the core pipeline uses `step2a`, `step3a`, and `step3b` rather than standalone `step2` or `step3`. Some other workflows carry additional diagnostic or validation scripts around this core (for example `step0c` external validation in the age and sex workflows, `step1a` integrity checks, `step3d`, and `step7b`). They sort into place by name and are optional extras, not new required stages.
 
-Set the input path before running. Each step script hardcodes an absolute Oscar path near the top (the `BASE` variable). Edit it to point at your data location. This release does not include a config-driven version that sets the path once.
+**Paths — read this before running.** The scripts use `/data` as a placeholder root for
+every input, output, model, and log path (near the top of each script, e.g. the `BASE`
+variable). It is *not* a real location on your machine — you set it. Two ways:
+
+- **In a container:** mount your data at `/data` (`-v /your/data:/data` for Docker,
+  `-B /your/data:/data` for Apptainer) and the paths resolve as-is.
+- **On your own machine/cluster:** edit the `/data/...` path near the top of the script
+  to your actual location. This release has no single config file that sets the path once,
+  so set it per script (the paths are all under `/data`, so a find-replace of `/data` to
+  your root works).
 
 Seeding uses `numpy.random.default_rng` with a fixed `RANDOM_STATE` defined near the top of each script.
 

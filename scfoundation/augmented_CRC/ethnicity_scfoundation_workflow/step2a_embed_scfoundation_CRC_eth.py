@@ -9,7 +9,7 @@ from tqdm import tqdm
 import pathlib
 import scipy.sparse as sp
 
-BASE   = pathlib.Path("/oscar/home/fperalta/data/fperalta/scfoundation/augmented_CRC/ethnicity_scfoundation_workflow")
+BASE   = pathlib.Path("/data/scfoundation/augmented_CRC/ethnicity_scfoundation_workflow")
 OUTDIR = BASE / "step2a_embeddings"
 OUTDIR.mkdir(exist_ok=True)
 RAW_COUNTS_PATH = BASE / "ColorectalCancer_RawCounts_ETH.h5ad"

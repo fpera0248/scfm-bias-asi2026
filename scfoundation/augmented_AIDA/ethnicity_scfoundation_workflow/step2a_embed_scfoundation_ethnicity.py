@@ -23,7 +23,7 @@ import scipy.sparse as sp
 print(f"Python: {sys.executable}", flush=True)
 print(f"Script: STEP 2a -- scFoundation ETHNICITY embedding", flush=True)
 
-BASE   = pathlib.Path("/oscar/home/fperalta/data/fperalta/scfoundation/augmented_AIDA/ethnicity_scfoundation_workflow")
+BASE   = pathlib.Path("/data/scfoundation/augmented_AIDA/ethnicity_scfoundation_workflow")
 INDIR  = BASE
 OUTDIR = BASE
 OUTDIR.mkdir(exist_ok=True)

@@ -20,6 +20,6 @@ export MKL_NUM_THREADS=$SLURM_NTASKS
 export CUDA_VISIBLE_DEVICES=""
 export JAX_PLATFORMS=cpu
 
-cd /oscar/home/fperalta/data/fperalta/scfoundation/augmented_AIDA/ethnicity_scfoundation_workflow
+cd /data/scfoundation/augmented_AIDA/ethnicity_scfoundation_workflow
 python step8_eth_conditioned_disease_scfoundation.py
 echo "Job finished at: $(date) | Exit: $?"

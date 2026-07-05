@@ -30,7 +30,7 @@ from sklearn.preprocessing import StandardScaler
 warnings.filterwarnings("ignore")
 
 BASE = pathlib.Path(
-    "/oscar/data/rsingh47/fperalta/Geneformer/augmented_AIDA/ethnicity_Geneformer_workflow"
+    "/data/Geneformer/augmented_AIDA/ethnicity_Geneformer_workflow"
 )
 
 LABELED_DIR = BASE / "step3b_labeled"

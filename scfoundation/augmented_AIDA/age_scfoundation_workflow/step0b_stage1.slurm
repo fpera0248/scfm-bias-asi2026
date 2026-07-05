@@ -5,8 +5,8 @@
 #SBATCH --cpus-per-task=8
 #SBATCH --mem=400G
 #SBATCH --time=96:00:00
-#SBATCH --output=/oscar/home/fperalta/data/fperalta/scfoundation/augmented_AIDA/age_scfoundation_workflow/logs/age_stage1_%j.out
-#SBATCH --error=/oscar/home/fperalta/data/fperalta/scfoundation/augmented_AIDA/age_scfoundation_workflow/logs/age_stage1_%j.err
+#SBATCH --output=/data/scfoundation/augmented_AIDA/age_scfoundation_workflow/logs/age_stage1_%j.out
+#SBATCH --error=/data/scfoundation/augmented_AIDA/age_scfoundation_workflow/logs/age_stage1_%j.err
 
 set -euo pipefail
 
@@ -23,7 +23,7 @@ module load miniforge3/25.3.0-3
 source "$(dirname $(which conda))/../etc/profile.d/conda.sh"
 conda activate scdesign3_env
 
-cd /oscar/home/fperalta/data/fperalta/scfoundation/augmented_AIDA/age_scfoundation_workflow
+cd /data/scfoundation/augmented_AIDA/age_scfoundation_workflow
 mkdir -p logs
 
 export OMP_NUM_THREADS=$SLURM_CPUS_PER_TASK

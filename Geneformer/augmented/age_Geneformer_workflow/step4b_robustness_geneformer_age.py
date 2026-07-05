@@ -34,7 +34,7 @@ from sklearn.kernel_approximation import RBFSampler
 from sklearn.pipeline import make_pipeline
 
 BASE = pathlib.Path(
-    "/oscar/home/fperalta/data/fperalta/Geneformer/augmented/age_Geneformer_workflow"
+    "/data/Geneformer/augmented/age_Geneformer_workflow"
 )
 
 OUTPUT_BASE = "ILD_Age_Pilot"                                    # [AGE 2]

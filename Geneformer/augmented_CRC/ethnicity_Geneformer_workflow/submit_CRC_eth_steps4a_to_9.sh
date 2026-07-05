@@ -3,7 +3,7 @@
 # Step 9 runs only after all prior steps succeed.
 # Usage: bash submit_CRC_eth_steps4a_to_9.sh
 
-BASE=/oscar/home/fperalta/data/fperalta/Geneformer/augmented_CRC/ethnicity_Geneformer_workflow
+BASE=/data/Geneformer/augmented_CRC/ethnicity_Geneformer_workflow
 LOGS=$BASE/logs
 mkdir -p $LOGS
 
@@ -97,4 +97,4 @@ echo "  step7  : $JOB_7"
 echo "  step8  : $JOB_8"
 echo "  step9  : $JOB_9  (runs after all above succeed)"
 echo ""
-echo "Monitor with: squeue -u fperalta"
+echo "Monitor with: squeue -u $USER"

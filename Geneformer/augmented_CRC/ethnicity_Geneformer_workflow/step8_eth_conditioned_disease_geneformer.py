@@ -25,7 +25,7 @@ from sklearn.metrics import accuracy_score, f1_score, balanced_accuracy_score
 warnings.filterwarnings("ignore")
 
 BASE = pathlib.Path(
-    "/oscar/home/fperalta/data/fperalta/Geneformer/augmented_CRC/ethnicity_Geneformer_workflow"
+    "/data/Geneformer/augmented_CRC/ethnicity_Geneformer_workflow"
 )
 
 LABELED_DIR = BASE / "step3b_labeled"

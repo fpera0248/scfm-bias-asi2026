@@ -5,8 +5,8 @@
 #SBATCH --cpus-per-task=8
 #SBATCH --mem=128G
 #SBATCH --time=12:00:00
-#SBATCH --output=/oscar/data/rsingh47/fperalta/Geneformer/augmented/sex_Geneformer_workflow/logs/sex_step3a_gf_%j.out
-#SBATCH --error=/oscar/data/rsingh47/fperalta/Geneformer/augmented/sex_Geneformer_workflow/logs/sex_step3a_gf_%j.err
+#SBATCH --output=/data/Geneformer/augmented/sex_Geneformer_workflow/logs/sex_step3a_gf_%j.out
+#SBATCH --error=/data/Geneformer/augmented/sex_Geneformer_workflow/logs/sex_step3a_gf_%j.err
 
 set -euo pipefail
 
@@ -26,7 +26,7 @@ set -u
 export JAX_PLATFORMS=cpu
 export CUDA_VISIBLE_DEVICES=""
 
-cd /oscar/home/fperalta/data/fperalta/Geneformer/augmented/sex_Geneformer_workflow
+cd /data/Geneformer/augmented/sex_Geneformer_workflow
 mkdir -p logs
 
 export OMP_NUM_THREADS=$SLURM_CPUS_PER_TASK

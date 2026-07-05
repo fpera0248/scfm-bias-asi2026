@@ -26,7 +26,7 @@ from sklearn.neighbors import KNeighborsClassifier
 # ============================================================
 
 BASE   = Path(
-    "/oscar/data/rsingh47/fperalta/Geneformer/augmented_AIDA/ethnicity_Geneformer_workflow"
+    "/data/Geneformer/augmented_AIDA/ethnicity_Geneformer_workflow"
 )
 OUTDIR  = BASE / "step3b_labeled"
 OUTDIR.mkdir(exist_ok=True)

@@ -16,7 +16,7 @@ import pandas as pd
 import scanpy as sc
 from sklearn.neighbors import KNeighborsClassifier
 
-BASE    = Path("/oscar/home/fperalta/data/fperalta/scGPT/sex_scGPT_workflow")
+BASE    = Path("/data/scGPT/sex_scGPT_workflow")
 INDIR   = BASE / "step2a_embeddings"
 OUTDIR  = BASE / "step3b_labeled"
 OUTDIR.mkdir(exist_ok=True)

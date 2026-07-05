@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-cd /oscar/home/fperalta/data/fperalta/scfoundation/augmented_AIDA/ethnicity_scfoundation_workflow
+cd /data/scfoundation/augmented_AIDA/ethnicity_scfoundation_workflow
 mkdir -p logs
 
 CHAIN_LOG="logs/chain_$(date +%Y%m%d_%H%M%S).txt"

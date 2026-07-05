@@ -5,8 +5,8 @@
 #SBATCH --ntasks=4
 #SBATCH --mem=30G
 #SBATCH --time=12:00:00
-#SBATCH --output=/oscar/home/fperalta/data/fperalta/Geneformer/augmented/sex_Geneformer_workflow/logs/sex_step5_gf_%j.out
-#SBATCH --error=/oscar/home/fperalta/data/fperalta/Geneformer/augmented/sex_Geneformer_workflow/logs/sex_step5_gf_%j.err
+#SBATCH --output=/data/Geneformer/augmented/sex_Geneformer_workflow/logs/sex_step5_gf_%j.out
+#SBATCH --error=/data/Geneformer/augmented/sex_Geneformer_workflow/logs/sex_step5_gf_%j.err
 
 set -e
 set -o pipefail
@@ -17,8 +17,8 @@ set +u
 conda activate geneformer310
 set -u
 
-mkdir -p /oscar/home/fperalta/data/fperalta/Geneformer/augmented/sex_Geneformer_workflow/logs
-cd /oscar/home/fperalta/data/fperalta/Geneformer/augmented/sex_Geneformer_workflow
+mkdir -p /data/Geneformer/augmented/sex_Geneformer_workflow/logs
+cd /data/Geneformer/augmented/sex_Geneformer_workflow
 
 export OMP_NUM_THREADS=$SLURM_NTASKS
 export OPENBLAS_NUM_THREADS=$SLURM_NTASKS

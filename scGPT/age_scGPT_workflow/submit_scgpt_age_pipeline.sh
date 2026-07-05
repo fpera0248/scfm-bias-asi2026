@@ -1,5 +1,5 @@
 #!/bin/bash
-BASE=/oscar/home/fperalta/data/fperalta/scGPT/age_scGPT_workflow
+BASE=/data/scGPT/age_scGPT_workflow
 
 J2=$(sbatch --parsable $BASE/step2a_scgpt_age.slurm)
 J3=$(sbatch --parsable --dependency=afterok:$J2 $BASE/step3_scgpt_age.slurm)

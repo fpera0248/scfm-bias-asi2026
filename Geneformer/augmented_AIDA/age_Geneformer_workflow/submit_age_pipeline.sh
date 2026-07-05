@@ -1,5 +1,5 @@
 #!/bin/bash
-BASE=/oscar/home/fperalta/data/fperalta/Geneformer/augmented_AIDA/age_Geneformer_workflow
+BASE=/data/Geneformer/augmented_AIDA/age_Geneformer_workflow
 
 J4=$(sbatch  --parsable $BASE/step4_geneformer_age.slurm)
 J4a=$(sbatch --parsable $BASE/step4a_geneformer_age.slurm)

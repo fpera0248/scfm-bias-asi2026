@@ -40,7 +40,7 @@ R --version
 echo "Conda env: $CONDA_PREFIX"
 
 # ---------------- working directory ----------------
-BASE_DIR="/oscar/home/fperalta/data/fperalta/Geneformer/augmented_AIDA/age_Geneformer_workflow"
+BASE_DIR="/data/Geneformer/augmented_AIDA/age_Geneformer_workflow"
 
 if [ ! -d "$BASE_DIR" ]; then
   echo "ERROR: BASE_DIR does not exist: $BASE_DIR"

@@ -26,7 +26,7 @@ from scib_metrics.benchmark import Benchmarker, BioConservation, BatchCorrection
 # ============================================================
 
 BASE = pathlib.Path(
-    "/oscar/data/rsingh47/fperalta/Geneformer/augmented_AIDA/ethnicity_Geneformer_workflow"
+    "/data/Geneformer/augmented_AIDA/ethnicity_Geneformer_workflow"
 )
 
 INDIR  = BASE

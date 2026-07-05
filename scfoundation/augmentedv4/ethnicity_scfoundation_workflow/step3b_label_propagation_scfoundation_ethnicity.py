@@ -6,7 +6,7 @@ from pathlib import Path
 import numpy as np, pandas as pd, scanpy as sc
 from sklearn.neighbors import KNeighborsClassifier
 
-BASE    = Path("/oscar/home/fperalta/data/fperalta/scfoundation/augmentedv4/ethnicity_scfoundation_workflow")
+BASE    = Path("/data/scfoundation/augmentedv4/ethnicity_scfoundation_workflow")
 OUTDIR  = BASE / "step3b_labeled"
 OUTDIR.mkdir(exist_ok=True)
 LOGFILE = OUTDIR / "step3b_label_propagation_log.txt"

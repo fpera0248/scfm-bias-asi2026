@@ -26,7 +26,7 @@ warnings.filterwarnings("ignore")
 # PATHS
 # ============================================================
 
-BASE       = pathlib.Path("/oscar/home/fperalta/data/fperalta/scGPT")
+BASE       = pathlib.Path("/data/scGPT")
 MODEL_DIR  = BASE / "scGPT_human"
 GENE_INFO  = BASE / "gene_info.csv"
 ETH_DIR    = BASE / "augmented_AIDA" / "ethnicity_scGPT_workflow"

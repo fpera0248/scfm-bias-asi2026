@@ -28,7 +28,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import accuracy_score, f1_score
 from sklearn.neighbors import NearestNeighbors
 
-BASE        = Path("/oscar/home/fperalta/data/fperalta/Geneformer/augmented/age_Geneformer_workflow")
+BASE        = Path("/data/Geneformer/augmented/age_Geneformer_workflow")
 LABELED_DIR = BASE / "step3b_labeled"
 OUTDIR      = BASE / "step4_external_validation_geneformer_age"   # [SEX 5]
 OUTDIR.mkdir(exist_ok=True)

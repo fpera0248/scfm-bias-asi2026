@@ -31,7 +31,7 @@ from sklearn.metrics import accuracy_score, balanced_accuracy_score, f1_score, s
 warnings.filterwarnings("ignore")
 
 BASE = pathlib.Path(
-    "/oscar/home/fperalta/data/fperalta/scfoundation/augmentedv4/age_scfoundation_workflow"
+    "/data/scfoundation/augmentedv4/age_scfoundation_workflow"
 )
 
 LABELED_DIR = BASE / "step3b_labeled"

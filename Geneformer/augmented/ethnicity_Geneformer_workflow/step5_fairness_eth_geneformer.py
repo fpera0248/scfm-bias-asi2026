@@ -34,7 +34,7 @@ warnings.filterwarnings("ignore")
 # ============================================================
 
 BASE = pathlib.Path(
-    "/oscar/data/rsingh47/fperalta/Geneformer/augmented/ethnicity_Geneformer_workflow"
+    "/data/Geneformer/augmented/ethnicity_Geneformer_workflow"
 )
 
 LABELED_DIR = BASE / "step3b_labeled"

@@ -5,10 +5,10 @@
 #SBATCH --cpus-per-task=4
 #SBATCH --mem=64G
 #SBATCH --time=12:00:00
-#SBATCH --output=/oscar/home/fperalta/data/fperalta/scfoundation/augmentedv4/age_scfoundation_workflow/logs/scf_age_4b_%j.out
-#SBATCH --error=/oscar/home/fperalta/data/fperalta/scfoundation/augmentedv4/age_scfoundation_workflow/logs/scf_age_4b_%j.err
+#SBATCH --output=/data/scfoundation/augmentedv4/age_scfoundation_workflow/logs/scf_age_4b_%j.out
+#SBATCH --error=/data/scfoundation/augmentedv4/age_scfoundation_workflow/logs/scf_age_4b_%j.err
 
-BASE=/oscar/home/fperalta/data/fperalta/scfoundation/augmentedv4/age_scfoundation_workflow
+BASE=/data/scfoundation/augmentedv4/age_scfoundation_workflow
 module purge
 module load miniforge3/25.3.0-3
 source "$(dirname $(which conda))/../etc/profile.d/conda.sh"

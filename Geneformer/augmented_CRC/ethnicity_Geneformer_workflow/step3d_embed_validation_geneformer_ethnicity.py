@@ -8,7 +8,7 @@ import sys, pathlib
 import numpy as np
 import scanpy as sc
 
-BASE     = pathlib.Path("/oscar/home/fperalta/data/fperalta/Geneformer/augmented_CRC/ethnicity_Geneformer_workflow")
+BASE     = pathlib.Path("/data/Geneformer/augmented_CRC/ethnicity_Geneformer_workflow")
 OUT_FILE = BASE / "CRC_Eth_External_Validation_8572_geneformer.h5ad"
 EMB_KEY  = "X_geneformer"
 MIN_UNIQUE_ROWS = 10

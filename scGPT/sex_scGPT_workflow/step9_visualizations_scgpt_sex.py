@@ -26,7 +26,7 @@ import scanpy as sc
 
 warnings.filterwarnings("ignore")
 
-BASE = pathlib.Path("/oscar/home/fperalta/data/fperalta/scGPT/sex_scGPT_workflow")
+BASE = pathlib.Path("/data/scGPT/sex_scGPT_workflow")
 
 OUTDIR     = BASE / "step9_visualizations_scgpt_sex"
 STEP3A_DIR = BASE / "benchmark_outputs_scgpt_sex"

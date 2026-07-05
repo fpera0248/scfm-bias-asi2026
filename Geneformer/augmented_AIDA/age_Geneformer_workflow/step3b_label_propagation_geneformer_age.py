@@ -9,7 +9,7 @@ import pandas as pd
 import scanpy as sc
 from sklearn.neighbors import KNeighborsClassifier
 
-BASE   = Path("/oscar/home/fperalta/data/fperalta/Geneformer/augmented_AIDA/age_Geneformer_workflow")
+BASE   = Path("/data/Geneformer/augmented_AIDA/age_Geneformer_workflow")
 OUTDIR = BASE / "step3b_labeled"
 OUTDIR.mkdir(exist_ok=True)
 LOGFILE = OUTDIR / "step3b_label_propagation_log.txt"

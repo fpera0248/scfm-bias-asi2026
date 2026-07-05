@@ -6,8 +6,8 @@
 #SBATCH --cpus-per-task=6
 #SBATCH --mem=192G
 #SBATCH --time=12:00:00
-#SBATCH --output=/oscar/data/rsingh47/fperalta/Geneformer/augmented/ethnicity_Geneformer_workflow/logs/gf_eth_labelprop_step3b_%j.out
-#SBATCH --error=/oscar/data/rsingh47/fperalta/Geneformer/augmented/ethnicity_Geneformer_workflow/logs/gf_eth_labelprop_step3b_%j.err
+#SBATCH --output=/data/Geneformer/augmented/ethnicity_Geneformer_workflow/logs/gf_eth_labelprop_step3b_%j.out
+#SBATCH --error=/data/Geneformer/augmented/ethnicity_Geneformer_workflow/logs/gf_eth_labelprop_step3b_%j.err
 
 set -euo pipefail
 
@@ -25,7 +25,7 @@ set +u
 conda activate geneformer310
 set -u
 
-BASE_DIR="/oscar/data/rsingh47/fperalta/Geneformer/augmented/ethnicity_Geneformer_workflow"
+BASE_DIR="/data/Geneformer/augmented/ethnicity_Geneformer_workflow"
 mkdir -p "$BASE_DIR/logs"
 cd "$BASE_DIR"
 

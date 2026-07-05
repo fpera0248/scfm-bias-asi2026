@@ -19,7 +19,7 @@ import pandas as pd
 import scanpy as sc
 from sklearn.neighbors import KNeighborsClassifier
 
-BASE   = Path("/oscar/home/fperalta/data/fperalta/scGPT/augmented_AIDA/ethnicity_scGPT_workflow")
+BASE   = Path("/data/scGPT/augmented_AIDA/ethnicity_scGPT_workflow")
 INDIR  = BASE / "step2a_embeddings"                              # [SCGPT 3]
 OUTDIR = BASE / "step3b_labeled"                                 # [SCGPT 5]
 OUTDIR.mkdir(exist_ok=True)

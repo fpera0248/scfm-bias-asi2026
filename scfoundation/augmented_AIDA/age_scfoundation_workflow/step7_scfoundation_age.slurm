@@ -5,8 +5,8 @@
 #SBATCH --cpus-per-task=4
 #SBATCH --mem=64G
 #SBATCH --time=6:00:00
-#SBATCH --output=/oscar/home/fperalta/data/fperalta/scfoundation/augmented_AIDA/age_scfoundation_workflow/logs/scf_age_7_%j.out
-#SBATCH --error=/oscar/home/fperalta/data/fperalta/scfoundation/augmented_AIDA/age_scfoundation_workflow/logs/scf_age_7_%j.err
+#SBATCH --output=/data/scfoundation/augmented_AIDA/age_scfoundation_workflow/logs/scf_age_7_%j.out
+#SBATCH --error=/data/scfoundation/augmented_AIDA/age_scfoundation_workflow/logs/scf_age_7_%j.err
 
 set -euo pipefail
 
@@ -19,6 +19,6 @@ export LD_LIBRARY_PATH="$CONDA_PREFIX/lib:${LD_LIBRARY_PATH:-}"
 export PYTHONNOUSERSITE=1
 export JAX_PLATFORM_NAME=cpu
 
-cd /oscar/home/fperalta/data/fperalta/scfoundation/augmented_AIDA/age_scfoundation_workflow
+cd /data/scfoundation/augmented_AIDA/age_scfoundation_workflow
 python step7_representation_diagnostics_scfoundation_age.py
 echo "Exit: $?"

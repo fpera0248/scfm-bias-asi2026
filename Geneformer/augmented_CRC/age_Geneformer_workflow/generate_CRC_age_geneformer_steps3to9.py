@@ -5,8 +5,8 @@ Run on Oscar: python3 generate_CRC_age_geneformer_steps3to9.py
 """
 import os, subprocess
 
-BASE_ILD = "/oscar/home/fperalta/data/fperalta/Geneformer/augmented/age_Geneformer_workflow"
-BASE_CRC = "/oscar/home/fperalta/data/fperalta/Geneformer/augmented_CRC/age_Geneformer_workflow"
+BASE_ILD = "/data/Geneformer/augmented/age_Geneformer_workflow"
+BASE_CRC = "/data/Geneformer/augmented_CRC/age_Geneformer_workflow"
 OUTPUT_BASE = "CRC_Age_Pilot"
 VAL_FILE    = "CRC_Age_External_Validation_9402"
 
@@ -335,7 +335,7 @@ echo "  step7  : $J7  (after 3b)"
 echo "  step8  : $J8  (after 3b)"
 echo "  step9  : $J9  (after all)"
 echo ""
-echo "Monitor: squeue -u fperalta"
+echo "Monitor: squeue -u $USER"
 """
 submit_path = f"{BASE_CRC}/submit_CRC_age_steps.sh"
 with open(submit_path, "w") as f:

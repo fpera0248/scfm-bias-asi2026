@@ -11,7 +11,7 @@
 
 set -euo pipefail
 
-BASE_DIR="/oscar/data/rsingh47/fperalta/Geneformer/augmented/ethnicity_Geneformer_workflow"
+BASE_DIR="/data/Geneformer/augmented/ethnicity_Geneformer_workflow"
 cd "$BASE_DIR"
 mkdir -p logs
 

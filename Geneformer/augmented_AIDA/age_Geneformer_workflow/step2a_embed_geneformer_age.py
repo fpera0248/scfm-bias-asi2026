@@ -14,11 +14,11 @@ print(f"Script: STEP 2a AGE -- Geneformer V2-316M embed", flush=True)
 
 from geneformer import TranscriptomeTokenizer, EmbExtractor
 
-BASE         = pathlib.Path("/oscar/home/fperalta/data/fperalta/Geneformer/augmented_AIDA/age_Geneformer_workflow")
+BASE         = pathlib.Path("/data/Geneformer/augmented_AIDA/age_Geneformer_workflow")
 TOKENIZE_DIR = BASE / "tokenized_datasets"
 TOKENIZE_DIR.mkdir(exist_ok=True)
 
-GENEFORMER_MODEL = pathlib.Path("/oscar/home/fperalta/data/fperalta/Geneformer/geneformer_repo/Geneformer-V2-316M")
+GENEFORMER_MODEL = pathlib.Path("/data/Geneformer/geneformer_repo/Geneformer-V2-316M")
 OUTPUT_BASE      = "AIDA_Age_Pilot"
 RAW_COUNTS_PATH  = BASE / "AIDA_RawCounts_AGE.h5ad"
 

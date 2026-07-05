@@ -27,7 +27,7 @@ import scanpy as sc
 warnings.filterwarnings("ignore")
 
 BASE = pathlib.Path(
-    "/oscar/home/fperalta/data/fperalta/Geneformer/augmented/sex_Geneformer_workflow"
+    "/data/Geneformer/augmented/sex_Geneformer_workflow"
 )
 
 OUTDIR     = BASE / "step9_visualizations_sex_geneformer"

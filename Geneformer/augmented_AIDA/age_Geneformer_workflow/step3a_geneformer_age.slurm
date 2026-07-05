@@ -5,8 +5,8 @@
 #SBATCH --cpus-per-task=4
 #SBATCH --mem=64G
 #SBATCH --time=6:00:00
-#SBATCH --output=/oscar/home/fperalta/data/fperalta/Geneformer/augmented_AIDA/age_Geneformer_workflow/logs/gf_age_3a_%j.out
-#SBATCH --error=/oscar/home/fperalta/data/fperalta/Geneformer/augmented_AIDA/age_Geneformer_workflow/logs/gf_age_3a_%j.err
+#SBATCH --output=/data/Geneformer/augmented_AIDA/age_Geneformer_workflow/logs/gf_age_3a_%j.out
+#SBATCH --error=/data/Geneformer/augmented_AIDA/age_Geneformer_workflow/logs/gf_age_3a_%j.err
 
 set -eo pipefail
 module purge
@@ -19,6 +19,6 @@ export PYTHONNOUSERSITE=1
 export JAX_PLATFORM_NAME=cpu
 export JAX_PLATFORMS=cpu
 
-cd /oscar/home/fperalta/data/fperalta/Geneformer/augmented_AIDA/age_Geneformer_workflow
+cd /data/Geneformer/augmented_AIDA/age_Geneformer_workflow
 python step3a_benchmark_geneformer_age.py
 echo "Exit: $?"

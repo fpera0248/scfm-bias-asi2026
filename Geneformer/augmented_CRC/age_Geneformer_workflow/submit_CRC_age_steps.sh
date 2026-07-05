@@ -4,7 +4,7 @@
 # Step 9 waits for all of 4a, 4b, 5, 6, 7, 8.
 # Usage: bash submit_CRC_age_steps.sh
 
-BASE=/oscar/home/fperalta/data/fperalta/Geneformer/augmented_CRC/age_Geneformer_workflow
+BASE=/data/Geneformer/augmented_CRC/age_Geneformer_workflow
 LOGS=$BASE/logs
 mkdir -p $LOGS
 
@@ -56,4 +56,4 @@ echo "  step7  : $J7  (after 3b)"
 echo "  step8  : $J8  (after 3b)"
 echo "  step9  : $J9  (after all)"
 echo ""
-echo "Monitor: squeue -u fperalta"
+echo "Monitor: squeue -u $USER"

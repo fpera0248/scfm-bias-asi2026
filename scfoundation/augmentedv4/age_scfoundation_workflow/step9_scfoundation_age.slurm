@@ -5,10 +5,10 @@
 #SBATCH --cpus-per-task=4
 #SBATCH --mem=32G
 #SBATCH --time=4:00:00
-#SBATCH --output=/oscar/home/fperalta/data/fperalta/scfoundation/augmentedv4/age_scfoundation_workflow/logs/scf_age_9_%j.out
-#SBATCH --error=/oscar/home/fperalta/data/fperalta/scfoundation/augmentedv4/age_scfoundation_workflow/logs/scf_age_9_%j.err
+#SBATCH --output=/data/scfoundation/augmentedv4/age_scfoundation_workflow/logs/scf_age_9_%j.out
+#SBATCH --error=/data/scfoundation/augmentedv4/age_scfoundation_workflow/logs/scf_age_9_%j.err
 
-BASE=/oscar/home/fperalta/data/fperalta/scfoundation/augmentedv4/age_scfoundation_workflow
+BASE=/data/scfoundation/augmentedv4/age_scfoundation_workflow
 module load miniforge3/25.3.0-3
 source activate scfoundation_gpu
 export PYTHONNOUSERSITE=1

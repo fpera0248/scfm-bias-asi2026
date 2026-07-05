@@ -6,9 +6,9 @@ import scanpy as sc
 import scipy.sparse as sp
 warnings.filterwarnings("ignore")
 
-BASE        = pathlib.Path("/oscar/home/fperalta/data/fperalta/scGPT/augmented_CRC/age_scGPT_workflow")
+BASE        = pathlib.Path("/data/scGPT/augmented_CRC/age_scGPT_workflow")
 OUTDIR      = BASE / "step2a_embeddings"
-SCGPT_DIR   = pathlib.Path("/oscar/home/fperalta/data/fperalta/scGPT")
+SCGPT_DIR   = pathlib.Path("/data/scGPT")
 OUTDIR.mkdir(exist_ok=True)
 CHECKPOINT  = SCGPT_DIR / "scGPT_human"
 GENE_INFO   = SCGPT_DIR / "gene_info.csv"

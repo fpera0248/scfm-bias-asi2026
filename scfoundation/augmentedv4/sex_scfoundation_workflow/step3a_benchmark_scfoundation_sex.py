@@ -9,7 +9,7 @@ import time
 import scipy.sparse as sp
 from scib_metrics.benchmark import Benchmarker, BioConservation, BatchCorrection
 
-BASE   = pathlib.Path("/oscar/home/fperalta/data/fperalta/scfoundation/augmentedv4/sex_scfoundation_workflow")
+BASE   = pathlib.Path("/data/scfoundation/augmentedv4/sex_scfoundation_workflow")
 OUTDIR = BASE / "benchmark_outputs_scfoundation_sex"
 OUTDIR.mkdir(parents=True, exist_ok=True)
 

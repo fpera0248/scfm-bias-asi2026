@@ -5,12 +5,12 @@
 #SBATCH --cpus-per-task=4
 #SBATCH --mem=64G
 #SBATCH --time=6:00:00
-#SBATCH --output=/oscar/home/fperalta/data/fperalta/scGPT/augmented_CRC/ethnicity_scGPT_workflow/logs/scgpt_CRC_eth_3_%j.out
-#SBATCH --error=/oscar/home/fperalta/data/fperalta/scGPT/augmented_CRC/ethnicity_scGPT_workflow/logs/scgpt_CRC_eth_3_%j.err
+#SBATCH --output=/data/scGPT/augmented_CRC/ethnicity_scGPT_workflow/logs/scgpt_CRC_eth_3_%j.out
+#SBATCH --error=/data/scGPT/augmented_CRC/ethnicity_scGPT_workflow/logs/scgpt_CRC_eth_3_%j.err
 
 set -eo pipefail
 
-BASE=/oscar/home/fperalta/data/fperalta/scGPT/augmented_CRC/ethnicity_scGPT_workflow
+BASE=/data/scGPT/augmented_CRC/ethnicity_scGPT_workflow
 
 module load miniforge3/25.3.0-3
 source activate scfoundation_gpu

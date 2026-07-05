@@ -1,6 +1,6 @@
 #!/bin/bash
 set -euo pipefail
-cd /oscar/home/fperalta/data/fperalta/scfoundation/augmented_AIDA/ethnicity_scfoundation_workflow
+cd /data/scfoundation/augmented_AIDA/ethnicity_scfoundation_workflow
 
 ETHNICITIES=("indian" "japanese" "korean" "singaporean chinese" "singaporean indian" "singaporean malay" "thai")
 S2_JIDS=""

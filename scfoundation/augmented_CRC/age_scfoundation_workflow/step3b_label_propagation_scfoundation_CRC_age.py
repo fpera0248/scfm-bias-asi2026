@@ -6,7 +6,7 @@ from pathlib import Path
 import numpy as np, pandas as pd, scanpy as sc
 from sklearn.neighbors import KNeighborsClassifier
 
-BASE    = Path("/oscar/home/fperalta/data/fperalta/scfoundation/augmented_CRC/age_scfoundation_workflow")
+BASE    = Path("/data/scfoundation/augmented_CRC/age_scfoundation_workflow")
 EMBDIR  = BASE / "step2a_embeddings"
 OUTDIR  = BASE / "step3b_labeled"
 OUTDIR.mkdir(exist_ok=True)

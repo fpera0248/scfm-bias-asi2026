@@ -13,7 +13,7 @@
 set -euo pipefail
 echo "=== step2a START $(date -Iseconds) node=$(hostname) job=${SLURM_JOB_ID} ==="
 
-cd /oscar/home/fperalta/data/fperalta/scfoundation/augmented_AIDA/ethnicity_scfoundation_workflow
+cd /data/scfoundation/augmented_AIDA/ethnicity_scfoundation_workflow
 
 module purge
 module load miniforge3/25.3.0-3

@@ -22,7 +22,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import accuracy_score, f1_score
 from sklearn.neighbors import NearestNeighbors
 
-BASE        = Path("/oscar/home/fperalta/data/fperalta/scGPT/sex_scGPT_workflow")
+BASE        = Path("/data/scGPT/sex_scGPT_workflow")
 LABELED_DIR = BASE / "step3b_labeled"
 OUTDIR      = BASE / "step4_external_validation_scgpt_sex"
 OUTDIR.mkdir(exist_ok=True)

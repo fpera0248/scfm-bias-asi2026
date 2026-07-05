@@ -5,7 +5,7 @@
 # ============================================================
 set -euo pipefail
 
-cd /oscar/home/fperalta/data/fperalta/scfoundation/augmentedv4/sex_scfoundation_workflow
+cd /data/scfoundation/augmentedv4/sex_scfoundation_workflow
 mkdir -p logs
 
 EMAIL=your_email@example.com
@@ -59,7 +59,7 @@ WATCHDOG=$(sbatch --parsable \
   --mail-type=END --mail-user=$EMAIL \
   --job-name=sex_s0b_watchdog \
   --output=logs/watchdog_%j.out \
-  --wrap="cd /oscar/home/fperalta/data/fperalta/scfoundation/augmentedv4/sex_scfoundation_workflow
+  --wrap="cd /data/scfoundation/augmentedv4/sex_scfoundation_workflow
 echo '=== SEX step0b CHAIN STATUS ==='
 echo \"Watchdog ran at: \$(date -Iseconds)\"
 echo
@@ -76,5 +76,5 @@ echo "" | tee -a "$CHAIN_LOG"
 echo "================================================" | tee -a "$CHAIN_LOG"
 echo "SEX STEP0B v6 CHAIN SUBMITTED" | tee -a "$CHAIN_LOG"
 echo "================================================" | tee -a "$CHAIN_LOG"
-echo "monitor: squeue -u fperalta" | tee -a "$CHAIN_LOG"
+echo "monitor: squeue -u $USER" | tee -a "$CHAIN_LOG"
 echo "log: $CHAIN_LOG" | tee -a "$CHAIN_LOG"

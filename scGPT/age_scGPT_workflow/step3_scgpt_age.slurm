@@ -5,10 +5,10 @@
 #SBATCH --cpus-per-task=4
 #SBATCH --mem=64G
 #SBATCH --time=6:00:00
-#SBATCH --output=/oscar/home/fperalta/data/fperalta/scGPT/age_scGPT_workflow/logs/scgpt_age_3_%j.out
-#SBATCH --error=/oscar/home/fperalta/data/fperalta/scGPT/age_scGPT_workflow/logs/scgpt_age_3_%j.err
+#SBATCH --output=/data/scGPT/age_scGPT_workflow/logs/scgpt_age_3_%j.out
+#SBATCH --error=/data/scGPT/age_scGPT_workflow/logs/scgpt_age_3_%j.err
 
-BASE=/oscar/home/fperalta/data/fperalta/scGPT/age_scGPT_workflow
+BASE=/data/scGPT/age_scGPT_workflow
 module purge
 module load miniforge3/25.3.0-3
 source "$(dirname $(which conda))/../etc/profile.d/conda.sh"

@@ -16,7 +16,7 @@ echo " Node(s):     $SLURM_NODELIST"
 echo " Start Time:  $(date)"
 echo "=========================================="
 
-BASE_DIR="/oscar/data/rsingh47/fperalta/Geneformer/augmented/ethnicity_Geneformer_workflow"
+BASE_DIR="/data/Geneformer/augmented/ethnicity_Geneformer_workflow"
 
 cd "$BASE_DIR" || {
     echo "Failed to cd into project directory"

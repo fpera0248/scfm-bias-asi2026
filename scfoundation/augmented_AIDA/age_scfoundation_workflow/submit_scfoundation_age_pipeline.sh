@@ -1,5 +1,5 @@
 #!/bin/bash
-BASE=/oscar/home/fperalta/data/fperalta/scfoundation/augmented_AIDA/age_scfoundation_workflow
+BASE=/data/scfoundation/augmented_AIDA/age_scfoundation_workflow
 
 J2=$(sbatch --parsable $BASE/step2a_scfoundation_age.slurm)
 J3=$(sbatch --parsable --dependency=afterok:$J2 $BASE/step3_scfoundation_age.slurm)

@@ -26,7 +26,7 @@ from sklearn.kernel_approximation import RBFSampler
 from sklearn.pipeline import make_pipeline
 
 BASE = pathlib.Path(
-    "/oscar/home/fperalta/data/fperalta/Geneformer/augmented_CRC/ethnicity_Geneformer_workflow"
+    "/data/Geneformer/augmented_CRC/ethnicity_Geneformer_workflow"
 )
 
 OUTPUT_BASE = "CRC_Eth_Pilot"

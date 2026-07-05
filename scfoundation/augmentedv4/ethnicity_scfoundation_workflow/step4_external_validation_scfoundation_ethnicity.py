@@ -10,7 +10,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import accuracy_score, f1_score
 from sklearn.neighbors import NearestNeighbors
 
-BASE        = Path("/oscar/home/fperalta/data/fperalta/scfoundation/augmentedv4/ethnicity_scfoundation_workflow")
+BASE        = Path("/data/scfoundation/augmentedv4/ethnicity_scfoundation_workflow")
 LABELED_DIR = BASE / "step3b_labeled"
 OUTDIR      = BASE / "step4_external_validation_scfoundation_ethnicity"
 OUTDIR.mkdir(exist_ok=True)

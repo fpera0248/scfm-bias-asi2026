@@ -31,7 +31,7 @@ from sklearn.preprocessing import StandardScaler
 warnings.filterwarnings("ignore")
 
 BASE = pathlib.Path(
-    "/oscar/home/fperalta/data/fperalta/scGPT/augmented_AIDA/age_scGPT_workflow"
+    "/data/scGPT/augmented_AIDA/age_scGPT_workflow"
 )
 
 LABELED_DIR = BASE / "step2a_embeddings"

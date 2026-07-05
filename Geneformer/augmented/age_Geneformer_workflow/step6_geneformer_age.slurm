@@ -5,10 +5,10 @@
 #SBATCH --cpus-per-task=4
 #SBATCH --mem=64G
 #SBATCH --time=6:00:00
-#SBATCH --output=/oscar/home/fperalta/data/fperalta/Geneformer/augmented/age_Geneformer_workflow/logs/gf_age_6_%j.out
-#SBATCH --error=/oscar/home/fperalta/data/fperalta/Geneformer/augmented/age_Geneformer_workflow/logs/gf_age_6_%j.err
+#SBATCH --output=/data/Geneformer/augmented/age_Geneformer_workflow/logs/gf_age_6_%j.out
+#SBATCH --error=/data/Geneformer/augmented/age_Geneformer_workflow/logs/gf_age_6_%j.err
 
-BASE=/oscar/home/fperalta/data/fperalta/Geneformer/augmented/age_Geneformer_workflow
+BASE=/data/Geneformer/augmented/age_Geneformer_workflow
 module load miniforge3/25.3.0-3
 module purge
 module load miniforge3/25.3.0-3

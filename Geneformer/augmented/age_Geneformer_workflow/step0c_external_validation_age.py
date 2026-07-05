@@ -4,7 +4,7 @@ import scanpy as sc
 import numpy as np
 import pathlib, time
 
-BASE     = pathlib.Path("/oscar/home/fperalta/data/fperalta/Geneformer/augmented/age_Geneformer_workflow")
+BASE     = pathlib.Path("/data/Geneformer/augmented/age_Geneformer_workflow")
 IN_FILE  = BASE / "ILD_Age_External_Validation_10500.h5ad"
 OUT_FILE = BASE / "ILD_Age_External_Validation_10500.h5ad"
 AGE_COL_CANDIDATES = ["age_bin_10yr", "age_bin", "age_group", "development_stage"]

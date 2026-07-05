@@ -6,8 +6,8 @@
 #SBATCH --cpus-per-task=4
 #SBATCH --mem=64G
 #SBATCH --time=06:00:00
-#SBATCH --output=/oscar/home/fperalta/data/fperalta/scGPT/ethnicity_scGPT_workflow/logs/eth_step2a_scgpt_%j.out
-#SBATCH --error=/oscar/home/fperalta/data/fperalta/scGPT/ethnicity_scGPT_workflow/logs/eth_step2a_scgpt_%j.err
+#SBATCH --output=/data/scGPT/ethnicity_scGPT_workflow/logs/eth_step2a_scgpt_%j.out
+#SBATCH --error=/data/scGPT/ethnicity_scGPT_workflow/logs/eth_step2a_scgpt_%j.err
 
 set -e
 set -o pipefail
@@ -19,7 +19,7 @@ export LD_PRELOAD=$(find $CONDA_PREFIX/lib -name 'libstdc++.so.6*' -not -type l 
 
 export PYTHONNOUSERSITE=1
 
-cd /oscar/home/fperalta/data/fperalta/scGPT/ethnicity_scGPT_workflow
+cd /data/scGPT/ethnicity_scGPT_workflow
 mkdir -p logs
 python step2a_embed_scgpt_ethnicity.py
 echo "Job finished at: $(date) | Exit: $?"

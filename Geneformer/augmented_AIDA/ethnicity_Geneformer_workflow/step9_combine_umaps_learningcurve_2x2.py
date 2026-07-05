@@ -29,7 +29,7 @@ warnings.filterwarnings("ignore")
 # ── Paths ─────────────────────────────────────────────────────────────────
 
 BASE = pathlib.Path(
-    "/oscar/home/fperalta/data/fperalta/scfoundation/augmentedv4/"
+    "/data/scfoundation/augmentedv4/"
     "ethnicity_scfoundation_workflow"
 )
 STEP5_DIR = BASE / "step5_outputs_ethnicity"

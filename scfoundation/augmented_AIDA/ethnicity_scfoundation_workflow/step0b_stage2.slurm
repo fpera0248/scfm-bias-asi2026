@@ -10,7 +10,7 @@
 #SBATCH --error=logs/stage2_%x_%j.err
 
 set -euo pipefail
-cd /oscar/home/fperalta/data/fperalta/scfoundation/augmented_AIDA/ethnicity_scfoundation_workflow
+cd /data/scfoundation/augmented_AIDA/ethnicity_scfoundation_workflow
 mkdir -p logs
 
 module purge

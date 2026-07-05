@@ -3,7 +3,7 @@
 # Each step only runs if the previous finished successfully.
 # All .out/.err files land in logs/, plus one consolidated log.
 set -euo pipefail
-cd /oscar/home/fperalta/data/fperalta/scfoundation/augmentedv4/ethnicity_scfoundation_workflow
+cd /data/scfoundation/augmentedv4/ethnicity_scfoundation_workflow
 mkdir -p logs
 
 CHAIN_LOG="logs/chain_$(date +%Y%m%d_%H%M%S).txt"
@@ -56,7 +56,7 @@ cat > "$AGG_SCRIPT" <<AGGEOF
 #SBATCH --dependency=afterany:$PREV_JID
 
 set -euo pipefail
-cd /oscar/home/fperalta/data/fperalta/scfoundation/augmentedv4/ethnicity_scfoundation_workflow
+cd /data/scfoundation/augmentedv4/ethnicity_scfoundation_workflow
 
 OUT="logs/chain_consolidated_\$(date +%Y%m%d_%H%M%S).txt"
 {

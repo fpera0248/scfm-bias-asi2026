@@ -6,7 +6,7 @@ Run on Oscar: python3 check_CRC_pipeline_status.py
 import pathlib
 import pandas as pd
 
-BASE = pathlib.Path("/oscar/home/fperalta/data/fperalta")
+BASE = pathlib.Path("/data")
 
 WORKFLOWS = {
     # Geneformer
@@ -179,6 +179,6 @@ else:
     print("\nAll checks passed.")
 
 # Save full report
-out = pathlib.Path("/oscar/home/fperalta/data/fperalta/CRC_pipeline_status.csv")
+out = pathlib.Path("/data/CRC_pipeline_status.csv")
 df.to_csv(out, index=False)
 print(f"\nFull report saved -> {out}")

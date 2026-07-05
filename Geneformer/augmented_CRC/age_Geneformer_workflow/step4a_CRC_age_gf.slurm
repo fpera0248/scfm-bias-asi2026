@@ -5,8 +5,8 @@
 #SBATCH --cpus-per-task=8
 #SBATCH --mem=64G
 #SBATCH --time=6:00:00
-#SBATCH --output=/oscar/home/fperalta/data/fperalta/Geneformer/augmented_CRC/age_Geneformer_workflow/logs/CRC_age_step4a_%j.out
-#SBATCH --error=/oscar/home/fperalta/data/fperalta/Geneformer/augmented_CRC/age_Geneformer_workflow/logs/CRC_age_step4a_%j.err
+#SBATCH --output=/data/Geneformer/augmented_CRC/age_Geneformer_workflow/logs/CRC_age_step4a_%j.out
+#SBATCH --error=/data/Geneformer/augmented_CRC/age_Geneformer_workflow/logs/CRC_age_step4a_%j.err
 
 set -eo pipefail
 
@@ -15,6 +15,6 @@ module load miniforge3/25.3.0-3
 source activate scfoundation_gpu
 export PYTHONNOUSERSITE=1
 export CUDA_VISIBLE_DEVICES=""
-cd /oscar/home/fperalta/data/fperalta/Geneformer/augmented_CRC/age_Geneformer_workflow
+cd /data/Geneformer/augmented_CRC/age_Geneformer_workflow
 python step4a_downstream_geneformer_CRC_age.py
 echo "Exit: $?"

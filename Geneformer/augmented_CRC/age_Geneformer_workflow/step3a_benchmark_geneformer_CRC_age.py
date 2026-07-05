@@ -7,7 +7,7 @@ import pathlib, time
 import scipy.sparse as sp
 from scib_metrics.benchmark import Benchmarker, BioConservation, BatchCorrection
 
-BASE   = pathlib.Path("/oscar/home/fperalta/data/fperalta/Geneformer/augmented_CRC/age_Geneformer_workflow")
+BASE   = pathlib.Path("/data/Geneformer/augmented_CRC/age_Geneformer_workflow")
 EMBDIR = BASE
 OUTDIR = BASE / "benchmark_outputs_geneformer_age"
 OUTDIR.mkdir(exist_ok=True)

@@ -21,7 +21,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, f1_score
 from sklearn.neighbors import NearestNeighbors
 
-BASE   = Path("/oscar/data/rsingh47/fperalta/Geneformer/augmented/ethnicity_Geneformer_workflow")
+BASE   = Path("/data/Geneformer/augmented/ethnicity_Geneformer_workflow")
 OUTDIR = BASE / "step4a_downstream_ethnicity"
 OUTDIR.mkdir(exist_ok=True)
 

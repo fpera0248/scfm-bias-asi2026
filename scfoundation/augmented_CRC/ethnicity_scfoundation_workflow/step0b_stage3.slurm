@@ -10,7 +10,7 @@
 #SBATCH --error=logs/stage3_%j.err
 
 set -eo pipefail
-cd /oscar/home/fperalta/data/fperalta/scfoundation/augmented_CRC/ethnicity_scfoundation_workflow
+cd /data/scfoundation/augmented_CRC/ethnicity_scfoundation_workflow
 mkdir -p logs
 
 module purge

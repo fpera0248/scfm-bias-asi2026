@@ -20,7 +20,7 @@ from sklearn.preprocessing import StandardScaler
 
 warnings.filterwarnings("ignore")
 
-BASE = pathlib.Path("/oscar/home/fperalta/data/fperalta/scGPT/age_scGPT_workflow")
+BASE = pathlib.Path("/data/scGPT/age_scGPT_workflow")
 LABELED_DIR = BASE / "step3b_labeled"
 OUTDIR      = BASE / "step7_representation_diagnostics_scgpt_age"
 OUTDIR.mkdir(exist_ok=True)

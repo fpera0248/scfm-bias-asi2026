@@ -4,7 +4,7 @@ import sys, pathlib, shutil
 import numpy as np
 import scanpy as sc
 
-BASE    = pathlib.Path("/oscar/home/fperalta/data/fperalta/scGPT/augmented_CRC/ethnicity_scGPT_workflow")
+BASE    = pathlib.Path("/data/scGPT/augmented_CRC/ethnicity_scGPT_workflow")
 EMB_KEY = "X_scGPT"
 
 candidates = [

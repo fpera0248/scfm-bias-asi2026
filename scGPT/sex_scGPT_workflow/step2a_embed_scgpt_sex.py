@@ -22,9 +22,9 @@ import scipy.sparse as sp
 
 warnings.filterwarnings("ignore")
 
-GF_SEX_DIR  = pathlib.Path("/oscar/home/fperalta/data/fperalta/scGPT/sex_scGPT_workflow")
-OUTDIR      = pathlib.Path("/oscar/home/fperalta/data/fperalta/scGPT/sex_scGPT_workflow/step2a_embeddings")
-SCGPT_DIR   = pathlib.Path("/oscar/home/fperalta/data/fperalta/scGPT")
+GF_SEX_DIR  = pathlib.Path("/data/scGPT/sex_scGPT_workflow")
+OUTDIR      = pathlib.Path("/data/scGPT/sex_scGPT_workflow/step2a_embeddings")
+SCGPT_DIR   = pathlib.Path("/data/scGPT")
 OUTDIR.mkdir(exist_ok=True)
 
 CHECKPOINT  = SCGPT_DIR / "scGPT_human"

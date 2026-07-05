@@ -1,6 +1,6 @@
 #!/bin/bash
 set -euo pipefail
-cd /oscar/home/fperalta/data/fperalta/scfoundation/augmented_AIDA/ethnicity_scfoundation_workflow
+cd /data/scfoundation/augmented_AIDA/ethnicity_scfoundation_workflow
 mkdir -p logs
 
 CHAIN_LOG="logs/chain_$(date +%Y%m%d_%H%M%S).txt"
@@ -56,7 +56,7 @@ done
 AGG=$(sbatch --parsable --dependency=afterany:$PREV --partition=batch \
   --time=00:10:00 --mem=4G --cpus-per-task=1 \
   --output=logs/consolidate_%j.out \
-  --wrap="cd /oscar/home/fperalta/data/fperalta/scfoundation/augmented_AIDA/ethnicity_scfoundation_workflow; { echo '==== CHAIN CONSOLIDATED LOG ===='; echo \"generated: \$(date -Iseconds)\"; for f in \$(ls -tr logs/stage*.out logs/stage*.err logs/step*.out logs/step*.err 2>/dev/null); do echo; echo '================================================================'; echo \"FILE: \$f\"; echo '================================================================'; cat \"\$f\"; done; } > logs/chain_consolidated_\$(date +%Y%m%d_%H%M%S).txt")
+  --wrap="cd /data/scfoundation/augmented_AIDA/ethnicity_scfoundation_workflow; { echo '==== CHAIN CONSOLIDATED LOG ===='; echo \"generated: \$(date -Iseconds)\"; for f in \$(ls -tr logs/stage*.out logs/stage*.err logs/step*.out logs/step*.err 2>/dev/null); do echo; echo '================================================================'; echo \"FILE: \$f\"; echo '================================================================'; cat \"\$f\"; done; } > logs/chain_consolidated_\$(date +%Y%m%d_%H%M%S).txt")
 echo "Consolidator -> job $AGG (afterany $PREV)" | tee -a "$CHAIN_LOG"
 
 echo | tee -a "$CHAIN_LOG"

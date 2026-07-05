@@ -9,7 +9,7 @@ from sklearn.neighbors import NearestNeighbors
 from sklearn.preprocessing import StandardScaler
 
 warnings.filterwarnings("ignore")
-BASE = pathlib.Path("/oscar/home/fperalta/data/fperalta/scfoundation/augmented_AIDA/age_scfoundation_workflow")
+BASE = pathlib.Path("/data/scfoundation/augmented_AIDA/age_scfoundation_workflow")
 LABELED_DIR = BASE / "step2a_embeddings"
 OUTDIR = BASE / "step7_representation_diagnostics_scfoundation_age"; OUTDIR.mkdir(exist_ok=True)
 OUTPUT_BASE = "AIDA_Age_Pilot"

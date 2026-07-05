@@ -8,7 +8,7 @@ import matplotlib.patches as mpatches
 import numpy as np, pandas as pd, scanpy as sc
 
 warnings.filterwarnings("ignore")
-BASE = pathlib.Path("/oscar/home/fperalta/data/fperalta/scfoundation/augmentedv4/sex_scfoundation_workflow")
+BASE = pathlib.Path("/data/scfoundation/augmentedv4/sex_scfoundation_workflow")
 OUTDIR     = BASE / "step9_visualizations_scfoundation_sex"
 STEP3A_DIR = BASE / "benchmark_outputs_scfoundation_sex"
 STEP4A_DIR = BASE / "step4a_downstream_scfoundation_sex"

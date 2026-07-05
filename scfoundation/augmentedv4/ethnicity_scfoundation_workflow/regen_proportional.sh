@@ -10,7 +10,7 @@
 #SBATCH --error=logs/regen_prop_%j.err
 
 set -euo pipefail
-cd /oscar/home/fperalta/data/fperalta/scfoundation/augmentedv4/ethnicity_scfoundation_workflow
+cd /data/scfoundation/augmentedv4/ethnicity_scfoundation_workflow
 
 module purge
 module load miniforge3/25.3.0-3

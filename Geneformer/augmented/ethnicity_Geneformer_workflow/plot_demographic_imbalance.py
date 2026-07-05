@@ -24,7 +24,7 @@ import warnings
 warnings.filterwarnings("ignore")
 
 BASE   = pathlib.Path(
-    "/oscar/home/fperalta/data/fperalta/scfoundation/augmentedv4/"
+    "/data/scfoundation/augmentedv4/"
     "ethnicity_scfoundation_workflow"
 )
 OUTDIR = BASE / "step9_visualizations_ethnicity"

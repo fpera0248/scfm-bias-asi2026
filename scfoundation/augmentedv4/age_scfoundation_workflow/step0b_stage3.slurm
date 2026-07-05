@@ -5,8 +5,8 @@
 #SBATCH --cpus-per-task=4
 #SBATCH --mem=128G
 #SBATCH --time=02:00:00
-#SBATCH --output=/oscar/home/fperalta/data/fperalta/scfoundation/augmentedv4/age_scfoundation_workflow/logs/age_stage3_%j.out
-#SBATCH --error=/oscar/home/fperalta/data/fperalta/scfoundation/augmentedv4/age_scfoundation_workflow/logs/age_stage3_%j.err
+#SBATCH --output=/data/scfoundation/augmentedv4/age_scfoundation_workflow/logs/age_stage3_%j.out
+#SBATCH --error=/data/scfoundation/augmentedv4/age_scfoundation_workflow/logs/age_stage3_%j.err
 
 set -euo pipefail
 
@@ -22,7 +22,7 @@ module load miniforge3/25.3.0-3
 source "$(dirname $(which conda))/../etc/profile.d/conda.sh"
 conda activate scdesign3_env
 
-cd /oscar/home/fperalta/data/fperalta/scfoundation/augmentedv4/age_scfoundation_workflow
+cd /data/scfoundation/augmentedv4/age_scfoundation_workflow
 mkdir -p logs
 
 Rscript step0b_stage3_aggregate.R

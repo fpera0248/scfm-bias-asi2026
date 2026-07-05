@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import matplotlib.ticker as mtick
 
 OUT = pathlib.Path(
-    "/oscar/home/fperalta/data/fperalta/scfoundation/augmented_AIDA/"
+    "/data/scfoundation/augmented_AIDA/"
     "ethnicity_scfoundation_workflow/step9_visualizations_ethnicity/"
     "figure0_demographic_imbalance.png"
 )

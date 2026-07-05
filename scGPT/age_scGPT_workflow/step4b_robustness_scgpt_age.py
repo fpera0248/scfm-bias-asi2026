@@ -12,7 +12,7 @@ from sklearn.neural_network import MLPClassifier
 from sklearn.kernel_approximation import RBFSampler
 from sklearn.pipeline import make_pipeline
 
-BASE = pathlib.Path("/oscar/home/fperalta/data/fperalta/scGPT/age_scGPT_workflow")
+BASE = pathlib.Path("/data/scGPT/age_scGPT_workflow")
 OUTPUT_BASE = "ILD_Age_Pilot"; LABELED_DIR = BASE / "step3b_labeled"
 DATASETS = {
     "BalancedAugmented_1262Each": LABELED_DIR / f"{OUTPUT_BASE}_BalancedAugmented_1262Each_labeled_scgpt.h5ad",

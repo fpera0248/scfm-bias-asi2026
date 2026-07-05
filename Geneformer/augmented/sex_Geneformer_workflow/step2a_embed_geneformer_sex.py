@@ -32,7 +32,7 @@ from geneformer import TranscriptomeTokenizer, EmbExtractor
 # ============================================================
 
 BASE = pathlib.Path(
-    "/oscar/home/fperalta/data/fperalta/Geneformer/augmented/sex_Geneformer_workflow"
+    "/data/Geneformer/augmented/sex_Geneformer_workflow"
 )
 INDIR  = BASE
 OUTDIR = BASE
@@ -42,7 +42,7 @@ TOKENIZE_DIR = BASE / "tokenized_datasets"
 TOKENIZE_DIR.mkdir(exist_ok=True)
 
 GENEFORMER_MODEL = pathlib.Path(
-    "/oscar/home/fperalta/data/fperalta/Geneformer/geneformer_repo/Geneformer-V2-316M"
+    "/data/Geneformer/geneformer_repo/Geneformer-V2-316M"
 )
 
 OUTPUT_BASE     = "ILD_Sex_Pilot"                                    # [SEX 2]
