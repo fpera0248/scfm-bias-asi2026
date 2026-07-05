@@ -1,95 +1,96 @@
-# Container: reproducible environment, bring your own data
+# Container: reproduce on your own GPU
 
-A single image bakes all four conda environments and the model code so you can mount
-your own `.h5ad` data and run any workflow without building anything. GPU comes from
-the **host driver** at run time (`--gpus all` / `--nv`); the conda envs ship their own
-CUDA userspace, so there is no system CUDA to match.
+The models are published as **four public Docker images, one per model**. Anyone with
+their own NVIDIA GPU can pull the one they want, mount their own `.h5ad` data, and run —
+no build step, no access to any HPC cluster.
 
-- **Docker image:** `ghcr.io/fpera0248/scfm-bias-asi2026:latest`
-- **Size:** ~18–28 GB (four PyTorch/CUDA + R environments). Pull once.
-- **Needs:** an NVIDIA GPU + driver on the host; `nvidia-container-toolkit` for Docker,
-  or Apptainer with `--nv`. `scdesign3_env` (augmentation) is CPU-only.
+| Image | Model | Approx size |
+|-------|-------|-------------|
+| `ghcr.io/fpera0248/scfm-scfoundation` | scFoundation embedding | ~7 GB |
+| `ghcr.io/fpera0248/scfm-geneformer`   | Geneformer embedding   | ~7 GB |
+| `ghcr.io/fpera0248/scfm-scgpt`        | scGPT embedding        | ~6 GB |
+| `ghcr.io/fpera0248/scfm-scdesign3`    | scDesign3 augmentation (CPU) | ~3 GB |
 
-## Pull and run
+## What a user needs
 
-### Docker
-```
-docker pull ghcr.io/fpera0248/scfm-bias-asi2026:latest
-docker run --gpus all -it \
-    -v /path/to/your/data:/data \
-    ghcr.io/fpera0248/scfm-bias-asi2026:latest
-```
+- **Docker** + **NVIDIA Container Toolkit** (`nvidia-container-toolkit`) on their machine.
+- **An NVIDIA GPU + driver ≥ 520** (images are CUDA 11.8; the driver is the only host-side
+  CUDA piece). `scfm-scdesign3` is CPU-only and needs no GPU.
+- Their own `.h5ad` (see README "Input format").
 
-### Apptainer (HPC)
-```
-apptainer pull scfm.sif docker://ghcr.io/fpera0248/scfm-bias-asi2026:latest
-apptainer run --nv -B /path/to/your/data:/data scfm.sif
-```
-
-Inside the container, each stage runs in its env:
-```
-conda run -n scfoundation_gpu python step2a_embed_scfoundation_ethnicity.py
-conda run -n scdesign3_env    Rscript step0b_stage2_augment.R
-```
-
-## Build it yourself
+## Run one
 
 ```
-# Docker
-docker build -t ghcr.io/fpera0248/scfm-bias-asi2026:latest .
-docker build --build-arg ... .            # (see Dockerfile for --full pinning note)
+docker pull ghcr.io/fpera0248/scfm-scgpt:latest
+docker run --gpus all -it -v /path/to/your/data:/data \
+    ghcr.io/fpera0248/scfm-scgpt:latest
 
-# Apptainer, from the built/published image
-apptainer build scfm.sif Apptainer.def
+# inside the container, run a stage in its env:
+conda run -n scgpt310 python step2a_embed_scgpt_ethnicity.py
 ```
 
-`Dockerfile` runs `install.sh` (the four envs) then `fetch_weights.sh` (model code +
-weights). To pin every transitive dependency to the original Linux/CUDA build, change
-the `install.sh` call in the Dockerfile to `install.sh --full`.
-
-## Model weights
-
-- **scFoundation** — no action. `modelgenerator` pulls `genbio-ai/scFoundation`
-  (`models.ckpt`, ~1.43 GB) from the HF Hub; the build pre-warms that cache.
-- **Geneformer** — `fetch_weights.sh` clones `ctheodoris/Geneformer` @ `fcd26c4`
-  (git-lfs) and editable-installs it; the 104M token dictionary ships in that repo.
-- **scGPT** — the whole-human checkpoint (`best_model.pt`, `vocab.json`, `args.json`)
-  is a separate download from the authors. Provide it one of two ways:
-  - `--build-arg`/env **`SCGPT_CKPT_URL`** = a direct/Zenodo tarball URL (recommended
-    for reproducibility — see Archival below), or
-  - leave it unset and `fetch_weights.sh` uses `gdown` on the Google Drive link from
-    the scGPT README. **Verify that link** — author-hosted links move.
+On HPC (no Docker) the same images run under Apptainer:
+```
+apptainer pull scfm-scgpt.sif docker://ghcr.io/fpera0248/scfm-scgpt:latest
+apptainer run --nv -B /path/to/your/data:/data scfm-scgpt.sif
+```
 
 ## Bring your own data
 
-Mount your data at `/data`. Each `.h5ad` needs (see README "Input format"): an
-expression matrix in `X`, an `obs` cell-type column (`cell_type`), and the demographic
-column for your axis (`self_reported_ethnicity`, `sex`, or the age field).
+Mount your data at `/data`. The images symlink the scripts' hardcoded Oscar roots
+(`/oscar/data/rsingh47/fperalta`, `/oscar/home/fperalta`, `/users/fperalta`) to `/data`,
+so many hardcoded `BASE` paths resolve automatically. If a script's `BASE` points
+elsewhere, edit it to `/data/...` (see README "Running a workflow").
 
-**Heads-up — hardcoded paths.** The step scripts hardcode absolute Oscar `BASE` paths
-(555 files; see README "Running a workflow"). Two ways to deal with it:
+---
 
-1. **Symlink shim (turnkey, best-effort).** The image symlinks the original Oscar roots
-   (`/oscar/data/rsingh47/fperalta`, `/oscar/home/fperalta`, `/users/fperalta`) to
-   `/data`, so mounting your data at `/data` makes many hardcoded paths resolve as-is.
-   Verify the `BASE` value in the script you run points under one of those roots.
-2. **Edit `BASE`.** Open the step script and set `BASE` to `/data/...`. This release has
-   no config-driven single-path option.
+# Publishing (maintainer)
 
-## Hosting
+The images are built and pushed **automatically by GitHub Actions** — no build machine,
+no GPU, and Oscar is never involved. Building an image needs only CPU + internet + disk,
+all of which the GitHub runner has.
 
-- **GHCR** (convenience): tag as `ghcr.io/fpera0248/scfm-bias-asi2026:<version>`,
-  `docker push`. Public images are free and Apptainer pulls `docker://…` directly.
-  Also tag an immutable `:asi2026` or `:v1.0` alongside `:latest`.
-- **Zenodo** (archival, for the paper): `apptainer build scfm.sif …`, upload the `.sif`
-  to Zenodo for a DOI so the exact container is citable and permanent. If you also
-  archive the scGPT checkpoint there, point `SCGPT_CKPT_URL` at that record so the
-  build no longer depends on the authors' Drive link.
+**One-time setup:**
 
-## Notes / caveats
+1. **scGPT weights → a public link.** Geneformer and scFoundation weights already live on
+   public servers (HF Hub); only scGPT's checkpoint doesn't. Tar the `scGPT_human/` you
+   have (`best_model.pt`, `vocab.json`, `args.json`) and attach it to a **GitHub Release**
+   in this repo:
+   ```
+   tar -czf scGPT_human.tar.gz -C /path/to scGPT_human
+   # then drag scGPT_human.tar.gz onto a GitHub Release (repo → Releases → draft)
+   ```
+   Copy the asset's download URL and set it as an **Actions variable**:
+   repo → Settings → Secrets and variables → Actions → Variables → New →
+   `SCGPT_CKPT_URL` = that URL.
 
-- First GPU run inside the container needs a host driver new enough for CUDA 11.8
-  (driver ≥ 520). `--nv` / `--gpus all` injects it.
+2. **Enable GHCR.** The workflow already has `packages: write`. After the first run, open
+   each package (repo → Packages) and set its visibility to **Public** so anyone can pull.
+
+**Publish / update:** cut a release (or run the `build-images` workflow manually via
+"Run workflow"). GitHub builds all four images and pushes `:latest` and `:<release-tag>`
+to GHCR. Done.
+
+**Smoke test before announcing:** on any GPU box (or Oscar via `apptainer pull`), run one
+model's `step2a` on a few cells to confirm GPU + weights + env all work end to end.
+
+---
+
+# All-in-one image (optional, for local/HPC single-image use)
+
+The root `Dockerfile` and `Apptainer.def` build a single image with **all four** envs
+(~18–28 GB). Useful if you want everything in one artifact for your own HPC runs, but it's
+large for public distribution — that's why the public images are split per model.
+
+```
+docker build -t scfm-all .
+bash install.sh --full        # inside: build all four, fully pinned
+```
+
+# Notes
+
 - scGPT runs without flash-attention (not a dependency of `scgpt==0.2.1`).
+- scFoundation weights auto-download via `modelgenerator` (HF `genbio-ai/scFoundation`);
+  the build pre-warms that cache.
 - `scdesign3_env` installs scDesign3 from GitHub `main` (~v1.5.0); pin a commit in
-  `install.sh` if you need bit-exact R reproducibility.
+  `install.sh` for bit-exact R reproducibility.

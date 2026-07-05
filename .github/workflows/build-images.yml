@@ -1,0 +1,59 @@
+name: build-images
+
+# Build one public Docker image per model and push to GHCR.
+# Triggers: on a published release (versioned images), or manually.
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { model: scfoundation, env_name: scfoundation_gpu }
+          - { model: geneformer,   env_name: geneformer310 }
+          - { model: scgpt,        env_name: scgpt310 }
+          - { model: scdesign3,    env_name: scdesign3_env }
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # Per-model images are several GB; reclaim runner disk before building.
+      - name: Free disk space
+        run: |
+          sudo rm -rf /usr/share/dotnet /opt/ghc /usr/local/lib/android \
+                      /opt/hostedtoolcache/CodeQL /usr/local/share/boost
+          docker system prune -af || true
+          df -h
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set lowercase owner
+        id: owner
+        run: echo "name=${GITHUB_REPOSITORY_OWNER,,}" >> "$GITHUB_OUTPUT"
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: docker/Dockerfile
+          push: true
+          tags: |
+            ghcr.io/${{ steps.owner.outputs.name }}/scfm-${{ matrix.model }}:latest
+            ghcr.io/${{ steps.owner.outputs.name }}/scfm-${{ matrix.model }}:${{ github.ref_name }}
+          build-args: |
+            MODEL=${{ matrix.model }}
+            ENV_NAME=${{ matrix.env_name }}
+            SCGPT_CKPT_URL=${{ vars.SCGPT_CKPT_URL }}

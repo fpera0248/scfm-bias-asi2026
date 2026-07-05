@@ -1,62 +1,62 @@
 #!/usr/bin/env bash
-# One-pass build of the four conda environments this repo uses.
-# See ENVIRONMENTS.md for the manual, step-by-step version, prerequisites,
-# and troubleshooting.
+# Build the conda environments this repo uses.
+# See ENVIRONMENTS.md for prerequisites and the manual, step-by-step version.
 #
 # Usage:
-#   bash install.sh          # build from the slim specs (environment_<name>.yml)
-#   bash install.sh --full   # build from the fully pinned specs (environment_<name>.full.yml)
+#   bash install.sh                       # build all four envs (slim specs)
+#   bash install.sh --full                # all four, fully pinned specs
+#   bash install.sh scgpt310              # build only this env (for per-model images)
+#   bash install.sh --full geneformer310  # one env, fully pinned
 set -euo pipefail
 
 SUFFIX=""
-if [ "${1:-}" = "--full" ]; then
-  SUFFIX=".full"
-elif [ -n "${1:-}" ]; then
-  echo "Unknown argument: $1 (use --full or no argument)" >&2
-  exit 2
+ENVS=()
+for arg in "$@"; do
+  case "$arg" in
+    --full) SUFFIX=".full" ;;
+    -*) echo "Unknown flag: $arg (use --full)" >&2; exit 2 ;;
+    *) ENVS+=("$arg") ;;
+  esac
+done
+# Default: all four.
+if [ "${#ENVS[@]}" -eq 0 ]; then
+  ENVS=(scfoundation_gpu geneformer310 scgpt310 scdesign3_env)
 fi
 
-# Prefer mamba (much faster solver) if available, else conda.
-if command -v mamba >/dev/null 2>&1; then
-  SOLVER=mamba
-elif command -v conda >/dev/null 2>&1; then
-  SOLVER=conda
-else
-  echo "ERROR: need conda or mamba on PATH. See ENVIRONMENTS.md (Prerequisites)." >&2
-  exit 1
-fi
+# Prefer mamba (faster solver) if available, else conda.
+if command -v mamba >/dev/null 2>&1; then SOLVER=mamba
+elif command -v conda >/dev/null 2>&1; then SOLVER=conda
+else echo "ERROR: need conda or mamba on PATH. See ENVIRONMENTS.md." >&2; exit 1; fi
 
+want () { for e in "${ENVS[@]}"; do [ "$e" = "$1" ] && return 0; done; return 1; }
 env_exists () { conda env list | awk '{print $1}' | grep -qx "$1"; }
 
 create_env () {
   local name="$1" spec="environment_$1${SUFFIX}.yml"
   echo "=== env: $name  (spec: $spec) ==="
-  if [ ! -f "$spec" ]; then
-    echo "ERROR: spec not found: $spec" >&2
-    exit 1
-  fi
+  [ -f "$spec" ] || { echo "ERROR: spec not found: $spec" >&2; exit 1; }
   if env_exists "$name"; then
-    echo "  '$name' already exists; skipping. Remove it first (conda env remove -n $name) to rebuild."
+    echo "  '$name' already exists; skipping. Remove it (conda env remove -n $name) to rebuild."
   else
     "$SOLVER" env create -f "$spec"
   fi
 }
 
-create_env scfoundation_gpu
-create_env geneformer310
-create_env scgpt310
-create_env scdesign3_env
+for e in "${ENVS[@]}"; do create_env "$e"; done
 
 # Extra step 1: scGPT is not on conda — install it into scgpt310 from pip.
-echo "=== installing scgpt==0.2.1 into scgpt310 ==="
-conda run -n scgpt310 pip install "scgpt==0.2.1"
+if want scgpt310; then
+  echo "=== installing scgpt==0.2.1 into scgpt310 ==="
+  conda run -n scgpt310 pip install "scgpt==0.2.1"
+fi
 
 # Extra step 2: scDesign3 is not on conda — install it into scdesign3_env from source.
-echo "=== installing scDesign3 (1.5.0) into scdesign3_env ==="
-conda run -n scdesign3_env Rscript -e \
-  'if (!requireNamespace("scDesign3", quietly=TRUE)) devtools::install_github("SONGDONGYUAN1994/scDesign3")'
+if want scdesign3_env; then
+  echo "=== installing scDesign3 (1.5.0) into scdesign3_env ==="
+  conda run -n scdesign3_env Rscript -e \
+    'if (!requireNamespace("scDesign3", quietly=TRUE)) devtools::install_github("SONGDONGYUAN1994/scDesign3")'
+fi
 
 echo
-echo "Done. All four environments are built."
-echo "Activate one with, e.g.:  conda activate scfoundation_gpu"
-echo "Model weights are separate downloads — see the Model setup section of README.md."
+echo "Done. Built: ${ENVS[*]}"
+echo "Activate one with, e.g.:  conda activate ${ENVS[0]}"
