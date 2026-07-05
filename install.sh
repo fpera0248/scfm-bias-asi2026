@@ -46,8 +46,12 @@ create_env () {
     #   - geneformer is a source/editable install (fetch_weights.sh), not on PyPI.
     # Sanitize into a temp spec: add PyTorch's extra index, drop the geneformer self-pin.
     build_spec="/tmp/spec_${name}.yml"
+    # Also drop the AWS/cloud family: the export pins mutually-inconsistent versions
+    # (aiobotocore requires a newer botocore than pinned), pip 25.3 has no legacy
+    # resolver to force it, and these cloud-storage deps aren't used for local runs.
     awk '
       /^[[:space:]]*-[[:space:]]*geneformer(==| @)/ { next }
+      /^[[:space:]]*-[[:space:]]*(aiobotocore|botocore|boto3|s3fs|aioboto[a-z0-9-]*)==/ { next }
       { print }
       /^[[:space:]]*-[[:space:]]*pip:[[:space:]]*$/ {
         print "      - --extra-index-url https://download.pytorch.org/whl/cu118"
