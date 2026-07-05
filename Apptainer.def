@@ -1,0 +1,32 @@
+# Apptainer/Singularity definition for HPC use.
+#
+# Simplest path (no .def needed) — convert the published image directly:
+#   apptainer pull scfm.sif docker://ghcr.io/fpera0248/scfm-bias-asi2026:latest
+#
+# This .def bootstraps from that same image and just adds a runscript + env, so the
+# Docker image stays the single source of truth. Build it with:
+#   apptainer build scfm.sif Apptainer.def
+#
+# Run on a GPU node (--nv binds the host driver; envs bring their own CUDA):
+#   apptainer run --nv -B /path/to/your/data:/data scfm.sif
+#   apptainer exec --nv -B /path/to/your/data:/data scfm.sif \
+#       conda run -n scfoundation_gpu python <script>.py
+
+Bootstrap: docker
+From: ghcr.io/fpera0248/scfm-bias-asi2026:latest
+
+%environment
+    export NVIDIA_VISIBLE_DEVICES=all
+    export NVIDIA_DRIVER_CAPABILITIES=compute,utility
+    export MODELS_DIR=/opt/models
+    export SCFM_HOME=/opt/scfm
+
+%runscript
+    echo "scfm-bias-asi2026 container"
+    echo "Envs: scfoundation_gpu, geneformer310, scgpt310, scdesign3_env"
+    echo "Run a step, e.g.:  conda run -n scfoundation_gpu python step2a_embed_scfoundation_ethnicity.py"
+    exec /bin/bash "$@"
+
+%labels
+    org.opencontainers.image.source https://github.com/fpera0248/scfm-bias-asi2026
+    description "Reproducible env for Demographic Bias in Single-Cell Foundation Models (ACM-BCB ASI 2026)"

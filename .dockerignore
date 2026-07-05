@@ -1,0 +1,29 @@
+# Keep the build context to source + specs only.
+.git
+.gitignore
+.idea
+.vscode
+.DS_Store
+
+# Never bake data, weights, or outputs into the image
+data/
+*.h5ad
+*.h5
+*.loom
+*.mtx
+*.pt
+*.pth
+*.ckpt
+*.pkl
+*.npy
+*.npz
+*.csv
+!Rpackages_*.csv
+*.png
+*.jpg
+*.pdf
+*.log
+
+# Python/OS cruft
+__pycache__/
+*.pyc

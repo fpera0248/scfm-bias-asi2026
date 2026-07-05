@@ -93,9 +93,9 @@ bash install.sh --full   # fully pinned specs, exact Linux/CUDA reproduction
 ```
 
 The environments provide the code to run each model. The pretrained model **weights** are separate downloads with their own licenses and are not in this repo:
-- scFoundation: [FILL: source and checkpoint version]
-- Geneformer: [FILL: source and checkpoint version]
-- scGPT: [FILL: source and checkpoint version] — the scGPT package itself is pinned to `scgpt==0.2.1`
+- **scFoundation** — no manual download. The env's `modelgenerator==0.1.3` (genbio-ai) auto-pulls the checkpoint from the HF Hub repo `genbio-ai/scFoundation` (commit `cb434153`, `models.ckpt`, ~1.43 GB) on first use.
+- **Geneformer** — HF repo `ctheodoris/Geneformer` (commit `fcd26c4`), installed as an editable package (`geneformer==0.1.0`). The 104M-model token dictionary `token_dictionary_gc104M.pkl` ships inside that repo.
+- **scGPT** — package `scgpt==0.2.1` (bowang-lab/scGPT). The pretrained **whole-human** checkpoint (`scGPT_human/`: `best_model.pt`, `vocab.json`, `args.json`) is a separate download from the authors (Google Drive/Figshare, linked in their README); `fetch_weights.sh` retrieves it.
 
 Pin the exact checkpoint for each model. A different checkpoint produces different embeddings and will not reproduce the reported numbers.
 
