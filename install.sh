@@ -75,11 +75,26 @@ if want scgpt310 && [ "$SUFFIX" != ".full" ]; then
   conda run -n scgpt310 pip install "scgpt==0.2.1"
 fi
 
-# Extra step 2: scDesign3 is not on conda — install it into scdesign3_env from source.
+# Extra step 2: scDesign3 (source) + zellkonverter (Bioconductor) into scdesign3_env.
+# zellkonverter provides the R<->AnnData (.h5ad) bridge that step0b uses; it relies on a
+# basilisk-managed Python env, which we pre-create here so it's baked into the image and
+# found at runtime via BASILISK_EXTERNAL_DIR (set in the Dockerfile). Without this the
+# container silently depended on the user's personal ~/.conda env — not reproducible.
 if want scdesign3_env; then
-  echo "=== installing scDesign3 (1.5.0) into scdesign3_env ==="
-  conda run -n scdesign3_env Rscript -e \
-    'if (!requireNamespace("scDesign3", quietly=TRUE)) devtools::install_github("SONGDONGYUAN1994/scDesign3")'
+  echo "=== installing scDesign3 + zellkonverter into scdesign3_env ==="
+  : "${BASILISK_EXTERNAL_DIR:=/opt/basilisk}"; export BASILISK_EXTERNAL_DIR
+  conda run -n scdesign3_env Rscript -e '
+    if (!requireNamespace("BiocManager", quietly=TRUE))
+      install.packages("BiocManager", repos="https://cloud.r-project.org")
+    if (!requireNamespace("scDesign3", quietly=TRUE))
+      devtools::install_github("SONGDONGYUAN1994/scDesign3")
+    if (!requireNamespace("zellkonverter", quietly=TRUE))
+      BiocManager::install("zellkonverter", update=FALSE, ask=FALSE)
+    # Pre-build the basilisk Python env so it is cached inside the image.
+    library(basilisk); library(zellkonverter)
+    cl <- basiliskStart(zellkonverterAnnDataEnv()); basiliskStop(cl)
+    cat("scDesign3 + zellkonverter + basilisk env ready\n")
+  '
 fi
 
 echo

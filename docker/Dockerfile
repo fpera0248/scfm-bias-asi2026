@@ -21,6 +21,7 @@ ENV NVIDIA_VISIBLE_DEVICES=all \
     DEBIAN_FRONTEND=noninteractive \
     MODELS_DIR=/opt/models \
     SCFM_HOME=/opt/scfm \
+    BASILISK_EXTERNAL_DIR=/opt/basilisk \
     SCGPT_CKPT_URL=${SCGPT_CKPT_URL}
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
