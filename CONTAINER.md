@@ -93,3 +93,23 @@ bash install.sh --full        # inside: build all four, fully pinned
   the build pre-warms that cache.
 - `scdesign3_env` installs scDesign3 from GitHub `main` (~v1.5.0); pin a commit in
   `install.sh` for bit-exact R reproducibility.
+
+## Runtime gotchas (Apptainer)
+
+- **Redirecting HOME:** Apptainer refuses `--env HOME=...`. If your home is read-only or
+  over quota, redirect it with `--home /some/writable/dir:/root` instead. Scientific tools
+  (scanpy, numba, matplotlib) write caches under HOME, so this prevents mid-run write
+  failures. Also set `MPLCONFIGDIR`, `NUMBA_CACHE_DIR`, `XDG_CACHE_HOME` to writable paths.
+- **scdesign3 / basilisk:** the R `zellkonverter` bridge uses a basilisk-managed Python env.
+  The image pre-bakes it at `/opt/basilisk`, but a `.sif` is read-only, so basilisk can't
+  place its lockfile there. Point `BASILISK_EXTERNAL_DIR` at a **writable** dir (e.g. on
+  scratch); basilisk will populate it on first use (needs internet the first time). Example:
+  ```
+  apptainer exec -B $DATA:/data --home $WORK/.home:/root \
+    --env BASILISK_EXTERNAL_DIR=/data/.home/basilisk \
+    scfm-scdesign3.sif conda run -n scdesign3_env Rscript step0b_*.R
+  ```
+- **step0b is CPU-only and long:** scDesign3 fits per-gene GAMs + a copula serially
+  (`N_CORES=1`, deliberate for memory safety). On a full cohort it can run many hours and
+  needs ~150–180 GB RAM. Run it on a CPU partition with a long walltime; reserve the GPU
+  only for the embedding/downstream steps.
