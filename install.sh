@@ -88,8 +88,9 @@ if want scdesign3_env; then
       install.packages("BiocManager", repos="https://cloud.r-project.org")
     if (!requireNamespace("scDesign3", quietly=TRUE))
       devtools::install_github("SONGDONGYUAN1994/scDesign3")
-    if (!requireNamespace("zellkonverter", quietly=TRUE))
-      BiocManager::install("zellkonverter", update=FALSE, ask=FALSE)
+    bioc <- c("zellkonverter", "scran", "scuttle", "SingleCellExperiment", "BiocParallel")
+    need <- bioc[!vapply(bioc, requireNamespace, logical(1), quietly=TRUE)]
+    if (length(need)) BiocManager::install(need, update=FALSE, ask=FALSE)
     # Pre-build the basilisk Python env so it is cached inside the image.
     library(basilisk); library(zellkonverter)
     cl <- basiliskStart(zellkonverterAnnDataEnv()); basiliskStop(cl)
