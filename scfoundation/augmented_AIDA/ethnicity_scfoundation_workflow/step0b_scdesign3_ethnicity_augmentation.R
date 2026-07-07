@@ -1082,8 +1082,7 @@ if (sum(found_mask) > 0) {
 cd      <- colData(sce_combined)
 rd_full <- rowData(sce_full)
 rd_genes_present <- intersect(original_genes, rownames(rd_full))
-rd_subset <- if (length(rd_genes_present) > 0) rd_full[rd_genes_present, , drop = FALSE]
-             else rd_full[integer(0), , drop = FALSE]
+rd_subset <- if (length(rd_genes_present) > 0) rd_full[rd_genes_present, , drop = FALSE] else rd_full[integer(0), , drop = FALSE]
 rd_genes_missing <- setdiff(original_genes, rownames(rd_full))
 if (length(rd_genes_missing) > 0) {
   rd_pad <- as.data.frame(matrix(NA, nrow = length(rd_genes_missing),
