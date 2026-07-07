@@ -97,9 +97,9 @@ def adapt(src: str) -> str:
                  "with 5 age bins, random expected ~0.800 (4/5 neighbours from other bins).")
         # JAX cpu env
         .replace('os.environ["JAX_PLATFORM_NAME"] = "cpu"\n\n', '')
-        # silhouette_batch compat
-        .replace("silhouette_batch=True,", "")
-        .replace("silhouette_batch=False,", "")
+        # bras compat
+        .replace("bras=True,", "")
+        .replace("bras=False,", "")
         # titles
         .replace("(AGE, scFoundation)", "(CRC AGE, scFoundation)")
         .replace("(AGE, Geneformer)", "(CRC AGE, scFoundation)")

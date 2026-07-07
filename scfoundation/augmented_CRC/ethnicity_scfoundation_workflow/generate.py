@@ -98,9 +98,9 @@ def adapt(src: str) -> str:
                  '"step8_fig7_african_american_delta.png"')
         .replace('"Native Am. Acc"', '"African Am. Acc"')
         .replace('"Native Am. Delta"', '"African Am. Delta"')
-        # silhouette_batch compat
-        .replace("silhouette_batch=True,", "")
-        .replace("silhouette_batch=False,", "")
+        # bras compat
+        .replace("bras=True,", "")
+        .replace("bras=False,", "")
         # titles
         .replace("(ETHNICITY, scFoundation)", "(CRC ETHNICITY, scFoundation)")
         .replace("scFoundation ETHNICITY", "CRC scFoundation ETHNICITY")

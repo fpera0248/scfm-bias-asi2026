@@ -248,7 +248,7 @@ def run_scib(mode: str, fname: str):
         "NMI":              float(row["KMeans NMI"])        if "KMeans NMI"        in row.index else np.nan,
         "ARI":              float(row["KMeans ARI"])        if "KMeans ARI"        in row.index else np.nan,
         "cLISI":            float(row["cLISI"])             if "cLISI"             in row.index else np.nan,
-        "silhouette_batch": float(row["Silhouette batch"])  if "Silhouette batch"  in row.index else np.nan,
+        "bras": float(row["Silhouette batch"])  if "Silhouette batch"  in row.index else np.nan,
         "iLISI":            float(row["iLISI"])             if "iLISI"             in row.index else np.nan,
         "kBET":             float(row["KBET"])              if "KBET"              in row.index else np.nan,
         "PCR":              float(row["PCR comparison"])    if "PCR comparison"    in row.index else np.nan,

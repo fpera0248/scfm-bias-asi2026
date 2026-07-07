@@ -63,7 +63,7 @@ def run_scib(mode, fname):
     bm = Benchmarker(ad_slim, batch_key=age_col, label_key=LABEL_KEY,
         embedding_obsm_keys=[EMB_KEY],
         bio_conservation_metrics=BioConservation(nmi_ari_cluster_labels_kmeans=True, clisi_knn=True, isolated_labels=False, silhouette_label=False),
-        batch_correction_metrics=BatchCorrection(silhouette_batch=True, ilisi_knn=True, kbet_per_label=True, graph_connectivity=False, pcr_comparison=True),
+        batch_correction_metrics=BatchCorrection(bras=True, ilisi_knn=True, kbet_per_label=True, graph_connectivity=False, pcr_comparison=True),
         n_jobs=-1)
     try: bm.benchmark()
     except Exception as e:
@@ -71,7 +71,7 @@ def run_scib(mode, fname):
             bm = Benchmarker(ad_slim, batch_key=age_col, label_key=LABEL_KEY,
                 embedding_obsm_keys=[EMB_KEY],
                 bio_conservation_metrics=BioConservation(nmi_ari_cluster_labels_kmeans=True, clisi_knn=True, isolated_labels=False, silhouette_label=False),
-                batch_correction_metrics=BatchCorrection(silhouette_batch=True, ilisi_knn=True, kbet_per_label=False, graph_connectivity=False, pcr_comparison=True),
+                batch_correction_metrics=BatchCorrection(bras=True, ilisi_knn=True, kbet_per_label=False, graph_connectivity=False, pcr_comparison=True),
                 n_jobs=-1)
             bm.benchmark()
         else: raise

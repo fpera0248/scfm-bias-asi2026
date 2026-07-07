@@ -166,9 +166,9 @@ for tag, ild_fname in script_names.items():
             f'    VALIDATION_FILE = BASE / "step2a_embeddings" / "{VAL_FILE}_geneformer.h5ad"'
         )
     if tag == "step3a":
-        # fix silhouette_batch API for scib_metrics version on Oscar
-        adapted = adapted.replace("silhouette_batch=True,", "")
-        adapted = adapted.replace("silhouette_batch=False,", "")
+        # fix bras API for scib_metrics version on Oscar
+        adapted = adapted.replace("bras=True,", "")
+        adapted = adapted.replace("bras=False,", "")
         # fix BASE path in EMBDIR
         adapted = adapted.replace(
             "EMBDIR = BASE",

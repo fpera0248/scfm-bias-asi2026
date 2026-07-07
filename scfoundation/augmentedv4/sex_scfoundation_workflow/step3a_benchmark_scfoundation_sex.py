@@ -75,7 +75,7 @@ def run_scib(mode, fname):
     bm = Benchmarker(ad_slim, batch_key=sex_col, label_key=LABEL_KEY,
         embedding_obsm_keys=[EMB_KEY],
         bio_conservation_metrics=BioConservation(nmi_ari_cluster_labels_kmeans=True, clisi_knn=True, isolated_labels=False, silhouette_label=False),
-        batch_correction_metrics=BatchCorrection(silhouette_batch=True, ilisi_knn=True, kbet_per_label=True, graph_connectivity=False, pcr_comparison=True),
+        batch_correction_metrics=BatchCorrection(bras=True, ilisi_knn=True, kbet_per_label=True, graph_connectivity=False, pcr_comparison=True),
         n_jobs=-1)
     try:
         bm.benchmark()
@@ -84,7 +84,7 @@ def run_scib(mode, fname):
             bm = Benchmarker(ad_slim, batch_key=sex_col, label_key=LABEL_KEY,
                 embedding_obsm_keys=[EMB_KEY],
                 bio_conservation_metrics=BioConservation(nmi_ari_cluster_labels_kmeans=True, clisi_knn=True, isolated_labels=False, silhouette_label=False),
-                batch_correction_metrics=BatchCorrection(silhouette_batch=True, ilisi_knn=True, kbet_per_label=False, graph_connectivity=False, pcr_comparison=True),
+                batch_correction_metrics=BatchCorrection(bras=True, ilisi_knn=True, kbet_per_label=False, graph_connectivity=False, pcr_comparison=True),
                 n_jobs=-1)
             bm.benchmark()
         else: raise
@@ -100,7 +100,7 @@ def run_scib(mode, fname):
         "NMI":              float(row["KMeans NMI"])       if "KMeans NMI"       in row.index else np.nan,
         "ARI":              float(row["KMeans ARI"])       if "KMeans ARI"       in row.index else np.nan,
         "cLISI":            float(row["cLISI"])            if "cLISI"            in row.index else np.nan,
-        "silhouette_batch": float(row["Silhouette batch"]) if "Silhouette batch" in row.index else np.nan,
+        "bras": float(row["Silhouette batch"]) if "Silhouette batch" in row.index else np.nan,
         "iLISI":            float(row["iLISI"])            if "iLISI"            in row.index else np.nan,
         "kBET":             float(row["KBET"])             if "KBET"             in row.index else np.nan,
         "PCR":              float(row["PCR comparison"])   if "PCR comparison"   in row.index else np.nan,
