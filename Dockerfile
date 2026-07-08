@@ -13,13 +13,16 @@
 # See CONTAINER.md for Apptainer/HPC, weights, and bring-your-own-data details.
 
 FROM condaforge/miniforge3:24.11.3-2
+ARG SCGPT_CKPT_URL=""
 
 # Let the NVIDIA container runtime (Docker --gpus / Apptainer --nv) inject the host driver.
 ENV NVIDIA_VISIBLE_DEVICES=all \
     NVIDIA_DRIVER_CAPABILITIES=compute,utility \
     DEBIAN_FRONTEND=noninteractive \
     MODELS_DIR=/opt/models \
-    SCFM_HOME=/opt/scfm
+    SCFM_HOME=/opt/scfm \
+    BASILISK_EXTERNAL_DIR=/opt/basilisk \
+    SCGPT_CKPT_URL=${SCGPT_CKPT_URL}
 
 # System deps: git-lfs (Geneformer HF repo), build tools (R/pip source installs), curl.
 RUN apt-get update && apt-get install -y --no-install-recommends \

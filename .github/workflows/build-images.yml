@@ -57,3 +57,42 @@ jobs:
             MODEL=${{ matrix.model }}
             ENV_NAME=${{ matrix.env_name }}
             SCGPT_CKPT_URL=${{ vars.SCGPT_CKPT_URL }}
+
+  # All-in-one image (every env + all weights). ~25 GB — tight on the free runner,
+  # so we reclaim as much disk as possible first. If it fails on disk, build it on a
+  # larger machine and push, or rely on the per-model images (each is self-contained).
+  build-all:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Free disk space (aggressive)
+        run: |
+          sudo rm -rf /usr/share/dotnet /opt/ghc /usr/local/lib/android \
+                      /opt/hostedtoolcache /usr/local/share/boost \
+                      /usr/local/lib/node_modules /usr/share/swift /opt/az
+          sudo apt-get clean
+          docker system prune -af || true
+          df -h
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Set lowercase owner
+        id: owner
+        run: echo "name=${GITHUB_REPOSITORY_OWNER,,}" >> "$GITHUB_OUTPUT"
+      - name: Build and push all-in-one
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: Dockerfile
+          push: true
+          tags: |
+            ghcr.io/${{ steps.owner.outputs.name }}/scfm-all:latest
+            ghcr.io/${{ steps.owner.outputs.name }}/scfm-all:${{ github.ref_name }}
+          build-args: |
+            SCGPT_CKPT_URL=${{ vars.SCGPT_CKPT_URL }}

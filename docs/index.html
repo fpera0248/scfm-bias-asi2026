@@ -84,42 +84,30 @@
 <section>
   <div class="wrap">
     <h2>Reproduce on your own GPU</h2>
-    <p>Each model ships as a public Docker image. Pull the one you want, mount your own
-      <code>.h5ad</code> data, and run — nothing to build.</p>
+    <p>Pull one prebuilt image and run a single command — it downloads the cohort, wires up
+      the baked model weights, and runs the whole pipeline (extract → augment → embed →
+      benchmark → figures). No environment setup, no path editing.</p>
 
+    <pre>docker pull ghcr.io/fpera0248/scfm-geneformer:latest
+docker run --gpus all -v "$PWD/data":/data \
+    ghcr.io/fpera0248/scfm-geneformer:latest \
+    reproduce geneformer aida ethnicity</pre>
+
+    <p style="margin-top:6px"><b>reproduce &lt;model&gt; &lt;cohort&gt; &lt;demographic&gt;</b></p>
     <div class="grid">
-      <div class="card">
-        <h3>scFoundation <span class="tag">GPU</span></h3>
-        <p>Embedding + evaluation.</p>
-        <pre>docker pull ghcr.io/fpera0248/scfm-scfoundation:latest</pre>
-      </div>
-      <div class="card">
-        <h3>Geneformer <span class="tag">GPU</span></h3>
-        <p>Embedding + evaluation.</p>
-        <pre>docker pull ghcr.io/fpera0248/scfm-geneformer:latest</pre>
-      </div>
-      <div class="card">
-        <h3>scGPT <span class="tag">GPU</span></h3>
-        <p>Embedding + evaluation.</p>
-        <pre>docker pull ghcr.io/fpera0248/scfm-scgpt:latest</pre>
-      </div>
-      <div class="card">
-        <h3>scDesign3 <span class="tag cpu">CPU</span></h3>
-        <p>Synthetic augmentation (R).</p>
-        <pre>docker pull ghcr.io/fpera0248/scfm-scdesign3:latest</pre>
-      </div>
+      <div class="card"><h3>model</h3><p><code>scfoundation</code> · <code>geneformer</code> · <code>scgpt</code></p></div>
+      <div class="card"><h3>cohort</h3><p><code>ild</code> · <code>crc</code> · <code>aida</code></p></div>
+      <div class="card"><h3>demographic</h3><p><code>ethnicity</code> · <code>sex</code> · <code>age</code><br><span style="font-size:12px;color:var(--muted)">AIDA &amp; CRC are sex-balanced (no sex)</span></p></div>
     </div>
 
-    <h3 style="margin-top:22px">Run one</h3>
-    <pre>docker run --gpus all -it -v /path/to/your/data:/data \
-    ghcr.io/fpera0248/scfm-scgpt:latest
-
-# inside the container:
-conda run -n scgpt310 python step2a_embed_scgpt_ethnicity.py</pre>
+    <p style="margin-top:14px">Images: per-model (<code>scfm-scfoundation</code>, <code>scfm-geneformer</code>,
+      <code>scfm-scgpt</code> — each bundles scDesign3) or the all-in-one <code>scfm-all</code>.
+      That one command reproduces any of the paper's nine model×cohort combinations.</p>
 
     <div class="note">On HPC without Docker, the same images run under Apptainer:
-      <code>apptainer pull scfm-scgpt.sif docker://ghcr.io/fpera0248/scfm-scgpt:latest</code>
-      then <code>apptainer run --nv -B /path/to/data:/data scfm-scgpt.sif</code>.</div>
+      <code>apptainer pull scfm-geneformer.sif docker://ghcr.io/fpera0248/scfm-geneformer:latest</code>
+      then <code>apptainer run --nv -B "$PWD/data":/data scfm-geneformer.sif reproduce geneformer aida ethnicity</code>.
+      Full guide in <a href="https://github.com/fpera0248/scfm-bias-asi2026/blob/main/CONTAINER.md">CONTAINER.md</a>.</div>
   </div>
 </section>
 
