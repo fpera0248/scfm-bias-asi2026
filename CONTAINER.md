@@ -1,39 +1,72 @@
-# Container: reproduce on your own GPU
+# Container: reproduce our results, turnkey
 
-The models are published as **four public Docker images, one per model**. Anyone with
-their own NVIDIA GPU can pull the one they want, mount their own `.h5ad` data, and run —
-no build step, no access to any HPC cluster.
+Everything runs from a prebuilt container — no environment setup, no path editing. Pull
+an image and run one command per workflow:
 
-| Image | Model | Approx size |
-|-------|-------|-------------|
-| `ghcr.io/fpera0248/scfm-scfoundation` | scFoundation embedding | ~7 GB |
-| `ghcr.io/fpera0248/scfm-geneformer`   | Geneformer embedding   | ~7 GB |
-| `ghcr.io/fpera0248/scfm-scgpt`        | scGPT embedding        | ~6 GB |
-| `ghcr.io/fpera0248/scfm-scdesign3`    | scDesign3 augmentation (CPU) | ~3 GB |
+```
+reproduce <model> <cohort> <demographic>
+```
 
-## What a user needs
+`reproduce` downloads the cohort from CZ CELLxGENE, wires the baked model checkpoint into
+the paths the scripts expect, and runs the full chain (extract → scDesign3 augment → embed
+→ benchmark → all downstream metrics/figures), writing outputs under `/data`.
 
-- **Docker** + **NVIDIA Container Toolkit** (`nvidia-container-toolkit`) on their machine.
+## Images
+
+Each image bundles its model env **and** scDesign3 (so it runs a full workflow — including
+step0b augmentation — on its own). Pick the model you want, or the all-in-one.
+
+| Image | Contents | Use for |
+|-------|----------|---------|
+| `ghcr.io/fpera0248/scfm-scfoundation` | scFoundation + scDesign3 | `reproduce scfoundation …` |
+| `ghcr.io/fpera0248/scfm-geneformer`   | Geneformer + scDesign3   | `reproduce geneformer …` |
+| `ghcr.io/fpera0248/scfm-scgpt`        | scGPT + scDesign3        | `reproduce scgpt …` |
+| `ghcr.io/fpera0248/scfm-all`          | all three + scDesign3    | any workflow (largest) |
+
+## What you need
+
+- **Docker** + **NVIDIA Container Toolkit**, or **Apptainer** on HPC.
 - **An NVIDIA GPU + driver ≥ 520** (images are CUDA 11.8; the driver is the only host-side
-  CUDA piece). `scfm-scdesign3` is CPU-only and needs no GPU.
-- Their own `.h5ad` (see README "Input format").
+  CUDA piece). Only the embedding step uses the GPU; augmentation + downstream are CPU.
+- Free space for the image + the cohort download (AIDA is ~14 GB).
 
-## Run one
+## Reproduce a workflow
 
 ```
-docker pull ghcr.io/fpera0248/scfm-scgpt:latest
-docker run --gpus all -it -v /path/to/your/data:/data \
-    ghcr.io/fpera0248/scfm-scgpt:latest
+docker pull ghcr.io/fpera0248/scfm-geneformer:latest
+docker run --gpus all -v "$PWD/data":/data \
+    ghcr.io/fpera0248/scfm-geneformer:latest \
+    reproduce geneformer aida ethnicity
+```
+- `<model>` — `scfoundation` | `geneformer` | `scgpt`
+- `<cohort>` — `ild` | `crc` | `aida`
+- `<demographic>` — `ethnicity` | `sex` | `age`  *(AIDA & CRC are sex-balanced — no `sex`)*
 
-# inside the container, run a stage in its env:
-conda run -n scgpt310 python step2a_embed_scgpt_ethnicity.py
+On HPC with Apptainer:
+```
+apptainer pull scfm-geneformer.sif docker://ghcr.io/fpera0248/scfm-geneformer:latest
+apptainer run --nv -B "$PWD/data":/data scfm-geneformer.sif reproduce geneformer aida ethnicity
 ```
 
-On HPC (no Docker) the same images run under Apptainer:
-```
-apptainer pull scfm-scgpt.sif docker://ghcr.io/fpera0248/scfm-scgpt:latest
-apptainer run --nv -B /path/to/your/data:/data scfm-scgpt.sif
-```
+## What's turnkey vs. what needs new code
+
+**Turnkey — the paper's nine model×cohort combinations.** `reproduce <model> <cohort> <demographic>`
+runs any of them end to end with nothing to edit.
+
+**Needs new code — this is a reproduction harness for these 3 datasets and 3 models, not a
+general plug-in framework:**
+- A **new dataset** needs its own `step0a` extractor (its `obs` schema, raw-count location,
+  and validation split are dataset-specific), a workflow, and a driver-manifest entry.
+- A **new model** needs its own conda env and `step2a` embedding call (each model tokenizes
+  and loads differently), plus checkpoint wiring.
+- The **downstream** stages (iLISI, classification, learning curves) *are* model- and
+  dataset-agnostic — they run on embeddings + labels — so those generalize. See the README's
+  "Auditing a new foundation model".
+
+---
+
+*The sections below are for running stages by hand or bringing your own data — you don't
+need them if you're using `reproduce`.*
 
 ## Bring your own data
 

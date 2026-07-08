@@ -8,9 +8,31 @@ Cohorts: interstitial lung disease (ILD, ethnicity imbalance 127:1), colorectal 
 
 This repo holds the pipeline code and the pinned conda environment specs for the three models plus the scDesign3 augmentation step. It does not host the datasets or the model weights, which each carry their own license and access terms. Reproducing the numbers needs a Linux machine with an NVIDIA GPU, the three datasets, and the three model weight sets.
 
-## Start here
+## Reproduce our results (recommended path)
 
-This repo serves two uses. To reproduce every number in the paper, you need all 24 workflows, since each one corresponds to a specific reported result. To learn how the pipeline works and adapt it to your own data, follow one workflow end to end.
+The turnkey way to recreate our numbers is the **prebuilt container** — no environment setup, no path editing, one command per workflow:
+
+```
+# all-in-one image (every model + scDesign3); per-model images (scfm-scfoundation, …) also work
+docker pull ghcr.io/fpera0248/scfm-all:latest
+docker run --gpus all -v "$PWD/data":/data \
+    ghcr.io/fpera0248/scfm-all:latest \
+    reproduce <model> <cohort> <demographic>
+```
+
+- `<model>` — `scfoundation` | `geneformer` | `scgpt`
+- `<cohort>` — `ild` | `crc` | `aida`
+- `<demographic>` — `ethnicity` | `sex` | `age`  *(AIDA and CRC are sex-balanced, so no `sex`)*
+
+`reproduce` downloads the cohort from CZ CELLxGENE, wires the baked model checkpoint into the paths the scripts expect, and runs the full chain (extract → scDesign3 augment → embed → benchmark → downstream), writing outputs and figures under `/data`. On HPC, use Apptainer: `apptainer run --nv -B /your/data:/data <image>.sif reproduce <model> <cohort> <demographic>`.
+
+That one command reproduces any of the **nine model×cohort combinations** in the paper. **Full details — image list, GPU vs. CPU, and the boundary of what's turnkey vs. what needs new code — are in [CONTAINER.md](CONTAINER.md).**
+
+Everything below is for **understanding the method or adapting it to your own data/models** — you do not need it to reproduce our results.
+
+## Understanding the pipeline (and adapting it)
+
+To learn how the pipeline works, or to run it by hand and adapt it, follow one workflow end to end.
 
 The reference workflow is `scfoundation/augmentedv4/ethnicity_scfoundation_workflow`. It runs scFoundation on the ILD cohort along the ethnicity axis, the main-text setup. Read "The pipeline, stage by stage" below, then open that folder and read its `step*.py` scripts in the order listed under Running a workflow. Every stage of the analysis lives there.
 
@@ -127,9 +149,9 @@ Two rules the pipeline depends on:
 
 Each model expects its own gene panel and tokenization. Preprocess your `.h5ad` to the model's expected input before the embedding stage, or the model will not produce valid representations.
 
-## Running a workflow
+## Running a workflow by hand (manual / adapting)
 
-Run the `step*.py` scripts in numerical order from inside a workflow folder. The sequence:
+*You only need this to adapt the pipeline or run it outside the container — to reproduce our results, use the `reproduce` command above.* Run the `step*.py` scripts in numerical order from inside a workflow folder. The sequence:
 
 - `step0a`: extract raw counts. Present only in age workflows; the other axes reuse its output.
 - `step0b`: scDesign3 synthetic generation, written in R, run as stages 1 through 3.
