@@ -32,16 +32,17 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 WORKDIR /opt/scfm
 COPY . /opt/scfm
 
-# Build just this model's env (from the fully pinned spec), then fetch just its weights.
-RUN bash install.sh --full "${ENV_NAME}"
+# Build this model's env PLUS scdesign3_env (step0b augmentation) so the image can run
+# a full workflow start-to-finish on its own, then fetch this model's weights.
+RUN bash install.sh --full "${ENV_NAME}" scdesign3_env
 RUN bash fetch_weights.sh "${MODEL}" || echo "WARN: weights step incomplete for ${MODEL}; see CONTAINER.md."
 
-# Mount your data at /data and point each step script's BASE at /data
-# (the scripts hardcode an absolute input path — see README "Running a workflow").
-# No cluster-specific paths are baked into the image.
+# Turnkey entrypoint: `reproduce <model> <cohort> <demographic>` on PATH.
+# The driver wires baked weights to the /data paths scripts expect and runs the chain.
+RUN chmod +x /opt/scfm/reproduce.sh && ln -sf /opt/scfm/reproduce.sh /usr/local/bin/reproduce
 RUN mkdir -p /data
 
 LABEL org.opencontainers.image.source="https://github.com/fpera0248/scfm-bias-asi2026" \
-      description="Reproducible env (${MODEL}) for Demographic Bias in Single-Cell Foundation Models (ACM-BCB ASI 2026)"
+      description="Reproducible env (${MODEL} + scdesign3) for Demographic Bias in Single-Cell Foundation Models (ACM-BCB ASI 2026)"
 
 CMD ["/bin/bash"]

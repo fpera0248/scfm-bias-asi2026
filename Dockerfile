@@ -38,9 +38,9 @@ RUN bash install.sh --full
 # if unset the build still succeeds and scGPT weights can be added at run time.
 RUN bash fetch_weights.sh || echo "WARN: fetch_weights.sh incomplete; see CONTAINER.md."
 
-# Mount your data at /data and set each step script's BASE to /data
-# (the scripts hardcode an absolute input path — see README "Running a workflow").
-# No cluster-specific paths are baked into the image.
+# Turnkey entrypoint: `reproduce <model> <cohort> <demographic>` on PATH — this all-in-one
+# image has every env + all model weights, so it can run any of the workflows.
+RUN chmod +x /opt/scfm/reproduce.sh && ln -sf /opt/scfm/reproduce.sh /usr/local/bin/reproduce
 RUN mkdir -p /data
 
 CMD ["/bin/bash"]
