@@ -98,8 +98,36 @@ runstep(){
 
 # step0a (extract raw counts) — present on ILD/AIDA, absent on CRC (skips cleanly)
 runstep "STEP 0a extract"    "$ENV"           python  "step0a*extract_raw_counts*.py"
-# step0b scDesign3 augmentation (R, CPU) — the *_augmentation.R is the entrypoint
-runstep "STEP 0b scdesign3"  scdesign3_env    Rscript "step0b_scdesign3_*augmentation*.R"
+
+# step0b scDesign3 augmentation. scDesign3 is model-agnostic and runs once per
+# (cohort, demographic); some model workflows (e.g. Geneformer/scGPT on AIDA) don't
+# carry their own augmentation .R and instead embed the shared conditions. If this
+# workflow has the .R, run it in place; otherwise run the canonical scFoundation
+# augmentation and copy its (identically-named) condition files in.
+if ls "$SRC_WF"/step0b_scdesign3_*augmentation*.R >/dev/null 2>&1; then
+  runstep "STEP 0b scdesign3" scdesign3_env Rscript "step0b_scdesign3_*augmentation*.R"
+else
+  say "STEP 0b scdesign3 (shared — running canonical scFoundation augmentation)"
+  case "$COHORT" in
+    ild)  AUGREL="scfoundation/augmentedv4/${DEMO}_scfoundation_workflow" ;;
+    crc)  AUGREL="scfoundation/augmented_CRC/${DEMO}_scfoundation_workflow" ;;
+    aida) AUGREL="scfoundation/augmented_AIDA/${DEMO}_scfoundation_workflow" ;;
+  esac
+  AUGSRC="$SCFM_HOME/$AUGREL"; AUGWORK="$DATA_ROOT/$AUGREL"
+  [ -d "$AUGSRC" ] || die "no canonical augmentation source: $AUGREL"
+  mkdir -p "$AUGWORK"
+  ln -sf "$WORK/$DATA_NAME" "$AUGWORK/$DATA_NAME"        # share the raw object
+  a0a="$(ls "$AUGSRC"/step0a*extract_raw_counts*.py 2>/dev/null | head -1 || true)"
+  a0b="$(ls "$AUGSRC"/step0b_scdesign3_*augmentation*.R 2>/dev/null | head -1 || true)"
+  [ -n "$a0b" ] || die "canonical source has no augmentation .R: $AUGREL"
+  [ -n "$a0a" ] && { echo ">>> (canonical) $(basename "$a0a")"; ( cd "$AUGWORK" && conda run -n "$ENV" python "$a0a" ) || die "canonical step0a FAILED"; }
+  echo ">>> (canonical) $(basename "$a0b")"
+  ( cd "$AUGWORK" && conda run -n scdesign3_env Rscript "$a0b" ) || die "canonical augmentation FAILED"
+  echo ">>> copying shared *_Pilot_* conditions into $WORK"
+  cp "$AUGWORK"/*_Pilot_*.h5ad "$WORK"/ 2>/dev/null || die "no *_Pilot_* conditions produced"
+  echo ">>> STEP 0b scdesign3 (shared) OK"
+fi
+
 # step2a embed (GPU)
 runstep "STEP 2a embed"      "$ENV"           python  "step2a*.py" 1
 # downstream (CPU)
