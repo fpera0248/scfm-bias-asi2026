@@ -6,147 +6,373 @@
 <title>Demographic Bias in Single-Cell Foundation Models</title>
 <style>
   :root{
-    --ink:#1a2230; --muted:#5b6676; --line:#e4e8ef; --bg:#f7f9fc;
+    --ink:#16202e; --muted:#5b6676; --line:#e4e8ef; --bg:#f7f9fc; --card:#fff;
     --accent:#2f7d84; --accent2:#3b4a8c; --code:#0f1626; --codeink:#e7edf6;
+    --prop:#9aa7b8; --ba:#2f7d84; --ups:#c98a3b; --down:#7d5ba6;
   }
   *{box-sizing:border-box}
-  body{margin:0;font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  body{margin:0;font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
     color:var(--ink);background:var(--bg);-webkit-font-smoothing:antialiased}
-  a{color:var(--accent);text-decoration:none}
-  a:hover{text-decoration:underline}
-  .wrap{max-width:860px;margin:0 auto;padding:0 20px}
-  header{background:linear-gradient(135deg,var(--accent2),var(--accent));color:#fff;padding:56px 0 40px}
-  header .wrap{max-width:860px}
-  .eyebrow{text-transform:uppercase;letter-spacing:.08em;font-size:12.5px;opacity:.85;margin:0 0 10px}
-  h1{margin:0 0 12px;font-size:32px;line-height:1.25;font-weight:700}
-  .sub{font-size:17px;opacity:.95;margin:0 0 22px;max-width:620px}
+  a{color:var(--accent)} a:hover{text-decoration:underline}
+  .wrap{max-width:900px;margin:0 auto;padding:0 22px}
+  header{background:linear-gradient(135deg,var(--accent2),var(--accent));color:#fff;padding:54px 0 42px}
+  .eyebrow{text-transform:uppercase;letter-spacing:.09em;font-size:12.5px;opacity:.85;margin:0 0 10px}
+  h1{margin:0 0 14px;font-size:33px;line-height:1.24;font-weight:750}
+  .authors{font-size:15px;opacity:.96;margin:0 0 4px}
+  .affil{font-size:13px;opacity:.8;margin:0 0 20px}
   .links{display:flex;flex-wrap:wrap;gap:10px}
   .btn{display:inline-block;padding:9px 15px;border-radius:8px;font-size:14px;font-weight:600;
     background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.35)}
-  .btn:hover{background:rgba(255,255,255,.25);text-decoration:none}
   .btn.solid{background:#fff;color:var(--accent2);border-color:#fff}
-  section{padding:38px 0;border-bottom:1px solid var(--line)}
-  h2{font-size:22px;margin:0 0 14px}
-  h3{font-size:16px;margin:0 0 6px}
-  p{margin:0 0 14px;color:var(--ink)}
-  .muted{color:var(--muted)}
+  .btn:hover{background:rgba(255,255,255,.28);text-decoration:none}
+  section{padding:34px 0;border-bottom:1px solid var(--line)}
+  h2{font-size:23px;margin:0 0 6px} h2 .num{color:var(--accent);font-weight:700;margin-right:8px}
+  h3{font-size:16.5px;margin:22px 0 6px}
+  p{margin:0 0 14px} .muted{color:var(--muted)}
+  .lead{font-size:17px}
+  figure{margin:20px 0;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px}
+  figure img{max-width:100%;display:block;margin:0 auto;border-radius:6px}
+  figcaption{font-size:13px;color:var(--muted);margin-top:10px;line-height:1.5}
+  figcaption b{color:var(--ink)}
+  .tbl-wrap{overflow-x:auto;margin:14px 0}
+  table{border-collapse:collapse;width:100%;font-size:13.5px;background:var(--card)}
+  th,td{padding:7px 10px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}
+  th{background:#eef2f7;font-weight:650} td.n{text-align:right;font-variant-numeric:tabular-nums}
+  td.best{font-weight:700;color:var(--accent2)}
+  caption{caption-side:top;text-align:left;font-size:12.5px;color:var(--muted);padding:0 0 8px}
   pre{background:var(--code);color:var(--codeink);padding:14px 16px;border-radius:10px;overflow-x:auto;
     font:13.5px/1.55 "SFMono-Regular",Menlo,Consolas,monospace;margin:0 0 14px}
-  code{font:13.5px/1.5 "SFMono-Regular",Menlo,Consolas,monospace}
-  p code,li code{background:#eceff5;padding:1px 6px;border-radius:5px;font-size:13px}
-  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px;margin:6px 0 4px}
-  .card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:16px}
-  .card h3{display:flex;align-items:center;gap:8px}
-  .tag{font-size:11px;font-weight:700;color:#fff;background:var(--accent);border-radius:20px;padding:2px 9px}
-  .tag.cpu{background:var(--muted)}
-  .card p{font-size:13.5px;margin:0 0 10px;color:var(--muted)}
-  .card pre{font-size:12px;padding:10px 12px;margin:0}
-  ul{margin:0 0 14px;padding-left:20px}
-  li{margin:0 0 7px}
-  .note{background:#fff;border-left:3px solid var(--accent);border-radius:0 8px 8px 0;
-    padding:12px 16px;margin:0 0 14px;font-size:14.5px}
-  footer{padding:30px 0 60px;color:var(--muted);font-size:13.5px}
-  .cohorts{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
-  .cohort{background:#fff;border:1px solid var(--line);border-radius:10px;padding:13px 15px}
-  .cohort b{display:block;margin-bottom:3px}
-  .cohort span{font-size:13px;color:var(--muted)}
+  code{font:13px/1.5 "SFMono-Regular",Menlo,Consolas,monospace}
+  p code,li code,td code{background:#eceff5;padding:1px 6px;border-radius:5px}
+  .repro{background:linear-gradient(135deg,#eef3ff,#eafcff);border:1px solid #cfe0ea;border-radius:14px;padding:20px 22px}
+  .repro h2{margin-top:0}
+  .qbox{background:#eef7f8;border-left:4px solid var(--accent);border-radius:0 10px 10px 0;padding:12px 16px;margin:16px 0}
+  .qbox b{color:var(--accent2)}
+  ul{margin:0 0 14px;padding-left:20px} li{margin:0 0 8px}
+  .grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin:14px 0}
+  .kv{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:13px 15px}
+  .kv b{display:block;font-size:13px;color:var(--muted);font-weight:600;margin-bottom:3px}
+  .legend{display:flex;flex-wrap:wrap;gap:14px;font-size:12.5px;margin:6px 0 4px}
+  .legend span{display:inline-flex;align-items:center;gap:6px}
+  .sw{width:12px;height:12px;border-radius:3px;display:inline-block}
+  footer{padding:28px 0 60px;color:var(--muted);font-size:13px}
+  .chart{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;margin:16px 0}
+  .chart h3{margin:0 0 4px}
 </style>
 </head>
 <body>
 
 <header>
   <div class="wrap">
-    <p class="eyebrow">ACM-BCB · ASI 2026 Workshop</p>
-    <h1>Demographic Bias in Single-Cell Foundation Models</h1>
-    <p class="sub">Evaluation and mitigation across models and cohorts — reproduce every
-      result on your own GPU with prebuilt containers.</p>
+    <p class="eyebrow">ACM-BCB · ASI 2026 Workshop · Rende, Italy</p>
+    <h1>Demographic Bias in Single-Cell Foundation Models: Evaluation and Mitigation Across Models and Cohorts</h1>
+    <p class="authors">Fernando Peralta Castro · Jiaqi Zhang · Ritambhara Singh</p>
+    <p class="affil">Moravian University · Brown University</p>
     <div class="links">
-      <a class="btn solid" href="https://github.com/fpera0248/scfm-bias-asi2026">Code on GitHub</a>
+      <a class="btn solid" href="#reproduce">Reproduce it</a>
+      <a class="btn" href="https://github.com/fpera0248/scfm-bias-asi2026">Code on GitHub</a>
       <a class="btn" href="https://github.com/fpera0248/scfm-bias-asi2026/blob/main/CONTAINER.md">Container guide</a>
-      <a class="btn" href="https://github.com/fpera0248/scfm-bias-asi2026/blob/main/README.md">Full README</a>
     </div>
   </div>
 </header>
 
+<!-- ABSTRACT -->
 <section>
   <div class="wrap">
-    <h2>What this is</h2>
-    <p>We measure how well <b>scFoundation</b>, <b>Geneformer</b>, and <b>scGPT</b> recover
-      cell types for underrepresented demographic groups, and test scDesign3 synthetic
-      augmentation as a mitigation. Three cohorts (interstitial lung disease, colorectal
-      cancer, and the Asian Immune Diversity Atlas), three demographic axes (ethnicity,
-      sex, age), measured with iLISI and worst-group cell-type macro-F1.</p>
-    <p class="muted">This page points you at the code and the ready-to-run containers.
-      The datasets and model weights keep their own licenses and are downloaded separately.</p>
+    <h2>Abstract</h2>
+    <p class="lead">Single-cell foundation models (scFMs) are increasingly used in biomedical research, yet biases can enter at every stage of the pipeline — from which donors are sampled, to how cohorts are composed, to how models amplify existing imbalances. Training datasets are often strongly imbalanced across demographic variables such as sex, age, and ethnicity, and these imbalances propagate into model representations, creating <b>demographic representation gaps</b> where minority groups are overlooked downstream.</p>
+    <p>We ask three questions: <b>(Q1)</b> Does demographic imbalance affect model learning? <b>(Q2)</b> Which foundation model is most robust to it? <b>(Q3)</b> Which rebalancing strategy most reliably restores equity? We evaluate three foundation models (scFoundation, Geneformer, scGPT) on three cohorts spanning a wide range of imbalance — interstitial lung disease (ILD), a colorectal cancer atlas (CRC), and the Asian Immune Diversity Atlas (AIDA) — and compare four rebalancing strategies (proportional, downsampling, upsampling, and scDesign3 realistic augmentation) against a Harmony baseline. All models exhibit poor integration on proportional data, with representation gaps scaling with imbalance; we give practical guidelines for choosing rebalancing strategies in real-world settings.</p>
   </div>
 </section>
 
-<section>
+<!-- REPRODUCE -->
+<section id="reproduce">
   <div class="wrap">
-    <h2>Reproduce on your own GPU</h2>
-    <p>Pull one prebuilt image and run a single command — it downloads the cohort, wires up
-      the baked model weights, and runs the whole pipeline (extract → augment → embed →
-      benchmark → figures). No environment setup, no path editing.</p>
-
-    <pre>docker pull ghcr.io/fpera0248/scfm-geneformer:latest
+    <div class="repro">
+      <h2>Reproduce our results — one command</h2>
+      <p>Every result here is reproducible from a prebuilt container: no environment setup, no path editing. Pull an image and run <code>reproduce &lt;model&gt; &lt;cohort&gt; &lt;demographic&gt;</code> — it downloads the cohort, wires in the baked model weights, and runs the whole pipeline (extract → augment → embed → benchmark → figures).</p>
+      <pre>docker pull ghcr.io/fpera0248/scfm-geneformer:latest
 docker run --gpus all -v "$PWD/data":/data \
     ghcr.io/fpera0248/scfm-geneformer:latest \
     reproduce geneformer aida ethnicity</pre>
-
-    <p style="margin-top:6px"><b>reproduce &lt;model&gt; &lt;cohort&gt; &lt;demographic&gt;</b></p>
-    <div class="grid">
-      <div class="card"><h3>model</h3><p><code>scfoundation</code> · <code>geneformer</code> · <code>scgpt</code></p></div>
-      <div class="card"><h3>cohort</h3><p><code>ild</code> · <code>crc</code> · <code>aida</code></p></div>
-      <div class="card"><h3>demographic</h3><p><code>ethnicity</code> · <code>sex</code> · <code>age</code><br><span style="font-size:12px;color:var(--muted)">AIDA &amp; CRC are sex-balanced (no sex)</span></p></div>
+      <div class="grid3">
+        <div class="kv"><b>model</b><code>scfoundation</code> · <code>geneformer</code> · <code>scgpt</code></div>
+        <div class="kv"><b>cohort</b><code>ild</code> · <code>crc</code> · <code>aida</code></div>
+        <div class="kv"><b>demographic</b><code>ethnicity</code> · <code>sex</code> · <code>age</code></div>
+      </div>
+      <p class="muted">One command reproduces any of the nine model×cohort combinations. On HPC, use Apptainer (<code>apptainer run --nv …</code>). Full details in <a href="https://github.com/fpera0248/scfm-bias-asi2026/blob/main/CONTAINER.md">CONTAINER.md</a>.</p>
     </div>
-
-    <p style="margin-top:14px">Images: per-model (<code>scfm-scfoundation</code>, <code>scfm-geneformer</code>,
-      <code>scfm-scgpt</code> — each bundles scDesign3) or the all-in-one <code>scfm-all</code>.
-      That one command reproduces any of the paper's nine model×cohort combinations.</p>
-
-    <div class="note">On HPC without Docker, the same images run under Apptainer:
-      <code>apptainer pull scfm-geneformer.sif docker://ghcr.io/fpera0248/scfm-geneformer:latest</code>
-      then <code>apptainer run --nv -B "$PWD/data":/data scfm-geneformer.sif reproduce geneformer aida ethnicity</code>.
-      Full guide in <a href="https://github.com/fpera0248/scfm-bias-asi2026/blob/main/CONTAINER.md">CONTAINER.md</a>.</div>
   </div>
 </section>
 
+<!-- INTRODUCTION -->
 <section>
   <div class="wrap">
-    <h2>What you need</h2>
+    <h2>Introduction</h2>
+    <p>Single-cell foundation models learn universal representations of cellular states from millions of transcriptomic profiles. Because they are deployed directly as <b>frozen encoders</b> without retraining, any pattern encoded during pretraining propagates unchanged into downstream representations — making the quality and composition of their training data critical.</p>
+    <p>The datasets these models are trained on reflect structural inequities that accumulate along the whole analysis pipeline: societal biases determine which populations reach clinical care, cohort biases oversample certain groups, and models trained on imbalanced data prioritize the majority while overlooking diversity within others. In healthcare this has produced algorithms that systematically underestimate the needs of minority patients. We extend the machine-learning notion of a "generalization gap" to single-cell genomics, defining a <b>demographic representation gap</b> as the quantifiable difference in a model's internal representation quality across demographic groups.</p>
+    <div class="qbox"><b>Q1.</b> Does demographic imbalance affect model learning across architectures?<br><b>Q2.</b> Which scFM is most robust to that imbalance?<br><b>Q3.</b> Which rebalancing strategy most reliably restores equity across models and cohorts?</div>
+    <p>We demonstrate a structured audit framework on three foundation models and three cohorts spanning a range of imbalance regimes: ILD (European American to Native American, <b>127:1</b>), CRC (European American to African American, <b>17:1</b>), and AIDA, a near-balanced healthy reference (Korean to Indian, <b>8.4:1</b>). We incorporate scDesign3 to generate covariate-conditioned synthetic cells that expand underrepresented cell-type × demographic combinations directly in gene-expression space, and compare it against proportional sampling, naive upsampling, and downsampling.</p>
+    <figure>
+      <img src="images/ethnicity/figure0_demographic_imbalance.png" alt="Demographic imbalance across cohorts">
+      <figcaption><b>Demographic imbalance across the three cohorts.</b> Ethnicity composition spans severe (ILD, 127:1) to near-balanced (AIDA, 8.4:1), giving a controlled range of imbalance regimes.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- HOW IT WORKS / PIPELINE -->
+<section>
+  <div class="wrap">
+    <h2>How the audit works</h2>
+    <p>Every model × cohort × demographic combination runs the same pipeline. From the raw cohort we build four rebalancing conditions, embed each through a frozen foundation model, and evaluate integration, cell-type recovery, and generalization.</p>
+    <div class="chart">
+      <svg viewBox="0 0 860 250" width="100%" role="img" aria-label="Pipeline diagram">
+        <defs>
+          <marker id="arw" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto">
+            <path d="M0,0 L7,3 L0,6 Z" fill="#5b6676"/>
+          </marker>
+          <style>
+            .bx{fill:#fff;stroke:#c7d2df;stroke-width:1.5;rx:9}
+            .lbl{font:600 12.5px -apple-system,Segoe UI,sans-serif;fill:#16202e}
+            .sub{font:11px -apple-system,Segoe UI,sans-serif;fill:#5b6676}
+            .fl{stroke:#5b6676;stroke-width:1.6;fill:none}
+            .stg{font:700 10px -apple-system;fill:#2f7d84;letter-spacing:.05em}
+          </style>
+        </defs>
+        <!-- raw -->
+        <rect class="bx" x="8" y="95" width="120" height="60" rx="9"/>
+        <text class="stg" x="16" y="88">STEP 0a</text>
+        <text class="lbl" x="18" y="122">Raw cohort</text>
+        <text class="sub" x="18" y="140">extract counts</text>
+        <line class="fl" x1="128" y1="125" x2="168" y2="125" marker-end="url(#arw)"/>
+        <!-- augment / 4 conditions -->
+        <rect class="bx" x="172" y="30" width="150" height="190" rx="9"/>
+        <text class="stg" x="180" y="23">STEP 0b · scDesign3</text>
+        <text class="lbl" x="182" y="52">4 conditions</text>
+        <text class="sub" x="182" y="74">• Proportional</text>
+        <text class="sub" x="182" y="94">• BalancedAugmented</text>
+        <text class="sub" x="182" y="114">• BalancedUpsampled</text>
+        <text class="sub" x="182" y="134">• Downsampled</text>
+        <text class="sub" x="182" y="166">synthetic minority</text>
+        <text class="sub" x="182" y="182">cells in expression</text>
+        <text class="sub" x="182" y="198">space (copula)</text>
+        <line class="fl" x1="322" y1="125" x2="362" y2="125" marker-end="url(#arw)"/>
+        <!-- frozen embed -->
+        <rect class="bx" x="366" y="95" width="140" height="60" rx="9"/>
+        <text class="stg" x="374" y="88">STEP 2a · GPU</text>
+        <text class="lbl" x="376" y="120">Frozen scFM</text>
+        <text class="sub" x="376" y="138">scFoundation / Gene-</text>
+        <text class="sub" x="376" y="152">former / scGPT</text>
+        <line class="fl" x1="506" y1="125" x2="546" y2="125" marker-end="url(#arw)"/>
+        <!-- integration -->
+        <rect class="bx" x="550" y="30" width="140" height="80" rx="9"/>
+        <text class="stg" x="558" y="23">STEP 3 · integration</text>
+        <text class="lbl" x="560" y="58">iLISI mixing</text>
+        <text class="sub" x="560" y="76">NMI · ARI · cLISI</text>
+        <text class="sub" x="560" y="94">vs. Harmony</text>
+        <!-- downstream -->
+        <rect class="bx" x="550" y="138" width="140" height="82" rx="9"/>
+        <text class="stg" x="558" y="131">STEP 4–9 · CPU</text>
+        <text class="lbl" x="560" y="166">Worst-group F1</text>
+        <text class="sub" x="560" y="184">learning curves,</text>
+        <text class="sub" x="560" y="200">disease, figures</text>
+        <line class="fl" x1="690" y1="70" x2="730" y2="70" marker-end="url(#arw)"/>
+        <line class="fl" x1="690" y1="179" x2="730" y2="179" marker-end="url(#arw)"/>
+        <rect class="bx" x="734" y="95" width="118" height="60" rx="9" style="fill:#eef7f8"/>
+        <text class="lbl" x="744" y="120">Equity</text>
+        <text class="sub" x="744" y="138">diagnostics</text>
+      </svg>
+    </div>
+    <div class="legend">
+      <span><span class="sw" style="background:var(--prop)"></span>Proportional (native imbalance)</span>
+      <span><span class="sw" style="background:var(--ba)"></span>BalancedAugmented (scDesign3)</span>
+      <span><span class="sw" style="background:var(--ups)"></span>BalancedUpsampled (duplicate)</span>
+      <span><span class="sw" style="background:var(--down)"></span>Downsampled (undersample)</span>
+    </div>
+    <p class="muted">Integration is scored with the scIB benchmark; <b>iLISI</b> (rescaled to [0,1]) is the primary metric — 1.0 is perfect demographic mixing in each cell's neighborhood, 0.0 complete segregation. Downstream, we predict cell type on frozen embeddings and report worst-group macro-F1 on a shared external validation set.</p>
+  </div>
+</section>
+
+<!-- Q1 -->
+<section>
+  <div class="wrap">
+    <h2><span class="num">Q1</span>Does data imbalance affect model learning?</h2>
+    <p>Yes — and it is a <b>data-composition problem common to all three architectures</b>, not a property of any one model. Baseline iLISI on the proportional pilots tracks the imbalance ratio of the source cohort across every model tested: as the cohort becomes less imbalanced (ILD → CRC → AIDA), baseline mixing rises in lockstep. Near-zero principal-component-regression scores confirm no model <i>amplifies</i> the demographic signal beyond what PCA already captures — the segregation comes from the data, and the encoder transmits it.</p>
+
+    <div class="chart">
+      <h3>Proportional iLISI rises as imbalance eases</h3>
+      <p class="muted" style="margin:0 0 10px">Baseline (proportional) iLISI by cohort, per model. Higher = better demographic mixing. The ordering tracks imbalance (ILD 127:1 → CRC 17:1 → AIDA 8.4:1) regardless of architecture.</p>
+      <svg viewBox="0 0 820 240" width="100%" role="img" aria-label="Proportional iLISI by cohort and model">
+        <style>
+          .ax{stroke:#c7d2df;stroke-width:1}
+          .gl{stroke:#eef2f7;stroke-width:1}
+          .t{font:11px -apple-system;fill:#5b6676}
+          .ct{font:600 12px -apple-system;fill:#16202e}
+          .v{font:600 10px -apple-system;fill:#16202e}
+        </style>
+        <!-- y grid 0..0.4 -->
+        <g>
+          <line class="ax" x1="60" y1="10" x2="60" y2="190"/>
+          <line class="ax" x1="60" y1="190" x2="800" y2="190"/>
+          <!-- gridlines at 0.1,0.2,0.3,0.4 (scale: 0.4 -> 180px tall) -->
+          <line class="gl" x1="60" y1="145" x2="800" y2="145"/><text class="t" x="30" y="149">0.1</text>
+          <line class="gl" x1="60" y1="100" x2="800" y2="100"/><text class="t" x="30" y="104">0.2</text>
+          <line class="gl" x1="60" y1="55"  x2="800" y2="55"/><text class="t" x="30" y="59">0.3</text>
+          <line class="gl" x1="60" y1="10"  x2="800" y2="10"/><text class="t" x="30" y="14">0.4</text>
+          <text class="t" x="34" y="193">0</text>
+        </g>
+        <!-- bars: 3 cohort groups, 3 models each. y = 190 - iLISI*450 -->
+        <!-- ILD group center ~180 -->
+        <g>
+          <rect x="110" y="165.7" width="34" height="24.3" fill="#2f7d84"/><text class="v" x="112" y="162">.054</text>
+          <rect x="148" y="176.0" width="34" height="14.0" fill="#3b4a8c"/><text class="v" x="150" y="172">.031</text>
+          <rect x="186" y="162.1" width="34" height="27.9" fill="#c98a3b"/><text class="v" x="188" y="158">.062</text>
+          <text class="ct" x="128" y="208">ILD (127:1)</text>
+        </g>
+        <!-- CRC center ~410 -->
+        <g>
+          <rect x="360" y="109.4" width="34" height="80.6" fill="#2f7d84"/><text class="v" x="362" y="105">.179</text>
+          <rect x="398" y="154.4" width="34" height="35.6" fill="#3b4a8c"/><text class="v" x="400" y="150">.079</text>
+          <rect x="436" y="144.1" width="34" height="45.9" fill="#c98a3b"/><text class="v" x="438" y="140">.102</text>
+          <text class="ct" x="382" y="208">CRC (17:1)</text>
+        </g>
+        <!-- AIDA center ~640 -->
+        <g>
+          <rect x="600" y="18.1"  width="34" height="171.9" fill="#2f7d84"/><text class="v" x="602" y="14">.382</text>
+          <rect x="638" y="105.8" width="34" height="84.2" fill="#3b4a8c"/><text class="v" x="640" y="101">.187</text>
+          <rect x="676" y="78.4"  width="34" height="111.6" fill="#c98a3b"/><text class="v" x="678" y="74">.248</text>
+          <text class="ct" x="614" y="208">AIDA (8.4:1)</text>
+        </g>
+      </svg>
+      <div class="legend">
+        <span><span class="sw" style="background:#2f7d84"></span>scFoundation</span>
+        <span><span class="sw" style="background:#3b4a8c"></span>Geneformer</span>
+        <span><span class="sw" style="background:#c98a3b"></span>scGPT</span>
+      </div>
+    </div>
+
+    <p><b>Augmentation lifts iLISI, most strongly where the embedding has empty regions to fill.</b> scDesign3 generates novel expression profiles that expression-aware encoders place at new coordinates: on scFoundation, BalancedAugmented lifts ILD ethnicity iLISI from 0.054 to 0.260 and CRC from 0.179 to 0.382. On AIDA, where baseline mixing is already high (0.382), augmentation adds little. Geneformer's rank-value encoding and scGPT's CLS-token aggregation map synthetic cells near existing ones, producing smaller iLISI gains.</p>
+
+    <figure>
+      <img src="images/ethnicity/figure1_ethnicity_umaps_3x4.png" alt="UMAP grid of ILD ethnicity embeddings">
+      <img src="images/ethnicity/figure_ild_legend.png" alt="Ethnicity legend" style="max-width:80%">
+      <figcaption><b>ILD ethnicity embeddings across the four strategies.</b> Rows: scFoundation, Geneformer, scGPT. Columns: Proportional, BalancedAugmented, BalancedUpsampled, Downsampled. Under augmentation, all five groups form clusters of comparable size because scDesign3 places synthetic cells in previously empty regions; upsampled panels stack duplicated cells at identical coordinates and resemble Proportional.</figcaption>
+    </figure>
+
+    <p><b>Downsampling produces the highest iLISI — for reasons that don't reflect genuine integration.</b> It reaches 0.640 on ILD scFoundation, but through two artifacts: neighborhoods so small (16–48 cells/group) that local mixing is trivial, and random undersampling that oversamples high-expression cells (mean library 7,363 vs 6,255, KS=0.189, p&lt;0.001). It also discards nearly all data (240 cells vs 398,735 available) and cannot scale.</p>
+
+    <div class="tbl-wrap">
+    <table>
+      <caption><b>Table — iLISI on the ethnicity axis.</b> Bold = highest per row. iLISI max ≈ 0.80 (5 groups) to 0.86 (7 groups).</caption>
+      <thead><tr><th>Cohort (imbalance)</th><th>Model</th><th class="n">Prop.</th><th class="n">Harmony</th><th class="n">BalAug</th><th class="n">Ups.</th><th class="n">Down.</th></tr></thead>
+      <tbody>
+        <tr><td>ILD eth. (127:1)</td><td>scFoundation</td><td class="n">0.054</td><td class="n">0.077</td><td class="n">0.260</td><td class="n">0.038</td><td class="n best">0.640</td></tr>
+        <tr><td></td><td>Geneformer</td><td class="n">0.031</td><td class="n">0.036</td><td class="n">0.055</td><td class="n">0.000</td><td class="n best">0.392</td></tr>
+        <tr><td></td><td>scGPT</td><td class="n">0.062</td><td class="n">0.056</td><td class="n">0.085</td><td class="n">0.004</td><td class="n best">0.468</td></tr>
+        <tr><td>CRC eth. (17:1)</td><td>scFoundation</td><td class="n">0.179</td><td class="n">0.091</td><td class="n">0.382</td><td class="n">0.265</td><td class="n best">0.766</td></tr>
+        <tr><td></td><td>Geneformer</td><td class="n">0.079</td><td class="n">0.087</td><td class="n">0.139</td><td class="n">0.076</td><td class="n best">0.545</td></tr>
+        <tr><td></td><td>scGPT</td><td class="n">0.102</td><td class="n">0.112</td><td class="n">0.168</td><td class="n">0.118</td><td class="n best">0.619</td></tr>
+        <tr><td>AIDA eth. (8.4:1)</td><td>scFoundation</td><td class="n">0.382</td><td class="n">0.368</td><td class="n best">0.390</td><td class="n">0.284</td><td class="n">0.376</td></tr>
+        <tr><td></td><td>Geneformer</td><td class="n">0.187</td><td class="n">0.402</td><td class="n">0.264</td><td class="n">0.156</td><td class="n best">0.407</td></tr>
+        <tr><td></td><td>scGPT</td><td class="n">0.248</td><td class="n">0.419</td><td class="n">0.303</td><td class="n">0.196</td><td class="n best">0.474</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <div class="qbox"><b>Q1 answer.</b> Demographic imbalance affects learning across all three architectures; baseline iLISI tracks the imbalance ratio regardless of model. Augmentation lifts iLISI substantially under severe imbalance and preserves real-cell distributions; downsampling's high scores are small-N and selection artifacts; upsampling matches the global label distribution but creates locally segregated neighborhoods.</p></div>
+  </div>
+</section>
+
+<!-- Q2 -->
+<section>
+  <div class="wrap">
+    <h2><span class="num">Q2</span>Which model is most robust to imbalance?</h2>
+    <p><b>Geneformer holds the highest worst-group cell-type macro-F1 on 5 of 6 cohort-axis combinations</b>, ranked on the proportional pilot (the setting that preserves natural imbalance and reveals intrinsic robustness). On ILD ethnicity, Geneformer reaches 0.732 (Hispanic or Latin) vs scGPT 0.695 and scFoundation 0.049 (Native American). <b>scFoundation is the weakest on every combination</b>, 0.08–0.67 below the next model.</p>
+    <p>The gap is large enough that <b>model choice dominates strategy choice</b>: switching scFoundation → Geneformer improves worst-group macro-F1 by 0.56–0.71 across the six combinations — more than any rebalancing strategy delivers within a single model. The same ranking holds when predicting disease status, so it is not specific to cell-type labels.</p>
+    <p>The mechanism is architectural: Geneformer encodes each cell as a <b>rank-ordered gene sequence</b>, and relative gene order is more stable across donors than absolute counts. scFoundation's read-depth-aware pretraining normalizes sequencing depth but not the demographic-covariate imbalance in its corpus.</p>
+    <div class="qbox"><b>Q2 answer.</b> Geneformer is the most equity-robust of the three (highest worst-group F1 on 5/6 combinations); scFoundation is weakest on every one. Model choice tends to dominate strategy choice for equity outcomes.</div>
+  </div>
+</section>
+
+<!-- Q3 -->
+<section>
+  <div class="wrap">
+    <h2><span class="num">Q3</span>Which rebalancing strategy restores equity?</h2>
+    <p><b>Augmentation is the only strategy that improves minority recovery without local segregation or whole-model collapse</b> — though the gain is modest and depends on the imbalance regime. On the ILD Native American minority (scFoundation), BalancedAugmented improves F1 from 0.049 to 0.073 with non-overlapping bootstrap CIs; on AIDA Indian (scGPT) point estimates rise from 0.169 to 0.244 but CIs overlap. Effects shrink toward noise as baseline minority representation improves.</p>
+
+    <figure>
+      <img src="images/ethnicity/figure2_learning_curves_2x3.png" alt="Learning curves">
+      <img src="images/ethnicity/figure2_learning_curves_legend.png" alt="Learning curve legend" style="max-width:80%">
+      <figcaption><b>Learning curves on ILD ethnicity</b> (columns: scFoundation, Geneformer, scGPT; rows: Random Forest, Logistic Regression). BalancedAugmented learns steadily; BalancedUpsampled shows phase-jump transitions rather than steady growth — the signature of memorization that the external-validation bootstrap corrects for. Downsampled is data-limited. The dynamic is consistent across all three encoders.</figcaption>
+    </figure>
+
+    <p><b>Downsampling helps minorities but collapses the overall model</b> (Geneformer ILD Native American falls 0.750 → 0.493 as every group is forced to 16–92 cells). <b>Upsampling is a memorization control</b>: its F1 tracks proportional closely, but the within-cell-type mixing diagnostic flags it — duplicated cells stack at identical coordinates and form ethnically homogeneous neighborhoods.</p>
+
+    <div class="tbl-wrap">
+    <table>
+      <caption><b>Table — per-group cell-type macro-F1 on the smallest minority</b> (point estimate; 95% bootstrap CI, 1,000 iterations). Bold = highest per row. BA = BalancedAugmented, BU = BalancedUpsampled, DS = Downsampled.</caption>
+      <thead><tr><th>Cohort / Group</th><th>Model</th><th class="n">Prop.</th><th class="n">BA</th><th class="n">BU</th><th class="n">DS</th></tr></thead>
+      <tbody>
+        <tr><td>ILD · Native American</td><td>scFoundation</td><td class="n">0.049</td><td class="n best">0.073</td><td class="n">0.061</td><td class="n">0.070</td></tr>
+        <tr><td></td><td>Geneformer</td><td class="n">0.750</td><td class="n best">0.808</td><td class="n">0.720</td><td class="n">0.493</td></tr>
+        <tr><td></td><td>scGPT</td><td class="n">0.695</td><td class="n best">0.712</td><td class="n">0.682</td><td class="n">0.450</td></tr>
+        <tr><td>CRC · African American</td><td>scFoundation</td><td class="n">0.206</td><td class="n">0.185</td><td class="n">0.227</td><td class="n best">0.268</td></tr>
+        <tr><td></td><td>Geneformer</td><td class="n">0.873</td><td class="n">0.775</td><td class="n">0.878</td><td class="n best">0.914</td></tr>
+        <tr><td></td><td>scGPT</td><td class="n">0.856</td><td class="n">0.850</td><td class="n best">0.879</td><td class="n">0.855</td></tr>
+        <tr><td>AIDA · Indian</td><td>scFoundation</td><td class="n">0.087</td><td class="n best">0.139</td><td class="n">0.105</td><td class="n">0.129</td></tr>
+        <tr><td></td><td>Geneformer</td><td class="n">0.301</td><td class="n">0.281</td><td class="n">0.241</td><td class="n best">0.359</td></tr>
+        <tr><td></td><td>scGPT</td><td class="n">0.169</td><td class="n">0.244</td><td class="n">0.190</td><td class="n best">0.251</td></tr>
+      </tbody>
+    </table>
+    </div>
+
+    <figure>
+      <img src="images/ethnicity/figure3_cross_model_barplot.png" alt="Cross-model worst-group F1 bar plot">
+      <img src="images/ethnicity/cross_model_legend.png" alt="Cross-model legend" style="max-width:70%">
+      <figcaption><b>Worst-group cell-type macro-F1</b> across cohorts, models, and rebalancing strategies (95% bootstrap CIs). BalancedAugmented sits at or above the Proportional baseline across most combinations, while never collapsing overall performance the way Downsampling does.</figcaption>
+    </figure>
+
+    <div class="qbox"><b>Q3 answer.</b> Augmentation gives a modest, statistically separable gain on the smallest minority under severe imbalance and is the only strategy that avoids local segregation (upsampling) or whole-model collapse (downsampling). Magnitude depends on the imbalance regime and the model.</div>
+  </div>
+</section>
+
+<!-- SYNTHETIC VALIDATION -->
+<section>
+  <div class="wrap">
+    <h2>Are the synthetic cells faithful?</h2>
+    <p>Kolmogorov–Smirnov tests on the top 100 HVGs per (group, cell type) show synthetic cells reproduce real-cell expression with high fidelity — the fraction of HVGs at p&lt;0.05 stays ≤8% (mean 0.6%). Classifiers on foundation-model embeddings can still separate synthetic from real (AUC≈1.0), reflecting scDesign3's parametric sampling (capture inefficiency, ambient RNA, count tails). Crucially, synthetic minority cells are <b>equally distinguishable from real cells in every group</b> — not preferentially similar to majority structure — so the technical signature is not majority-derived and does not invalidate the iLISI gains.</p>
+  </div>
+</section>
+
+<!-- DISCUSSION / GUIDANCE -->
+<section>
+  <div class="wrap">
+    <h2>Practical guidance</h2>
+    <p>Demographic bias in scFM embeddings is a <b>data-composition problem whose severity scales with source imbalance</b>. No single strategy dominates — match the intervention to the regime:</p>
     <ul>
-      <li><b>Docker</b> and the <b>NVIDIA Container Toolkit</b> on your machine.</li>
-      <li><b>An NVIDIA GPU + driver ≥ 520</b> — the images are CUDA 11.8 and carry their
-        own CUDA libraries; the driver is the only host-side piece. The scDesign3 image
-        is CPU-only.</li>
-      <li>Your own <code>.h5ad</code> data with an expression matrix, a
-        <code>cell_type</code> column, and a demographic column
-        (<code>self_reported_ethnicity</code>, <code>sex</code>, or age).</li>
+      <li><b>Default to Geneformer</b> for cohorts with non-trivial demographic structure — rank-value encoding is more equity-robust.</li>
+      <li><b>Use scDesign3 augmentation</b> when imbalance is severe and minorities are structurally segregated (ILD) — it adds cells in regions the source data doesn't cover.</li>
+      <li><b>Use Harmony</b> (demographic as batch) when imbalance is mild and minorities are already present in latent space (AIDA), where per-cluster linear offsets suffice.</li>
+      <li><b>Upsampling</b> can match augmentation on per-group F1 but produces locally segregated embeddings — duplicated cells stack at identical coordinates, undermining neighborhood-based interpretation.</li>
+      <li><b>Avoid downsampling</b> — it forces high iLISI through small-N artifacts and collapses overall cell-type classification.</li>
     </ul>
-    <p class="muted">Mount your data at <code>/data</code> and point each step script's
-      <code>BASE</code> variable at <code>/data</code>.</p>
+    <p class="muted">Distinguishing biology from learned bias is fundamentally difficult here — on disease cohorts, minority ethnicities correlate with specific disease subtypes. We frame these results as evidence of model behavior under demographic shift, not a clean measurement of bias in isolation. That segregation severity tracks input imbalance regardless of architecture points to <b>pretraining-corpus composition</b> as a fairness intervention upstream of any cohort-level rebalancing.</p>
   </div>
 </section>
 
+<!-- CITATION -->
 <section>
   <div class="wrap">
-    <h2>Datasets</h2>
-    <p>Downloaded from CZ CELLxGENE with <code>fetch_data.sh</code> (each keeps its own
-      license):</p>
-    <div class="cohorts">
-      <div class="cohort"><b>ILD</b><span>Natri et al. 2024, Nature Genetics · GSE227136</span></div>
-      <div class="cohort"><b>CRC</b><span>Moorman et al. 2024, Nature · epithelial compartment</span></div>
-      <div class="cohort"><b>AIDA</b><span>Kock et al. 2025, Cell · Phase 1 Data Freeze v2</span></div>
-    </div>
+    <h2>Cite this work</h2>
+    <p class="muted">Peralta Castro, Zhang, Singh. <i>Demographic Bias in Single-Cell Foundation Models: Evaluation and Mitigation Across Models and Cohorts.</i> 4th Workshop on Advances in Systems Immunology (ASI 2026), ACM-BCB Companion Proceedings, 2026.</p>
+    <p>Code, containers, and the full reproduction harness: <a href="https://github.com/fpera0248/scfm-bias-asi2026">github.com/fpera0248/scfm-bias-asi2026</a>. Datasets are obtained from CZ CELLxGENE under their own licenses; the pipeline downloads them at run time.</p>
   </div>
 </section>
 
 <footer>
   <div class="wrap">
-    <p>Reproduction code for <i>Demographic Bias in Single-Cell Foundation Models:
-      Evaluation and Mitigation Across Models and Cohorts</i> (ACM-BCB ASI 2026 workshop).
-      Code, containers, and environment specs on
-      <a href="https://github.com/fpera0248/scfm-bias-asi2026">GitHub</a>.</p>
+    <p>Reproduction code, prebuilt containers, and environment specs on
+      <a href="https://github.com/fpera0248/scfm-bias-asi2026">GitHub</a>.
+      We acknowledge support from the Google exploreCSR program at Brown University.</p>
   </div>
 </footer>
 

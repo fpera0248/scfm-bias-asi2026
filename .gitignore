@@ -80,3 +80,8 @@ slurm-*.out
 .vscode/
 .DS_Store
 Thumbs.db
+
+# site figures for GitHub Pages
+!docs/images/**
+!docs/images/*.png
+!docs/images/**/*.png

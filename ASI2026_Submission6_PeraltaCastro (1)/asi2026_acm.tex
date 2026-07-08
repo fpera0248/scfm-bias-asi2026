@@ -1,0 +1,630 @@
+%% ASI 2026 Workshop (4th Workshop on Advances in Systems Immunology)
+%% Track II: 8-10 page guideline
+%% ACM-BCB Workshop Companion Proceedings, June 30, 2026, Rende, Italy
+%%
+%% For initial double-blind review, switch to:
+%%   \documentclass[sigconf,anonymous,review]{acmart}
+
+\documentclass[sigconf]{acmart}
+
+\usepackage{multirow}
+\usepackage{threeparttable}
+\usepackage{booktabs}
+\usepackage[most]{tcolorbox}
+\newtcolorbox{answerbox}[1]{
+  enhanced,
+  breakable,
+  colback=blue!4,
+  colframe=blue!50!black,
+  boxrule=0.5pt,
+  arc=2pt,
+  left=6pt, right=6pt, top=4pt, bottom=4pt,
+  title=\textbf{Answer to #1}
+}
+
+\citestyle{acmnumeric}
+
+\setcopyright{acmlicensed}
+\copyrightyear{2026}
+\acmYear{2026}
+\acmDOI{XXXXXXX.XXXXXXX}
+\acmISBN{978-1-4503-XXXX-X/2026/06}
+\acmConference[ASI 2026]{4th Workshop on Advances in Systems Immunology}{June 30, 2026}{Rende, Italy}
+\acmBooktitle{Companion Proceedings of the 17th ACM Conference on Bioinformatics, Computational Biology, and Health Informatics (ACM-BCB 2026), June 30--July 3, 2026, Rende, Italy}
+\acmSubmissionID{XXXX}
+
+\graphicspath{{images/}}
+
+\begin{document}
+
+\title[Demographic Bias in Single-Cell Foundation Models]{Demographic Bias in Single-Cell Foundation Models: Evaluation and Mitigation Across Models and Cohorts}
+
+\author{Fernando Peralta Castro}
+\affiliation{%
+  \institution{Department of Computer Science\\Moravian University}
+  \city{Bethlehem}
+  \state{Pennsylvania}
+  \country{USA}}
+\email{fernando_peralta_castro@brown.edu}
+
+\author{Jiaqi Zhang}
+\authornote{Co-corresponding author.}
+\affiliation{%
+  \institution{Department of Computer Science\\Brown University}
+  \city{Providence}
+  \state{Rhode Island}
+  \country{USA}}
+\email{jiaqi_zhang2@brown.edu}
+
+\author{Ritambhara Singh}
+\authornotemark[1]
+\affiliation{%
+  \institution{Department of Computer Science and Center for Computational Molecular Biology\\Brown University}
+  \city{Providence}
+  \state{Rhode Island}
+  \country{USA}}
+\email{ritambhara_singh@brown.edu}
+
+\renewcommand{\shortauthors}{Peralta Castro et al.}
+
+\begin{abstract}
+Single-cell foundation models (scFMs) are increasingly used in biomedical research, yet biases can enter at every stage of the analysis pipeline, from which donors are sampled, to how cohorts are composed, to how models amplify existing imbalances. Training datasets are often strongly imbalanced across demographic variables such as sex, age, and ethnicity, and these imbalances propagate into model representations, creating demographic representation gaps where minority groups are overlooked in downstream analysis. Such biases risk producing diagnostic errors that disproportionately affect underrepresented populations, particularly as foundation models begin to influence clinical decision-making.
+
+We address three questions in this work: Does demographic imbalance affect model learning? Which foundation model is most robust to that imbalance? And which rebalancing strategy most reliably restores equity?
+
+We evaluate three foundation models (scFoundation, Geneformer, scGPT) on three cohorts spanning a wide range of demographic imbalance: an interstitial lung disease cohort, a colorectal cancer atlas, and the Asian Immune Diversity Atlas. We compare four strategies for addressing data imbalance: proportional sampling, downsampling, upsampling, and realistic augmentation based on the scDesign3 model, and benchmark them against Harmony with the demographic group as the batch variable. We find that all models exhibit poor integration on proportional data, with representation gaps scaling with demographic imbalance, and provide practical guidelines for selecting rebalancing strategies in real-world settings.\end{abstract}
+
+\begin{CCSXML}
+<ccs2012>
+   <concept>
+       <concept_id>10010405.10010444.10010087.10010090</concept_id>
+       <concept_desc>Applied computing~Computational transcriptomics</concept_desc>
+       <concept_significance>500</concept_significance>
+   </concept>
+   <concept>
+       <concept_id>10010147.10010257.10010293.10010294</concept_id>
+       <concept_desc>Computing methodologies~Neural networks</concept_desc>
+       <concept_significance>300</concept_significance>
+   </concept>
+   <concept>
+       <concept_id>10003456.10003462</concept_id>
+       <concept_desc>Social and professional topics~Computing / technology policy</concept_desc>
+       <concept_significance>300</concept_significance>
+   </concept>
+</ccs2012>
+\end{CCSXML}
+
+\ccsdesc[500]{Applied computing~Computational transcriptomics}
+\ccsdesc[300]{Computing methodologies~Neural networks}
+\ccsdesc[300]{Social and professional topics~Computing / technology policy}
+
+\keywords{single-cell RNA sequencing, foundation models, algorithmic fairness, demographic bias, data augmentation, representation learning, distribution shift, benchmarking, resampling strategies, health disparities, interstitial lung disease, colorectal cancer}
+
+\received{4 May 2026}
+
+\maketitle
+
+% --- INTRODUCTION ----------------------------------------------------------
+\section{Introduction}
+
+Single-cell foundation models (scFMs) aim to transform biomedical research by learning universal representations of cellular states from millions of transcriptomic profiles~\cite{hao2024scfoundation,theodoris2023geneformer,cui2024scgpt}. These models achieve state-of-the-art performance on gene expression enhancement, cell clustering, and drug response prediction, and have emerged as widely used tools for zero-shot tasks across tissues and disease contexts. Since scFMs are deployed directly as frozen encoders without retraining, any patterns encoded during pretraining propagate unchanged into downstream representations, making the quality of their training data critical.
+
+The datasets on which these models are trained reflect structural inequities that accumulate along the entire analysis pipeline~\cite{willem2025bias}. Societal biases determine which populations have access to clinical care and thus which donors contribute samples. Cohort biases arise when studies oversample certain demographic groups, as is common in genomics~\cite{popejoy2016genomics}. When ML models are trained on such imbalanced datasets, they prioritize the overrepresented group while overlooking diversity within others~\cite{willem2025bias}, and in healthcare this has led to algorithms that systematically underestimate the care needs of minority patients~\cite{obermeyer2019dissecting}. Fairness in single-cell genomics remains largely unexplored despite these well-documented risks. ML models trained on imbalanced data often fail to generalize to underrepresented groups, a phenomenon termed the ``generalization gap''~\cite{das2022efficient,arpit2017memorization}. In embedding space, minority classes occupy compressed regions and mix poorly with majority classes~\cite{dablain2022efficient}. We extend this concept to single-cell genomics, defining a \textit{demographic representation gap} as the quantifiable difference in a model's internal representation quality across demographic groups.
+
+Several approaches to addressing demographic imbalance have been explored in single-cell and machine learning contexts. Adaptive Resampling (AR)~\cite{navidi2025adaptive} re-weights training examples so that cells in underrepresented regions of the embedding receive more influence during learning, improving minority-class accuracy in VAE-based models. Expansive Over-Sampling (EOS)~\cite{dablain2022efficient} generates synthetic minority examples by extrapolating away from majority-class neighbors in embedding space. Both operate at inference time and can be layered on top of any embedding, making them natural complements to data-level interventions. Their effectiveness depends on what the encoder has retained, bounding gains on frozen scFMs that already collapse minority structure.
+
+Algorithmic fairness research has proposed multiple definitions of model fairness. One criterion asks whether all groups should receive positive predictions at the same rate, while another asks whether the model should be equally accurate across groups. These criteria often conflict, meaning that satisfying one can require violating another~\cite{hardt2016equality,chouldechova2017fair,kleinberg2016inherent}. None of these approaches have been evaluated head-to-head across multiple frozen foundation models, where the representation bottleneck may limit their effectiveness and where model choice may matter as much as strategy choice.
+
+Leading scFMs consistently note the absence of bias or subgroup analysis as a key limitation~\cite{hao2024scfoundation,zeng2025cellfm,baek2025single}, and no systematic benchmark exists that compares foundation models and rebalancing strategies across embedding quality, downstream classification, and generalization diagnostics jointly. Closing this gap requires joint evaluation across multiple metric families and multiple model architectures, since no single metric or single model captures equity behavior on its own. Data-centric resampling has proven effective in single-cell settings, yet such methods require model retraining, which is computationally prohibitive for multi-million parameter foundation models~\cite{navidi2025adaptive}.
+
+In this work, we present a structured audit framework demonstrated on three foundation models (scFoundation~\cite{hao2024scfoundation}, Geneformer~\cite{theodoris2023geneformer}, scGPT~\cite{cui2024scgpt}) to evaluate demographic imbalance across ethnicity, age, and sex axes on three cohorts spanning a range of imbalance regimes: an interstitial lung disease (ILD) cohort with severe ethnicity imbalance (European American to Native American, 127:1), a colorectal cancer (CRC) atlas with moderate skew (European American to African American, 17:1), and the Asian Immune Diversity Atlas (AIDA), a near-balanced healthy reference cohort (Korean to Indian, 8.4:1). We ran the full audit on all three demographic axes and three cohorts. We focus on ethnicity in the main text because it spans the widest range of imbalance, and report age and sex patterns where they confirm or extend the ethnicity findings.
+
+We incorporate scDesign3~\cite{song2023scdesign3} to generate covariate-conditioned synthetic cells that expand underrepresented combinations of cell type and demographic group. Unlike oversampling or latent-space interpolation, scDesign3 operates directly in gene-expression space and preserves gene-to-gene correlation structure while conditioning on demographic features such as ethnicity or age. We compare this augmentation strategy against proportional sampling, naive upsampling, and downsampling. The framework asks three questions:
+
+\begin{itemize}
+    \item[(Q1)] Does demographic imbalance affect model learning across architectures?
+    \item[(Q2)] Which scFM is most robust to that imbalance?
+    \item[(Q3)] Which rebalancing strategy most reliably restores equity across models and cohorts?
+\end{itemize}
+
+All three models inherit demographic segregation from input data, with baseline integration performance tracking imbalance ratio regardless of architecture. Geneformer is the most equity-robust of the three on 5 of 6 cohort-axis combinations tested, while scFoundation is the weakest on every combination. Among rebalancing strategies, augmentation with scDesign3 improves minority cell-type recovery on multi-group ethnicity axes under severe imbalance and preserves real-cell distributions, with the magnitude of improvement depending on the imbalance regime and model architecture. Downsampling produces nominally higher integration scores through small-N artifacts (per-group cell counts so low that local neighborhoods mix by construction), and upsampling matches augmented worst-group accuracy through duplicate-cell memorization that fails the within-cell-type mixing diagnostic.
+
+By evaluating how demographic imbalance shapes scFM behavior across architectures and cohorts, and by characterizing when each rebalancing strategy helps and when it does not, this work provides an actionable framework for fairness auditing in single-cell analysis. Foundational representations that reflect diverse populations are essential for building equitable, reliable AI systems that support biomedical research and clinical decision-making across all patient groups.
+% --- METHODS ---------------------------------------------------------------
+\section{Methods}
+
+\subsection{Datasets and Sampling Strategies}
+
+\textbf{Interstitial lung disease cohort.} We analyze scRNA-seq data from 
+Natri et al.~\cite{natri2024ild}, comprising 471{,}905 cells across 31{,}432 
+genes from 105 unique donors. We retain cells with complete demographic 
+metadata for each axis of interest, yielding an analysis pool of 398{,}735 
+cells across 96 donors after QC. Age is extracted from the \texttt{development\_stage} ontology 
+field and binned into 10-year intervals. Disease metadata is binarized to 
+normal vs.\ disease for downstream classification. The dataset has severe imbalances across 
+all three demographic axes (Table~\ref{tab:demo_all}).
+
+\textbf{Colorectal cancer atlas.} We additionally evaluate on a colorectal 
+cancer (CRC) atlas~\cite{moorman2024crc} comprising 47{,}107 colorectal cancer 
+epithelial cells across 25{,}344 genes (34{,}356 cells across 26 donors after QC). Sex is approximately balanced (close 
+to 1:1) and excluded from analysis because there is no informative imbalance 
+to evaluate. CRC serves as a complementary test of whether equity gains generalize when the imbalance ratio is milder (Table~\ref{tab:demo_all}).
+
+\textbf{Asian Immune Diversity Atlas.} We additionally evaluate on the Asian 
+Immune Diversity Atlas (AIDA)~\cite{kock2025aida}, comprising 886{,}586 
+peripheral immune cells across 35{,}477 genes from 617 healthy donors. AIDA extends the evaluation to a near-balanced 
+cohort, providing a complementary imbalance regime to ILD and CRC 
+(Table~\ref{tab:demo_all}).
+
+\begin{table*}[h]
+\footnotesize
+\centering
+\caption{Demographic composition across all three cohorts. Imbalance ratios are ILD ethnicity 127:1, age 60:1, sex 2.6:1. CRC ethnicity 17:1, age 6.8:1 (sex approximately 1:1, excluded). AIDA ethnicity 8.4:1, age 3.2:1. CRC ethnicity rows count cells with ethnicity metadata (8{,}572 of 34{,}356).}
+\label{tab:demo_all}
+\begin{minipage}[t]{0.33\textwidth}
+\centering
+\textbf{ILD} (n=398{,}735, 96 donors)\\[2pt]
+\begin{tabular}{@{}lr@{}}
+\toprule
+\multicolumn{2}{c}{\textit{Ethnicity}} \\
+European American & 333{,}602 \\
+African American  & 39{,}666 \\
+Hispanic or Latin & 12{,}787 \\
+Asian             & 10{,}054 \\
+Native American   & 2{,}626 \\
+\midrule
+\multicolumn{2}{c}{\textit{Age (10-yr bins)}} \\
+60--69 & 198{,}848 \\
+50--59 & 111{,}088 \\
+70--79 & 37{,}380 \\
+40--49 & 25{,}280 \\
+30--39 & 13{,}745 \\
+10--19 & 9{,}100 \\
+20--29 & 3{,}294 \\
+\midrule
+\multicolumn{2}{c}{\textit{Sex}} \\
+Male   & 287{,}679 \\
+Female & 111{,}056 \\
+\bottomrule
+\end{tabular}
+\end{minipage}%
+\hfill
+\begin{minipage}[t]{0.33\textwidth}
+\centering
+\textbf{CRC} (n=34{,}356, 26 donors)\\[2pt]
+\begin{tabular}{@{}lr@{}}
+\toprule
+\multicolumn{2}{c}{\textit{Ethnicity}} \\
+European American & 6{,}456 \\
+Hispanic or Latin & 1{,}111 \\
+Asian             & 619 \\
+African American  & 386 \\
+\midrule
+\multicolumn{2}{c}{\textit{Age (10-yr bins)}} \\
+50--59 & 9{,}850 \\
+40--49 & 8{,}827 \\
+60--69 & 7{,}745 \\
+70--79 & 6{,}486 \\
+30--39 & 1{,}448 \\
+\bottomrule
+\end{tabular}
+\end{minipage}%
+\hfill
+\begin{minipage}[t]{0.33\textwidth}
+\centering
+\textbf{AIDA} (n=886{,}586, 617 donors)\\[2pt]
+\begin{tabular}{@{}lr@{}}
+\toprule
+\multicolumn{2}{c}{\textit{Ethnicity}} \\
+Korean              & 275{,}468 \\
+Japanese            & 217{,}143 \\
+Singaporean Chinese & 98{,}426 \\
+Thai                & 93{,}752 \\
+Singaporean Indian  & 88{,}719 \\
+Singaporean Malay   & 80{,}399 \\
+Indian              & 32{,}679 \\
+\midrule
+\multicolumn{2}{c}{\textit{Age (10-yr bins)}} \\
+30--39 & 265{,}065 \\
+40--49 & 237{,}779 \\
+20--29 & 175{,}315 \\
+50--59 & 126{,}656 \\
+60+    & 81{,}771 \\
+\bottomrule
+\end{tabular}
+\end{minipage}
+\end{table*}
+
+\textbf{Sampling strategies.} For each cohort-axis combination, we construct 
+four dataset variants, each isolating a specific mechanism of demographic 
+rebalancing. Since the full cohorts are too large to process through scDesign3 
+fitting and three foundation model embeddings in a single pass, we work with 
+pilot subsets that preserve the original group proportions, approximately 
+2{,}500 cells per pilot across ILD, CRC, and AIDA. The four variants are:
+
+\begin{itemize}
+    \item \textbf{Proportional baseline:} Cells are sampled proportionally 
+    by demographic group, preserving the original class imbalance. This 
+    baseline quantifies the extent of bias in foundation model embeddings on 
+    typical imbalanced datasets and serves as the anchor against which all 
+    other strategies are compared.
+
+    \item \textbf{Balanced augmented:} scDesign3~\cite{song2023scdesign3} 
+    generates synthetic cells for minority groups until each group reaches 
+    parity with the majority group, conditioned on cell type and demographic 
+    group. The model fits negative binomial marginals per gene and a Gaussian 
+    copula on the top 1{,}000 highly variable genes, then simulates new cells 
+    whose joint expression distribution matches the per-group, per-cell-type 
+    real data. This strategy tests whether adding genuine new biological 
+    variation can close the representation gap without model retraining.
+
+    \item \textbf{Balanced upsampled:} Demographic parity is achieved through 
+    random duplication with replacement. This variant introduces no new 
+    biological diversity and serves as a lower bound that tests whether numeric 
+    balance alone is sufficient. Since the frozen encoder produces identical 
+    embeddings for identical input, duplicated cells stack at exactly the same 
+    coordinates in latent space, making upsampling a particularly informative 
+    control for memorization effects.
+
+    \item \textbf{Downsampled:} All groups are reduced to the minority group 
+    size via random undersampling. This represents the theoretical ceiling of 
+    what perfect balance alone can achieve, at the cost of discarding the vast 
+    majority of available data. For ILD ethnicity, this means 16--48 cells per 
+    group. For CRC age, it is 99 cells per group. At these scales, classifier 
+    training is severely data-limited.
+\end{itemize}
+
+\textbf{Validation sets.} For each cohort-axis combination we sample one 
+external validation set, held out before any pilot construction and shared 
+across all four rebalancing strategies. ILD validation sets are stratified 
+equally across demographic groups so that per-group performance estimates have 
+comparable statistical power. AIDA validation sets are similarly stratified. 
+CRC validation sets use all available held-out real cells because the CRC pool 
+is too small to stratify at comparable per-group depth. Full validation set 
+sizes are shown in Table~\ref{tab:val_sets}.
+
+\begin{table}[h]
+\footnotesize
+\centering
+\caption{Validation set sizes by cohort and demographic axis. ILD and AIDA 
+are stratified equally across groups. CRC uses all available held-out cells.}
+\label{tab:val_sets}
+\begin{tabular*}{\columnwidth}{@{\extracolsep{\fill}} llrr}
+\toprule
+\textbf{Cohort} & \textbf{Axis} & \textbf{Per Group} & \textbf{Total} \\
+\midrule
+ILD  & Ethnicity & 2{,}500 (5 groups)  & 12{,}500 \\
+ILD  & Age       & 1{,}500 (7 bins)    & 10{,}500 \\
+ILD  & Sex       & 2{,}500 (2 groups)  & 5{,}000  \\
+\midrule
+AIDA & Ethnicity & 1{,}786 (7 groups)  & 12{,}500 \\
+AIDA & Age       & 2{,}000 (5 bins)    & 10{,}000 \\
+\midrule
+CRC  & Ethnicity & All held-out cells  & 8{,}572  \\
+CRC  & Age       & All held-out cells  & 9{,}402  \\
+\bottomrule
+\end{tabular*}
+\end{table}
+
+Sharing the validation set across strategies corrects an earlier per-strategy 
+split that leaked duplicated cells from upsampled training partitions into 
+their own validation partition. Without a shared external set, upsampling 
+appears to outperform every other strategy on internal accuracy. Under external 
+validation, the same upsampled pilots collapse to majority-class prediction on 
+held-out donors.
+
+\subsection{Pipeline}
+\label{sec:pipeline}
+
+We process each model and cohort-axis combination through one shared pipeline. 
+We generate synthetic cells using scDesign3 on the top 1{,}000 highly variable 
+genes, producing the four dataset variants described above. Library size for synthetic cells is computed from the full 
+gene matrix rather than the HVG subset to avoid systematic underestimation of 
+total counts.
+
+Each dataset variant is embedded through three frozen foundation models. For 
+\textbf{scFoundation}, we sort raw integer count vectors descending by 
+expression value, truncate or zero-pad to 15{,}000 genes, and pass them 
+through the frozen backbone in batches of 64 cells with float16 
+mixed-precision inference. The final representation is the mean-pooled 
+768-dimensional embedding per cell. These settings follow scFoundation's recommended embedding extraction~\cite{hao2024scfoundation}. For \textbf{Geneformer V2-316M}, we 
+tokenize cells via the Genecorpus-104M dictionary using 
+\texttt{TranscriptomeTokenizer} (\texttt{version="V2"}), then embed with \texttt{EmbExtractor} producing 1{,}152-dimensional mean-pooled cell 
+embeddings from the second-to-last layer, excluding CLS and EOS tokens. This is the default Geneformer V2 cell embedding pipeline~\cite{theodoris2023geneformer}. For 
+\textbf{scGPT}, we tokenize gene-value pairs with a CUDA-visible runtime and 
+extract the 512-dimensional CLS-token embedding per cell. This follows scGPT's recommended cell-level embedding setting~\cite{cui2024scgpt}. All three models are 
+deployed as frozen encoders with no fine-tuning.
+
+We use the scIB benchmark~\cite{luecken2022benchmarking} for integration metrics. iLISI is the primary metric, rescaled to $[0,1]$: 1.0 indicates perfect demographic mixing in each cell's neighborhood, 0.0 complete segregation. NMI and ARI score unsupervised clustering of the embedding against ground-truth cell-type labels. cLISI measures local cell-type purity in the same neighborhood framework as iLISI, where values near 1.0 indicate clusters remain cell-type-pure. Disease labels from real cells are propagated to synthetic cells via a $k$-nearest neighbor classifier ($k = 5$, Euclidean distance) in embedding space. Real-only datasets pass through unchanged.
+
+For downstream evaluation, we predict cell-type identity using a logistic regression classifier on each model's frozen embeddings, evaluated on the shared external validation set rather than per-strategy internal splits. We also train random forest classifiers on ILD ethnicity at different training-set sizes to track how each strategy learns over time, and report the key numbers in Section~\ref{sec:q3}. For ILD and CRC, we run a normal-vs.-disease classification as a secondary check and summarize the results alongside the main findings in Section~\ref{sec:q2}. AIDA donors are all healthy at sample collection, so cell-type classification is the only downstream task for that cohort.
+
+\textbf{Learning curves.} Since rebalancing strategies that duplicate cells (upsampling) or generate synthetic ones (augmentation) introduce different training dynamics, we use learning curves to separate strategies that produce steady generalization from those that exit majority-class prediction only after crossing a representation threshold. Curves report macro-F1 vs.\ training-set size with 5-fold cross-validation using a random forest classifier on the frozen embeddings. Both training and validation curves are reported so that the train-validation gap is visible alongside the generalization trajectory.
+
+\textbf{Harmony baseline.} For each cohort-axis-model combination we apply harmonypy 2.0~\cite{korsunsky2019fast} to the proportional embedding using the demographic label as the batch covariate, then compute the same scIB metrics on the Harmony-corrected embedding. Harmony rearranges existing cells via per-cluster linear offsets, in contrast with augmentation which adds novel cells.
+
+% --- RESULTS ---------------------------------------------------------------
+\section{Results}
+
+We organize the Results around the three questions defined in the Introduction, using ethnicity as the primary demonstration axis (127:1 imbalance in ILD). We verified that the same patterns hold on age and sex in all three cohorts.
+
+\subsection{Q1: Does data imbalance affect model learning?}
+\label{sec:q1}
+
+Baseline iLISI on the proportional pilots tracks the demographic imbalance ratio of the source cohort across every model tested (Table~\ref{tab:integration}). On the severely imbalanced ILD ethnicity axis (127:1), proportional iLISI is 0.054 for scFoundation, 0.031 for Geneformer, and 0.062 for scGPT, all far below the 0.80 expected for random mixing across five groups. On CRC ethnicity (17:1), proportional iLISI rises to 0.179, 0.079, and 0.102 across the three models. On AIDA ethnicity (8.4:1), it rises further to 0.382, 0.187, and 0.248. The same ordering holds for age, with smaller absolute gaps because age imbalance is milder on every cohort. Near-zero principal-component regression (PCR) scores on the demographic label confirm that no model amplifies the demographic signal beyond what PCA already captures from the input. The segregation comes from the underlying data, and the encoder transmits it. This is a data composition problem common to all three architectural families, not a property of any single foundation model.
+
+Figure~\ref{fig:combined_umaps} shows ILD ethnicity UMAPs of Geneformer embeddings under the four rebalancing strategies. In the proportional embedding, European American cells dominate and minority groups are sparsely scattered. Augmentation balances group representation: under BalancedAugmented, all five groups form visible clusters of comparable size because scDesign3 generates novel gene-expression profiles that Geneformer embeds at new coordinates rather than stacking copies at existing ones. Upsampled and proportional UMAPs are nearly identical because duplicated cells receive identical embeddings and occupy the same points in latent space. Downsampled at 48 cells per group is sparse but visibly more mixed.
+
+\begin{figure*}[t]
+\centering
+\includegraphics[width=\textwidth]{images/ethnicity/figure1_ethnicity_umaps_3x4.png}\\[2pt]
+\includegraphics[width=.9\textwidth]{images/ethnicity/figure_ild_legend.png}
+\caption{UMAP embeddings of ILD ethnicity. Rows: scFoundation, Geneformer, scGPT. Columns: Proportional (2{,}497 cells), BalancedAugmented (10{,}762 total, 2{,}143 per group), BalancedUpsampled (10{,}715 total, 2{,}143 per group), Downsampled (240 total, 48 per group). Augmentation disperses minority cells into empty embedding regions because scDesign3 generates novel expression profiles. Upsampled panels stack at identical coordinates and resemble Proportional. Downsampled panels reflect sparse sampling.}
+
+\Description{A 3 by 4 grid of UMAP scatter plots. Rows correspond to the three foundation models (scFoundation, Geneformer, scGPT) and columns to the four rebalancing strategies (Proportional, BalancedAugmented, BalancedUpsampled, Downsampled). Cells are colored by ethnicity. Proportional panels show distinct clusters dominated by the European American color across all three models. BalancedAugmented panels show cells of all colors more interspersed. Upsampled panels visually resemble Proportional. Downsampled panels show scattered points reflecting sparse sampling. A shared legend beneath the plots identifies the five ethnicity groups.}
+\label{fig:combined_umaps}
+\end{figure*}
+
+\textbf{Augmentation lifts iLISI, with magnitude depending on encoder architecture.} On Geneformer (Figure~\ref{fig:combined_umaps}), BalancedAugmented lifts ILD ethnicity iLISI from 0.031 to 0.055, CRC from 0.079 to 0.139, and AIDA from 0.187 to 0.264. The mechanism is visible in the figure: minority groups are weakly defined in the proportional embedding and form distinct clusters of comparable size under BalancedAugmented. scFoundation shows much larger absolute lifts (ILD 0.054 to 0.260, CRC 0.179 to 0.382) because its expression-aware encoder embeds synthetic cells at new coordinates in previously empty latent regions. On AIDA, where baseline mixing is already substantially higher (0.382), scFoundation augmentation produces no further lift (0.390). Geneformer's rank-value encoding and scGPT's CLS-token aggregation map synthetic cells near existing cells, producing smaller iLISI gains even when the visible effect on minority cluster formation is comparable.
+
+\textbf{Harmony works in the opposite regime to augmentation.} A natural question is whether existing batch correction already closes the representation gap. Applying Harmony with the demographic label as the batch variable produces an outcome that depends on the imbalance regime (Table~\ref{tab:integration}). On AIDA (mild imbalance), Harmony achieves competitive or superior iLISI to BalancedAugmented for Geneformer (0.402 vs.\ 0.264) and scGPT (0.419 vs.\ 0.303). On ILD and CRC, the ordering reverses: BalancedAugmented reaches 0.260 on ILD scFoundation vs.\ Harmony 0.077, and 0.382 on CRC scFoundation vs.\ Harmony 0.091, which falls below the proportional baseline. Harmony rearranges existing cells via per-cluster linear offsets and works when minority groups are already populated at cohort level. When minorities are sparse and structurally segregated by disease subtype, the latent regions they occupy cannot be shifted closer to majority regions through linear offsets. Augmentation handles this by adding cells in previously unpopulated regions.
+
+NMI rises for several model-strategy combinations and cLISI remains above 0.99, confirming that local cell-type structure is preserved. ARI drops under augmentation on multiple combinations, which we attribute to a Leiden over-fragmentation artifact rather than a loss of biological signal. When synthetic cells increase local density at cell-type boundaries, Leiden splits clusters more finely at a fixed resolution, dropping ARI even as each sub-cluster remains cell-type-pure.
+
+\textbf{Downsampling produces the highest iLISI on 8 of 9 ethnicity combinations, but for reasons that do not reflect genuine integration.} Downsampling reaches 0.640 on ILD ethnicity scFoundation, 0.766 on CRC ethnicity scFoundation, and 0.468 on ILD ethnicity scGPT. The exception is AIDA ethnicity scFoundation, where the augmented pilot (0.390) edges out the downsampled pilot (0.376). Two compounding artifacts drive the downsampling scores. First, downsampled neighborhoods are small (48 cells per group on ILD ethnicity, 92 cells per group on AIDA ethnicity), which trivializes local mixing. With five or seven groups at this scale, every $k=15$ neighborhood mixes by construction regardless of what the encoder learned, so iLISI cannot distinguish genuine integration from forced mixing. Second, random undersampling oversamples high-expression cells. On the ILD ethnicity scFoundation pilot, mean library size in the downsampled pool is 7{,}363 versus 6{,}255 in proportional (KS$=$0.189, $p < 0.001$). High-expression cells embed more diffusely in latent space, which inflates iLISI further. The AIDA scFoundation exception fits the same mechanism in reverse: when the baseline embedding already mixes groups well (proportional iLISI 0.382), the downsampling artifact has less headroom to add. Downsampling also does not scale: only 240 cells remain in the pilot versus 398{,}735 available in the ILD ethnicity pool. Augmentation produces lower iLISI than downsampling on severe-imbalance cohorts but does so on full-scale pilots that preserve real-cell distributions and support downstream classification.
+
+\begin{table*}[!t]
+\caption{iLISI on the ethnicity axis across ILD, CRC, and AIDA for scFoundation, Geneformer, and scGPT. Five conditions: Proportional baseline, Harmony with demographic as batch variable, BalancedAugmented (scDesign3), BalancedUpsampled, and Downsampled. \textbf{Bold} = highest per row. NMI, ARI, and cLISI are summarized in the text. iLISI maximum is approximately 0.80 (5 groups, ILD) to 0.86 (7 groups, AIDA).}
+\label{tab:integration}
+\centering
+\small
+\begin{tabular}{ll ccccc}
+\toprule
+\textbf{Cohort (imbalance)} & \textbf{Model} & Prop. & Harmony & BalancedAugmented & Ups. & Down. \\
+\midrule
+\multirow{3}{*}{ILD eth. (127:1)}
+ & scFoundation & 0.054 & 0.077 & 0.260 & 0.038 & \textbf{0.640} \\
+ & Geneformer   & 0.031 & 0.036 & 0.055 & 0.000 & \textbf{0.392} \\
+ & scGPT        & 0.062 & 0.056 & 0.085 & 0.004 & \textbf{0.468} \\
+\midrule
+\multirow{3}{*}{CRC eth. (17:1)}
+ & scFoundation & 0.179 & 0.091 & 0.382 & 0.265 & \textbf{0.766} \\
+ & Geneformer   & 0.079 & 0.087 & 0.139 & 0.076 & \textbf{0.545} \\
+ & scGPT        & 0.102 & 0.112 & 0.168 & 0.118 & \textbf{0.619} \\
+\midrule
+\multirow{3}{*}{AIDA eth. (8.4:1)}
+ & scFoundation & 0.382 & 0.368 & \textbf{0.390} & 0.284 & 0.376 \\
+ & Geneformer   & 0.187 & 0.402 & 0.264 & 0.156 & \textbf{0.407} \\
+ & scGPT        & 0.248 & 0.419 & 0.303 & 0.196 & \textbf{0.474} \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\textbf{Distribution checks separate augmentation from upsampling.} Augmented real cells match the proportional distribution on library size (KS$=$0.016, $p{=}0.90$) and gene sparsity (KS$=$0.017, $p{=}0.85$). Upsampled unique real cells also match proportional (KS$=$0.034, $p{=}0.19$ and KS$=$0.028, $p{=}0.40$). Only downsampled fails both checks. The KS results rule out the possibility that augmentation-driven iLISI improvement comes from synthetic cells reshaping the real-cell distribution. Within-cell-type mixing (fraction of $k=15$ nearest neighbors from a different ethnicity, conditioned on shared cell type) rises substantially under augmentation on scFoundation, indicating synthetic minority cells embed among majority cells within shared cell types rather than forming isolated clusters. Native American within-cell-type mixing under upsampling drops to near zero because duplicated cells stack at identical coordinates and form ethnically homogeneous neighborhoods within every cell type.
+
+\begin{answerbox}{Q1}
+Demographic imbalance affects model learning across all three architectures. Baseline iLISI tracks the imbalance ratio of input data regardless of model, confirming that segregation in scFM embeddings is a data composition problem, not an architectural one. Augmentation lifts iLISI substantially on scFoundation under severe imbalance and preserves real-cell distributions. Downsampling produces nominally higher iLISI through small-N triviality and high-expression selection bias. Upsampling produces locally segregated neighborhoods despite matching the global label distribution.
+\end{answerbox}
+
+\subsection{Q2: Which scFM is most robust to demographic imbalance?}
+\label{sec:q2}
+
+We rank the three foundation models by worst-group cell-type macro-F1 on the proportional pilot, the strategy that preserves natural demographic imbalance and therefore reveals each model's intrinsic robustness. Worst-group F1 is the lowest per-group F1 across demographic groups in a given cohort-axis combination.
+
+\textbf{Geneformer holds the highest worst-group F1 on 5 of 6 cohort-axis combinations.} On ILD ethnicity, Geneformer reaches 0.732 (Hispanic or Latin), scGPT 0.695 (Native American), scFoundation 0.049 (Native American). On CRC ethnicity, Geneformer 0.862 (Hispanic or Latin), scGPT 0.850 (Asian), scFoundation 0.206 (African American). On AIDA ethnicity, Geneformer 0.301 (Indian), scGPT 0.169 (Indian), scFoundation 0.087 (Indian). The same ordering holds on age in 2 of 3 cohorts: Geneformer wins ILD age and AIDA age, while scGPT beats Geneformer on CRC age (0.828 vs.\ 0.734). scFoundation is the weakest model on every cohort-axis combination tested, with worst-group F1 0.08 to 0.67 below the next model.
+
+The cross-model gap is large enough on scFoundation that no rebalancing strategy closes it. ILD scFoundation Native American under BalancedAugmented reaches 0.073, still 0.68 below Geneformer proportional on the same group (0.751). Switching from scFoundation to Geneformer improves worst-group F1 more than any data-level intervention does. The same ranking shows up when we ask the models to predict disease status on ILD and CRC: Geneformer has the highest worst-group disease accuracy on every combination tested, confirming the cell-type ranking is not specific to one task.
+
+The mechanism is architectural. Geneformer encodes each cell as a rank-ordered gene sequence, and relative gene order is more stable across donors than absolute counts. scFoundation's read-depth-aware pretraining normalizes sequencing depth but not the demographic-covariate imbalance baked into the source corpus, so the model preserves depth structure while still encoding donor-level expression differences that correlate with demographic background. scGPT's CLS-token aggregation produces compact embeddings that track Geneformer's mean-pool closely on proportional data, with the absolute gap between the two models small (0.01 to 0.13 worst-group F1), and scGPT exceeding Geneformer on CRC age.
+
+\begin{answerbox}{Q2}
+Geneformer is the most equity-robust of the three models tested, with the highest worst-group cell-type macro-F1 on 5 of 6 cohort-axis combinations. scFoundation is the weakest on every combination. The cross-model gap is large enough that model choice tends to dominate strategy choice for equity outcomes.
+\end{answerbox}
+
+\subsection{Q3: Which rebalancing strategy most reliably restores equity?}
+\label{sec:q3}
+
+\begin{figure*}[t]
+\centering
+\includegraphics[width=\textwidth]{images/ethnicity/figure2_learning_curves_2x3.png}\\[2pt]
+\includegraphics[width=1\textwidth]{images/ethnicity/figure2_learning_curves_legend.png}
+\caption{Learning curves on ILD ethnicity across the three foundation models (columns: scFoundation, Geneformer, scGPT) and two classifiers (rows: Random Forest, Logistic Regression). Validation macro-F1 vs.\ training-set size, 5-fold cross-validation. BalancedAugmented shows steady learning across all model-classifier combinations. Proportional plateaus mid-range. BalancedUpsampled plateaus higher in CV but exhibits phase-jump transitions rather than steady growth, indicating memorization that the external-validation bootstrap in Table~\ref{tab:bootstrap_min} corrects for. Downsampled is data-limited. The pattern is consistent across all three encoders, confirming the dynamic is not specific to scFoundation.}
+\Description{A 2 by 3 grid of learning curves. Columns represent the three foundation models (scFoundation, Geneformer, scGPT). Rows represent random forest (top) and logistic regression (bottom). Each panel plots macro-F1 versus training set size for four rebalancing strategies. Across all panels, the augmented curve rises smoothly, the proportional curve rises gradually, and the upsampled curve plateaus higher with a phase-jump shape, while downsampled is confined to small training sizes.}
+\label{fig:learning_curves}
+\end{figure*}
+We evaluate the four rebalancing strategies on cell-type macro-F1 of the smallest demographic minority in each ethnicity combination, using the held-out external validation set. To distinguish real per-group gains from sampling noise, we compute 95\% bootstrap confidence intervals (1{,}000 iterations, stratified within demographic group), refitting a logistic regression classifier (StandardScaler + LogReg, max\_iter=5000) on the training pilot per iteration and dropping cells with NaN or zero embeddings. Table~\ref{tab:bootstrap_min} reports the point F1 and CI for each strategy on the smallest minority of each cohort: Native American on ILD, African American on CRC, and Indian on AIDA. Figure~\ref{fig:cross_model_barplot} shows the full grid of worst-group F1 across cohorts, axes, foundation models, and rebalancing strategies.
+
+\begin{table*}[t]
+\caption{Per-group cell-type macro-F1 on the smallest minority of each cohort. Each cell shows the point estimate followed by the 95\% bootstrap CI as [lower, upper] (1{,}000 iterations, stratified within demographic group). \textbf{Bold} = highest point F1 per row. Asterisk marks strategies where the CI lower bound exceeds the Proportional CI upper bound (clear separation).}
+\label{tab:bootstrap_min}
+\centering
+\small
+\begin{tabular}{lll cccc}
+\toprule
+\textbf{Cohort/Group} & \textbf{Model} & \textbf{n\_val} & Prop. & BA & BU & DS \\
+\midrule
+\multirow{3}{*}{\shortstack[l]{ILD\\Native American}}
+ & scFoundation & 2{,}500 & 0.049 [0.04, 0.06] & \textbf{0.073}* [0.06, 0.10] & 0.061 [0.06, 0.07] & 0.070* [0.06, 0.08] \\
+ & Geneformer   & 2{,}500 & 0.750 [0.69, 0.82] & \textbf{0.808} [0.75, 0.85] & 0.720 [0.64, 0.79] & 0.493 [0.47, 0.57] \\
+ & scGPT        & 2{,}500 & 0.695 [0.65, 0.79] & \textbf{0.712} [0.66, 0.76] & 0.682 [0.62, 0.73] & 0.450 [0.43, 0.54] \\
+\midrule
+\multirow{3}{*}{\shortstack[l]{CRC\\African American}}
+ & scFoundation & 386 & 0.206 [0.18, 0.26] & 0.185 [0.16, 0.24] & 0.227 [0.19, 0.27] & \textbf{0.268} [0.21, 0.36] \\
+ & Geneformer   & 386 & 0.873 [0.77, 0.93] & 0.775 [0.68, 0.93] & 0.878 [0.76, 0.94] & \textbf{0.914} [0.80, 0.97] \\
+ & scGPT        & 386 & 0.856 [0.79, 0.90] & 0.850 [0.73, 0.91] & \textbf{0.879} [0.80, 0.93] & 0.855 [0.79, 0.90] \\
+\midrule
+\multirow{3}{*}{\shortstack[l]{AIDA\\Indian}}
+ & scFoundation & 459 & 0.087 [0.07, 0.12] & \textbf{0.139} [0.11, 0.21] & 0.105 [0.09, 0.15] & 0.129 [0.11, 0.17] \\
+ & Geneformer   & 459 & 0.301 [0.26, 0.38] & 0.281 [0.24, 0.35] & 0.241 [0.25, 0.36] & \textbf{0.359} [0.35, 0.53] \\
+ & scGPT        & 459 & 0.169 [0.15, 0.20] & 0.244 [0.20, 0.29] & 0.190 [0.18, 0.25] & \textbf{0.251}* [0.23, 0.31] \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\begin{figure*}[t]
+  \centering
+  \includegraphics[width=\textwidth]{images/ethnicity/cross_model_barplot.png}
+  \includegraphics[width=0.5\textwidth]{images/ethnicity/cross_model_legend.png}\\[4pt]
+  \caption{Worst-group cell-type macro F1 across cohorts (ILD, CRC, AIDA), demographic axes, foundation models (scFoundation, Geneformer, scGPT), and rebalancing strategies (Prop, BA, Ups, Down). Error bars are 95\% percentile bootstrap CIs ($n=1000$ resamples, stratified within demographic group). Ethnicity panels are the focus of this analysis; age and sex panels appear for completeness.}
+  \label{fig:cross_model_barplot}
+\Description{Grouped bar chart of worst-group cell-type macro F1 across three cohorts (ILD, CRC, AIDA), demographic axes, three foundation models (scFoundation, Geneformer, scGPT), and four rebalancing strategies (Proportional, BalancedAugmented, BalancedUpsampled, Downsampled). Error bars are 95\% bootstrap percentile intervals. BalancedAugmented bars are at or above the Proportional baseline across most cohort-model combinations.}
+\end{figure*}
+
+\textbf{Augmentation gains are real but small under severe imbalance, and shrink under mild imbalance.} On the ILD Native American minority, BalancedAugmented improves scFoundation F1 from 0.049 to 0.073 with non-overlapping CIs (proportional upper 0.057, BalancedAugmented lower 0.058). On AIDA Indian (8.4:1), augmentation lifts scFoundation F1 from 0.087 to 0.139 and scGPT from 0.169 to 0.244. Point estimates are clearly higher under augmentation though CIs overlap by small margins. Effects elsewhere fall within sampling noise: Geneformer and scGPT on ILD show small absolute gains with overlapping CIs, and no strategy produces CI-separable gains on CRC African American. The pattern matches the iLISI mechanism: augmentation has the biggest effect where the embedding has empty regions to fill and shrinks toward noise as baseline minority representation improves.
+
+\textbf{Downsampling helps minorities but collapses the overall model.} Downsampling sometimes matches augmentation on the smallest minorities, but forces every group to 16--92 cells. Geneformer ILD Native American falls from 0.750 (proportional) to 0.493 (downsampled) and scGPT from 0.695 to 0.450: minority-group F1 looks competitive while overall classification collapses.
+
+\textbf{Upsampling is a memorization control.} Upsampled F1 tracks proportional closely (Geneformer ILD 0.720 vs.\ 0.750, scGPT CRC 0.879 vs.\ 0.856), as expected for a strategy that adds no new biological signal. The within-cell-type mixing diagnostic from Section~\ref{sec:q1} flags upsampling: Native American within-cell-type mixing drops to near zero because duplicated cells stack at identical coordinates.
+
+\textbf{Learning curves separate generalization from memorization.} Figure~\ref{fig:learning_curves} shows macro-F1 vs.\ training-set size (5-fold CV) across all three encoders. On ILD ethnicity scFoundation, BalancedAugmented plateaus at 0.81 with steady learning while Proportional plateaus at 0.46. BalancedUpsampled and Downsampled show phase-jump transitions rather than steady growth, jumping near $N$=7{,}000 and $N$=170 respectively where minority representation crosses a usability threshold. The same qualitative dynamic holds on Geneformer and scGPT: BalancedAugmented learns steadily while BalancedUpsampled exhibits phase-jump transitions and overstates plateau performance via memorization that the external-validation bootstrap in Table~\ref{tab:bootstrap_min} corrects for. The aggregate macro-F1 gap exceeds the per-group bootstrap deltas on the smallest minorities (Table~\ref{tab:bootstrap_min}), because most of the lift comes from cell types that classify well across strategies, not from the smallest minority alone.
+
+\begin{answerbox}{Q3}
+Augmentation provides a modest, statistically separable gain on the smallest demographic minority under severe imbalance (ILD Native American on scFoundation). On milder-imbalance cohorts (AIDA Indian), point estimates rise under augmentation on scFoundation and scGPT but bootstrap CIs overlap. Downsampling forces small-N mixing but cannot scale and collapses overall performance. Upsampling matches proportional on held-out F1 but creates ethnically segregated neighborhoods at the local level. Augmentation is the only strategy that improves minority cell-type recovery without local segregation or whole-model collapse, though the magnitude of improvement is modest and depends on the imbalance regime and model architecture.
+\end{answerbox}
+
+\subsection{Validating Synthetic Cells from scDesign3}
+\label{sec:scdesign3_results}
+
+We address two concerns with scDesign3 augmentation: faithfulness to real biology and inheritance of majority-group structure. Kolmogorov-Smirnov tests on the top 100 highly variable genes per (group, cell type) pair show synthetic cells reproduce real-cell expression distributions with high fidelity: the fraction of HVGs at $p < 0.05$ stays at or below 8\% across all combinations (mean 0.6\%, median KS statistic 0.000 to 0.030, Bonferroni-corrected fraction at most 4\%). Logistic regression classifiers trained on foundation-model embeddings achieve AUC$=$1.000 at every scope (overall, per cell type, per demographic group), meaning synthetic cells carry a separable technical signature despite matching real cells at the gene level. To test whether this signature is majority-derived, we train an additional classifier to distinguish synthetic minority cells from pooled real-other-group cells (excluding the matched minority): AUC$=$1.000 across all 9 ethnicity combinations in both directions. Synthetic cells are equally distinguishable from real cells in every group, not preferentially similar to majority structure. The technical signature most likely reflects scDesign3's parametric sampling (capture inefficiency, ambient RNA, and count tails that negative binomial and Gaussian copula do not perfectly reproduce) and does not invalidate the iLISI gains under augmentation.
+
+% --- DISCUSSION AND CONCLUSION --------------------------------------------
+\section{Discussion and Conclusion}
+
+The central finding of this work is that demographic bias in scFM embeddings is a data composition problem whose severity scales with source data imbalance. Across all three cohorts and all three models tested, baseline iLISI tracks the imbalance ratio of the underlying axis. Strategy choice depends on the model, the cohort, and the imbalance regime. No single rebalancing strategy dominates across all settings.
+
+\textbf{When augmentation matters and when it does not.} Synthetic augmentation provides clear iLISI gains on disease cohorts with severe demographic imbalance (ILD 127:1, CRC 17:1), where minority cells occupy latent regions Harmony cannot reach through linear offsets. On the milder-imbalance AIDA cohort (8.4:1), Harmony achieves competitive or superior iLISI to BalancedAugmented for Geneformer and scGPT, and augmentation produces minimal further gain. Harmony rearranges existing cells via per-cluster offsets and works well when minority cells are already present in latent space at sufficient density. Augmentation adds cells in regions where the source data lacks coverage. Practitioners should select the intervention to match the imbalance regime rather than treating either as universally appropriate. On bootstrap-corrected per-group cell-type macro-F1, augmentation produces a statistically separable gain on ILD Native American with scFoundation (0.049 [0.04, 0.06] to 0.073 [0.06, 0.10], non-overlapping CIs). On AIDA Indian with scGPT, point estimates rise substantially (0.169 [0.15, 0.20] to 0.244 [0.20, 0.29]) but bootstrap CIs overlap by small margins. Point-estimate comparisons without CIs consistently favor augmentation, but the per-group gain crosses statistical significance only on the most severely imbalanced minority.
+
+\textbf{Model choice matters more than strategy choice on most combinations.} Geneformer holds the highest worst-group cell-type macro-F1 on 5 of 6 cohort-axis combinations tested. Switching from scFoundation to Geneformer improves worst-group cell-type macro-F1 by 0.56 to 0.71 across the six cohort-axis combinations, a larger gain than any rebalancing strategy delivers within a single model. The same ranking holds when predicting disease status on ILD and CRC, so the result is not specific to cell-type classification. The architectural reason, rank-value encoding instead of absolute counts, is general and likely to apply to other rank-based scFMs as they emerge.
+
+\textbf{Biology, bias, and pretraining inheritance.} Distinguishing biological variation from learned bias is fundamentally difficult here. Performance gaps across demographic groups may reflect real biological differences in cell-type composition, transcriptional state, or disease subtype distribution at the donor level rather than pure model bias, especially on disease cohorts where minority ethnicities correlate with specific disease subtypes (ILD idiopathic vs.\ non-IPF, CRC tumor subtypes). We frame our results as evidence of model behavior under demographic shift, not as a clean measurement of model bias in isolation. The fact that segregation severity tracks input imbalance regardless of architecture suggests encoders transmit the demographic skew of their pretraining corpus directly into downstream representations. This raises concerns for any application where embedding choice affects equitable outcomes, and points to pretraining corpus composition as a fairness intervention upstream of any cohort-level rebalancing.
+
+\textbf{Practical guidance.}
+\begin{itemize}
+\item Select Geneformer as the default scFM for cohorts with non-trivial demographic structure.
+\item Use scDesign3 augmentation when imbalance is severe and minorities are structurally segregated (ILD).
+\item Use Harmony with the demographic as batch variable when imbalance is mild and minorities are already present in latent space (AIDA).
+\item On per-group F1, upsampling can match or exceed augmentation (notably CRC African American across all three models) but produces locally segregated embeddings where duplicated minority cells stack at identical coordinates, undermining downstream interpretation that depends on neighborhood mixing.
+\item Avoid downsampling, which forces high iLISI through small-N artifacts and collapses overall cell-type classification.
+\end{itemize}
+
+\textbf{Limitations.} Pilot datasets are small relative to full cohort scale: proportional pilots approximately 2{,}500 cells, BalancedAugmented and BalancedUpsampled reaching roughly 10{,}700 cells, and downsampled at 240 cells. Effect sizes may change at scale, and minority synthetic-to-real ratios become extreme on full cohorts (126:1 for Native American at 100K), raising tractability concerns for some augmentation regimes. Validation sets are sampled cell-wise rather than donor-wise, and some minority groups (Native American, n$=$2 ILD donors) cannot support donor-level splits at this scale. The disease-ethnicity confound on ILD and CRC is partially addressed: minority ethnicities correlate with specific disease subtypes at the donor level, and per-disease stratified analysis is needed to fully disentangle bias, biology, and disease-subtype distribution. The scDesign3 synthetic cells introduce a detectable technical signature in embedding space. While we show this signature is not majority-derived (Section~\ref{sec:scdesign3_results}), metric interpretation should account for its presence.
+
+The framework is modular and model-agnostic, supporting systematic bias auditing for any frozen scFM as the single-cell AI landscape evolves.
+
+% --- BIBLIOGRAPHY (inline thebibliography for ACM) -------------------------
+\begin{acks}
+
+We acknowledge support from the Google exploreCSR program at Brown University.
+
+\end{acks}
+
+\begin{thebibliography}{20}
+
+\bibitem{hao2024scfoundation}
+M.~Hao \textit{et al.}
+\newblock Large-scale foundation model on single-cell transcriptomics.
+\newblock \textit{Nature Methods}, 21:1481--1491, 2024.
+
+\bibitem{cui2024scgpt}
+H.~Cui \textit{et al.}
+\newblock scGPT: toward building a foundation model for single-cell multi-omics using generative AI.
+\newblock \textit{Nature Methods}, 21:1470--1480, 2024.
+
+\bibitem{theodoris2023geneformer}
+C.~V. Theodoris \textit{et al.}
+\newblock Transfer learning enables predictions in network biology.
+\newblock \textit{Nature}, 618:616--624, 2023.
+
+\bibitem{popejoy2016genomics}
+A.~B. Popejoy and S.~M. Fullerton.
+\newblock Genomics is failing on diversity.
+\newblock \textit{Nature}, 538:161--164, 2016.
+
+\bibitem{obermeyer2019dissecting}
+Z.~Obermeyer \textit{et al.}
+\newblock Dissecting racial bias in an algorithm used to manage the health of populations.
+\newblock \textit{Science}, 366:447--453, 2019.
+
+\bibitem{das2022efficient}
+S.~Das \textit{et al.}
+\newblock An empirical analysis of the impact of data augmentation on knowledge distillation.
+\newblock \textit{arXiv:2206.14606}, 2022.
+
+\bibitem{arpit2017memorization}
+D.~Arpit \textit{et al.}
+\newblock A closer look at memorization in deep networks.
+\newblock In \textit{ICML}, 2017.
+
+\bibitem{dablain2022efficient}
+D.~Dablain \textit{et al.}
+\newblock Efficient and effective generation of tabular data with the EOS algorithm.
+\newblock 2022.
+
+\bibitem{zeng2025cellfm}
+Y.~Zeng \textit{et al.}
+\newblock CellFM: a large-scale foundation model pre-trained on transcriptomics of 100 million human cells.
+\newblock 2025.
+
+\bibitem{baek2025single}
+S.~Baek \textit{et al.}
+\newblock A survey on foundation models for single-cell biology.
+\newblock 2025.
+
+\bibitem{natri2024ild}
+H.~M. Natri \textit{et al.}
+\newblock Cell type-specific and disease-associated eQTL in the human lung.
+\newblock \textit{Nature Genetics}, 56:595--604, 2024.
+
+\bibitem{moorman2024crc}
+A.~Moorman \textit{et al.}
+\newblock Progressive plasticity during colorectal cancer metastasis.
+\newblock \textit{Nature}, 637:947--954, 2025.
+
+\bibitem{song2023scdesign3}
+D.~Song \textit{et al.}
+\newblock scDesign3 generates realistic in silico data for multimodal single-cell and spatial omics.
+\newblock \textit{Nature Biotechnology}, 42:247--252, 2024.
+
+\bibitem{luecken2022benchmarking}
+M.~D. Luecken \textit{et al.}
+\newblock Benchmarking atlas-level data integration in single-cell genomics.
+\newblock \textit{Nature Methods}, 19:41--50, 2022.
+
+\bibitem{navidi2025adaptive}
+Z.~Navidi \textit{et al.}
+\newblock Adaptive resampling for single-cell integration.
+\newblock 2025.
+
+\bibitem{hardt2016equality}
+M.~Hardt \textit{et al.}
+\newblock Equality of opportunity in supervised learning.
+\newblock In \textit{NeurIPS}, 2016.
+
+\bibitem{chouldechova2017fair}
+A.~Chouldechova.
+\newblock Fair prediction with disparate impact: a study of bias in recidivism prediction instruments.
+\newblock \textit{Big Data}, 5:153--163, 2017.
+
+\bibitem{kleinberg2016inherent}
+J.~Kleinberg \textit{et al.}
+\newblock Inherent trade-offs in the fair determination of risk scores.
+\newblock In \textit{ITCS}, 2017.
+
+\bibitem{korsunsky2019fast}
+I.~Korsunsky \textit{et al.}
+\newblock Fast, sensitive and accurate integration of single-cell data with Harmony.
+\newblock \textit{Nature Methods}, 16:1289--1296, 2019.
+
+\bibitem{willem2025bias}
+T.~Willem \textit{et al.}
+\newblock Biases in machine-learning models of human single-cell data.
+\newblock \textit{Nature Cell Biology}, 27:384--392, 2025.
+
+\bibitem{kock2025aida}
+K.~H. Kock \textit{et al.}
+\newblock Asian diversity in human immune cells.
+\newblock \textit{Cell}, 188:2288--2308, 2025.
+
+\end{thebibliography}
+
+\end{document}
