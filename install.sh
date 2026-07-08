@@ -86,8 +86,10 @@ if want scdesign3_env; then
   conda run -n scdesign3_env Rscript -e '
     if (!requireNamespace("BiocManager", quietly=TRUE))
       install.packages("BiocManager", repos="https://cloud.r-project.org")
+    # Pinned to the exact commit used for the paper (version 1.5.0 spans many
+    # commits; the seeded augmentation is only bit-reproducible at this SHA).
     if (!requireNamespace("scDesign3", quietly=TRUE))
-      devtools::install_github("SONGDONGYUAN1994/scDesign3")
+      devtools::install_github("SONGDONGYUAN1994/scDesign3@4370074cc5392ddd7821e66e1e1c1d1181f21d3d")
     bioc <- c("zellkonverter", "scran", "scuttle", "SingleCellExperiment", "BiocParallel")
     need <- bioc[!vapply(bioc, requireNamespace, logical(1), quietly=TRUE)]
     if (length(need)) BiocManager::install(need, update=FALSE, ask=FALSE)

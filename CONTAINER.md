@@ -91,8 +91,9 @@ bash install.sh --full        # inside: build all four, fully pinned
 - scGPT runs without flash-attention (not a dependency of `scgpt==0.2.1`).
 - scFoundation weights auto-download via `modelgenerator` (HF `genbio-ai/scFoundation`);
   the build pre-warms that cache.
-- `scdesign3_env` installs scDesign3 from GitHub `main` (~v1.5.0); pin a commit in
-  `install.sh` for bit-exact R reproducibility.
+- `scdesign3_env` installs scDesign3 pinned to the exact commit used for the paper
+  (`SONGDONGYUAN1994/scDesign3@4370074c`, version 1.5.0). Version `1.5.0` spans many
+  commits; the seeded scDesign3 augmentation only reproduces bit-for-bit at this SHA.
 
 ## Runtime gotchas (Apptainer)
 
