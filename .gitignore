@@ -85,3 +85,6 @@ Thumbs.db
 !docs/images/**
 !docs/images/*.png
 !docs/images/**/*.png
+
+# Raw paper submission (source material, not published)
+ASI2026_Submission*/
