@@ -30,7 +30,7 @@ download() {
 download ILD  "https://datasets.cellxgene.cziscience.com/c3d9262e-0dc5-4eca-bf20-56e6d96d0306.h5ad" "ILD_GSE227136.h5ad"
 
 # CRC  — Moorman et al. 2024, Nature (epithelial compartment)
-download CRC  "https://datasets.cellxgene.cziscience.com/66cadf3b-4c71-4930-8add-fa748745704d.h5ad" "CRC_Moorman2024.h5ad"
+download CRC  "https://datasets.cellxgene.cziscience.com/66cadf3b-4c71-4930-8add-fa748745704d.h5ad" "ColorectalCancer_Epithelial.h5ad"
 
 # AIDA — Kock et al. 2025, Cell (Phase 1 Data Freeze v2)
 download AIDA "https://datasets.cellxgene.cziscience.com/f89a12c2-7a3b-415b-ab87-bbc550fe17f4.h5ad" "AIDA_phase1_v2.h5ad"
