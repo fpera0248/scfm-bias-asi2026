@@ -20,7 +20,7 @@ import sys
 # ============================================================
 # CONFIGURATION
 # ============================================================
-RAW_FILE    = "InterstitialLungDisease.h5ad"
+RAW_FILE    = "AIDA_phase1_v2.h5ad"
 OUTPUT_FILE = "AIDA_RawCounts_ETHNICITY_900k.h5ad"
 GROUP_KEY   = "self_reported_ethnicity"
 LOGFILE     = "step0a_ethnicity_log.txt"

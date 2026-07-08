@@ -39,7 +39,7 @@ import re
 # ============================================================
 # CONFIGURATION  [AGE 1-3]
 # ============================================================
-RAW_FILE    = "InterstitialLungDisease.h5ad"
+RAW_FILE    = "AIDA_phase1_v2.h5ad"
 OUTPUT_FILE = "AIDA_RawCounts_AGE.h5ad"   # [AGE 1]
 GROUP_KEY   = "development_stage"                             # [AGE 2]
 BIN_KEY     = "age_bin_10yr"                                  # [AGE 5] derived column
