@@ -101,17 +101,38 @@ fi
 runstep(){
   local label="$1" env="$2" interp="$3" glob="$4" gpu="${5:-0}"
   local script; script="$(ls "$SRC_WF"/$glob 2>/dev/null | sort | head -1 || true)"
-  [ -z "$script" ] && [ -n "$PREP" ] && script="$(ls "$PREP"/$glob 2>/dev/null | sort | head -1 || true)"
   if [ -z "$script" ]; then echo ">>> $label: no script ($glob) — skipping"; return 0; fi
   say "$label  ($(basename "$script"), $(date +%T))"
   ( cd "$WORK" && conda run -n "$env" "$interp" "$script" ) \
     && echo ">>> $label OK" || die "$label FAILED"
 }
 
-# step0a (extract raw counts) then step0c (seeded external-validation split) — the
-# model-agnostic dataset prep step0b needs. Resolved from $SRC_WF or the $PREP fallback.
-runstep "STEP 0a extract"    "$ENV"           python  "step0a*extract_raw_counts*.py"
-runstep "STEP 0c validation" "$ENV"           python  "step0c*external_validation*.py"
+# ---- step0 prep: the two model-agnostic dataset artifacts step0b needs ----
+# step0a -> RawCounts;  step0c -> seeded (RANDOM_STATE=42) external-validation split.
+# step0c hardcodes an absolute BASE (== $DATA_ROOT/$PREPREL), and step0a is cwd-relative,
+# so the canonical producers must run in $PREPWORK. We then stage both artifacts into
+# $WORK, where step0b reads them by bare (cwd-relative) name. Cohorts whose model
+# workflow carries its own step0a (no $PREP) run it in place as before.
+if [ -n "$PREP" ]; then
+  PREPWORK="$DATA_ROOT/$PREPREL"
+  mkdir -p "$PREPWORK"
+  ln -sf "$WORK/$DATA_NAME" "$PREPWORK/$DATA_NAME"      # share the fetched raw object
+  p0a="$(ls "$PREP"/step0a*extract_raw_counts*.py 2>/dev/null | head -1 || true)"
+  p0c="$(ls "$PREP"/step0c*external_validation*.py   2>/dev/null | head -1 || true)"
+  if [ -n "$p0a" ]; then
+    say "STEP 0a extract  ($(basename "$p0a"), $(date +%T))"
+    ( cd "$PREPWORK" && conda run -n "$ENV" python "$p0a" ) && echo ">>> STEP 0a OK" || die "STEP 0a extract FAILED"
+  fi
+  if [ -n "$p0c" ]; then
+    say "STEP 0c validation  ($(basename "$p0c"), $(date +%T))"
+    ( cd "$PREPWORK" && conda run -n "$ENV" python "$p0c" ) && echo ">>> STEP 0c OK" || die "STEP 0c validation FAILED"
+  fi
+  cp -f "$PREPWORK"/*RawCounts*.h5ad          "$WORK"/ 2>/dev/null || true
+  cp -f "$PREPWORK"/*External_Validation*.h5ad "$WORK"/ 2>/dev/null || die "step0c produced no external-validation file"
+else
+  runstep "STEP 0a extract"    "$ENV"           python  "step0a*extract_raw_counts*.py"
+  runstep "STEP 0c validation" "$ENV"           python  "step0c*external_validation*.py"
+fi
 
 # step0b scDesign3 augmentation. scDesign3 is model-agnostic and runs once per
 # (cohort, demographic); some model workflows (e.g. Geneformer/scGPT on AIDA) don't
