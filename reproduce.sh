@@ -63,6 +63,17 @@ SRC_WF="$SCFM_HOME/$WFREL"           # scripts (baked, read-only)
 WORK="$DATA_ROOT/$WFREL"             # data + outputs (writable, == /data/... the scripts hardcode)
 mkdir -p "$WORK"
 
+# The step0a (RawCounts) and step0c (seeded external-validation split) producers are
+# model-agnostic dataset-prep and, for ILD/AIDA, live only in the Geneformer workflow.
+# A model workflow that lacks its own step0*.py consumes those outputs — so runstep
+# falls back to $PREP to find/run the canonical producer (writing into $WORK).
+case "$COHORT" in
+  ild)  PREPREL="Geneformer/augmented/${DEMO}_Geneformer_workflow" ;;
+  aida) PREPREL="Geneformer/augmented_AIDA/${DEMO}_Geneformer_workflow" ;;
+  crc)  PREPREL="" ;;   # CRC: the shared step0a extractor writes its own validation split
+esac
+PREP=""; [ -n "$PREPREL" ] && [ -d "$SCFM_HOME/$PREPREL" ] && PREP="$SCFM_HOME/$PREPREL"
+
 say "REPRODUCE  $MODEL / $COHORT / $DEMO   ($(date +%T))"
 echo "  workflow : $WFREL"
 echo "  env      : $ENV (+ scdesign3_env for step0b)"
@@ -90,14 +101,17 @@ fi
 runstep(){
   local label="$1" env="$2" interp="$3" glob="$4" gpu="${5:-0}"
   local script; script="$(ls "$SRC_WF"/$glob 2>/dev/null | sort | head -1 || true)"
+  [ -z "$script" ] && [ -n "$PREP" ] && script="$(ls "$PREP"/$glob 2>/dev/null | sort | head -1 || true)"
   if [ -z "$script" ]; then echo ">>> $label: no script ($glob) — skipping"; return 0; fi
   say "$label  ($(basename "$script"), $(date +%T))"
   ( cd "$WORK" && conda run -n "$env" "$interp" "$script" ) \
     && echo ">>> $label OK" || die "$label FAILED"
 }
 
-# step0a (extract raw counts) — present on ILD/AIDA, absent on CRC (skips cleanly)
+# step0a (extract raw counts) then step0c (seeded external-validation split) — the
+# model-agnostic dataset prep step0b needs. Resolved from $SRC_WF or the $PREP fallback.
 runstep "STEP 0a extract"    "$ENV"           python  "step0a*extract_raw_counts*.py"
+runstep "STEP 0c validation" "$ENV"           python  "step0c*external_validation*.py"
 
 # step0b scDesign3 augmentation. scDesign3 is model-agnostic and runs once per
 # (cohort, demographic); some model workflows (e.g. Geneformer/scGPT on AIDA) don't
