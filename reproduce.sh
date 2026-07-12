@@ -22,6 +22,20 @@
 #   MODELS_DIR  where baked weights live (default /opt/models)
 set -euo pipefail
 
+# --- conda hygiene ----------------------------------------------------------
+# Apptainer/Docker forward the caller's shell environment into the container by
+# default. A user who has conda or mamba active on the host thus leaks CONDA_EXE,
+# MAMBA_ROOT_PREFIX, CONDA_PREFIX, CONDA_SHLVL, ... into the image, where they
+# hijack `conda run` and send it to a host path that does not exist inside the
+# container (breaking every step). Drop that inherited state and pin to the
+# image's own conda so `reproduce` works from any shell, with no --cleanenv needed.
+unset CONDA_EXE CONDA_PYTHON_EXE CONDA_SHLVL CONDA_PREFIX CONDA_DEFAULT_ENV \
+      CONDA_PROMPT_MODIFIER MAMBA_ROOT_PREFIX MAMBA_EXE _CE_CONDA _CE_M 2>/dev/null || true
+if [ -f /opt/conda/etc/profile.d/conda.sh ]; then
+  export PATH="/opt/conda/bin:$PATH"
+  . /opt/conda/etc/profile.d/conda.sh
+fi
+
 MODEL="${1:?usage: reproduce.sh <model> <cohort> <demographic> [stage]}"
 COHORT="${2:?usage: reproduce.sh <model> <cohort> <demographic> [stage]}"
 DEMO="${3:?usage: reproduce.sh <model> <cohort> <demographic> [stage]}"
