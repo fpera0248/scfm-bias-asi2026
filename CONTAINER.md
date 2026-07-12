@@ -42,11 +42,35 @@ docker run --gpus all -v "$PWD/data":/data \
 - `<cohort>` — `ild` | `crc` | `aida`
 - `<demographic>` — `ethnicity` | `sex` | `age`  *(AIDA & CRC are sex-balanced — no `sex`)*
 
-On HPC with Apptainer:
+On HPC with Apptainer (note `--writable-tmpfs`, explained below):
 ```
 apptainer pull scfm-geneformer.sif docker://ghcr.io/fpera0248/scfm-geneformer:latest
-apptainer run --nv -B "$PWD/data":/data scfm-geneformer.sif reproduce geneformer aida ethnicity
+apptainer run --nv --writable-tmpfs -B "$PWD/data":/data scfm-geneformer.sif reproduce geneformer aida ethnicity
 ```
+`--writable-tmpfs` gives an ephemeral (RAM) overlay so the R↔AnnData bridge (basilisk) can
+write its lockfile — the `.sif` is read-only and its baked conda env otherwise can't be
+locked. Docker images are writable, so `docker run` needs no equivalent flag.
+
+### Running on the right resource (`[stage]`)
+
+`reproduce` takes an optional 4th argument so each phase runs where it belongs — only the
+embedding needs a GPU:
+
+| stage | does | resource |
+|-------|------|----------|
+| `prep` | fetch + step0a/step0c + step0b scDesign3 augmentation | CPU (long) |
+| `embed` | step2a embedding | **GPU** |
+| `down` | step3a…step9 downstream (iLISI, classification, figures) | CPU |
+| `all` *(default)* | everything in one process | GPU box |
+
+On a local GPU box just omit it (`reproduce scfoundation ild ethnicity` runs `all`). On a
+cluster, submit `... prep` and `... down` to a CPU partition and `... embed` to a GPU
+partition (chain them with `sbatch --dependency=afterok:`), so the GPU is held only for the
+minutes of embedding, not the hours of augmentation.
+
+The image is also robust to your shell: if you have conda/mamba active on the host, those
+env vars no longer leak in and hijack the container's own conda — `reproduce` resets to the
+image's `/opt/conda` itself, so no `--cleanenv` is needed.
 
 ## What's turnkey vs. what needs new code
 
@@ -134,15 +158,14 @@ bash install.sh --full        # inside: build all four, fully pinned
   over quota, redirect it with `--home /some/writable/dir:/root` instead. Scientific tools
   (scanpy, numba, matplotlib) write caches under HOME, so this prevents mid-run write
   failures. Also set `MPLCONFIGDIR`, `NUMBA_CACHE_DIR`, `XDG_CACHE_HOME` to writable paths.
-- **scdesign3 / basilisk:** the R `zellkonverter` bridge uses a basilisk-managed Python env.
-  The image pre-bakes it at `/opt/basilisk`, but a `.sif` is read-only, so basilisk can't
-  place its lockfile there. Point `BASILISK_EXTERNAL_DIR` at a **writable** dir (e.g. on
-  scratch); basilisk will populate it on first use (needs internet the first time). Example:
-  ```
-  apptainer exec -B $DATA:/data --home $WORK/.home:/root \
-    --env BASILISK_EXTERNAL_DIR=/data/.home/basilisk \
-    scfm-scdesign3.sif conda run -n scdesign3_env Rscript step0b_*.R
-  ```
+- **scdesign3 / basilisk:** the R `zellkonverter` bridge uses a basilisk-managed conda env.
+  The image bakes it at `/opt/basilisk` and `reproduce` already points `BASILISK_EXTERNAL_DIR`
+  there — **do not set it yourself.** The only thing you must add is **`--writable-tmpfs`** on
+  the `apptainer run` line, so basilisk can write its lockfile (the `.sif` is read-only, so
+  it needs an ephemeral overlay; the env itself still comes from the baked, valid
+  `/opt/basilisk` — no download, no internet, no rebuild). Pointing `BASILISK_EXTERNAL_DIR` at
+  an empty scratch dir is the classic mistake: basilisk then can't find its env and, offline
+  on a compute node, can't build one — the run dies with `use_condaenv … Unable to locate`.
 - **step0b is CPU-only and long:** scDesign3 fits per-gene GAMs + a copula serially
   (`N_CORES=1`, deliberate for memory safety). On a full cohort it can run many hours and
   needs ~150–180 GB RAM. Run it on a CPU partition with a long walltime; reserve the GPU
