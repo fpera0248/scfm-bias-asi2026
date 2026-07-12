@@ -36,6 +36,14 @@ if [ -f /opt/conda/etc/profile.d/conda.sh ]; then
   . /opt/conda/etc/profile.d/conda.sh
 fi
 
+# --- basilisk / zellkonverter -----------------------------------------------
+# step0b reads .h5ad files into R via zellkonverter, which runs a private conda env
+# managed by basilisk. The image bakes that env at /opt/basilisk, so default there and
+# the reviewer never has to provision or point at it. NOTE: /opt is read-only in a .sif,
+# so basilisk needs somewhere writable for its lockfile — run the container with
+# `apptainer run --writable-tmpfs ...` (an ephemeral overlay; see CONTAINER.md).
+export BASILISK_EXTERNAL_DIR="${BASILISK_EXTERNAL_DIR:-/opt/basilisk}"
+
 MODEL="${1:?usage: reproduce.sh <model> <cohort> <demographic> [stage]}"
 COHORT="${2:?usage: reproduce.sh <model> <cohort> <demographic> [stage]}"
 DEMO="${3:?usage: reproduce.sh <model> <cohort> <demographic> [stage]}"
