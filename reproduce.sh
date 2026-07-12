@@ -188,10 +188,19 @@ else
   [ -d "$AUGSRC" ] || die "no canonical augmentation source: $AUGREL"
   mkdir -p "$AUGWORK"
   ln -sf "$WORK/$DATA_NAME" "$AUGWORK/$DATA_NAME"        # share the raw object
+  # The canonical augmentation needs RawCounts + the external-validation split. The prep
+  # stage already produced these dataset-level files (they're in $WORK); reuse them so the
+  # shared branch doesn't have to re-extract or re-split (and so step0b doesn't die looking
+  # for a validation file the shared workflow never generates itself).
+  cp -f "$WORK"/*RawCounts*.h5ad           "$AUGWORK"/ 2>/dev/null || true
+  cp -f "$WORK"/*External_Validation*.h5ad "$AUGWORK"/ 2>/dev/null || true
   a0a="$(ls "$AUGSRC"/step0a*extract_raw_counts*.py 2>/dev/null | head -1 || true)"
   a0b="$(ls "$AUGSRC"/step0b_scdesign3_*augmentation*.R 2>/dev/null | head -1 || true)"
   [ -n "$a0b" ] || die "canonical source has no augmentation .R: $AUGREL"
-  [ -n "$a0a" ] && { echo ">>> (canonical) $(basename "$a0a")"; ( cd "$AUGWORK" && conda run -n "$ENV" python "$a0a" ) || die "canonical step0a FAILED"; }
+  # only re-run canonical step0a if prep didn't already supply RawCounts
+  if [ -z "$(ls "$AUGWORK"/*RawCounts*.h5ad 2>/dev/null)" ] && [ -n "$a0a" ]; then
+    echo ">>> (canonical) $(basename "$a0a")"; ( cd "$AUGWORK" && conda run -n "$ENV" python "$a0a" ) || die "canonical step0a FAILED"
+  fi
   echo ">>> (canonical) $(basename "$a0b")"
   ( cd "$AUGWORK" && conda run -n scdesign3_env Rscript "$a0b" ) || die "canonical augmentation FAILED"
   echo ">>> copying shared *_Pilot_* conditions into $WORK"
