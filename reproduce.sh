@@ -152,7 +152,12 @@ if want prep; then
 if [ -n "$PREP" ]; then
   PREPWORK="$DATA_ROOT/$PREPREL"
   mkdir -p "$PREPWORK"
-  ln -sf "$WORK/$DATA_NAME" "$PREPWORK/$DATA_NAME"      # share the fetched raw object
+  # When the model's own workflow dir IS the prep dir (e.g. geneformer on ILD), $WORK and
+  # $PREPWORK are the same path — don't link/copy files onto themselves (that errors under
+  # set -e). The step0a/step0c outputs already land directly in $WORK in that case.
+  if [ "$WORK" != "$PREPWORK" ]; then
+    ln -sf "$WORK/$DATA_NAME" "$PREPWORK/$DATA_NAME"    # share the fetched raw object
+  fi
   p0a="$(ls "$PREP"/step0a*extract_raw_counts*.py 2>/dev/null | head -1 || true)"
   p0c="$(ls "$PREP"/step0c*external_validation*.py   2>/dev/null | head -1 || true)"
   if [ -n "$p0a" ]; then
@@ -163,8 +168,12 @@ if [ -n "$PREP" ]; then
     say "STEP 0c validation  ($(basename "$p0c"), $(date +%T))"
     ( cd "$PREPWORK" && conda run -n "$ENV" python "$p0c" ) && echo ">>> STEP 0c OK" || die "STEP 0c validation FAILED"
   fi
-  cp -f "$PREPWORK"/*RawCounts*.h5ad          "$WORK"/ 2>/dev/null || true
-  cp -f "$PREPWORK"/*External_Validation*.h5ad "$WORK"/ 2>/dev/null || die "step0c produced no external-validation file"
+  if [ "$WORK" != "$PREPWORK" ]; then
+    cp -f "$PREPWORK"/*RawCounts*.h5ad          "$WORK"/ 2>/dev/null || true
+    cp -f "$PREPWORK"/*External_Validation*.h5ad "$WORK"/ 2>/dev/null || die "step0c produced no external-validation file"
+  else
+    [ -n "$(ls "$WORK"/*External_Validation*.h5ad 2>/dev/null)" ] || die "step0c produced no external-validation file"
+  fi
 else
   runstep "STEP 0a extract"    "$ENV"           python  "step0a*extract_raw_counts*.py"
   runstep "STEP 0c validation" "$ENV"           python  "step0c*external_validation*.py"
@@ -187,7 +196,7 @@ else
   AUGSRC="$SCFM_HOME/$AUGREL"; AUGWORK="$DATA_ROOT/$AUGREL"
   [ -d "$AUGSRC" ] || die "no canonical augmentation source: $AUGREL"
   mkdir -p "$AUGWORK"
-  ln -sf "$WORK/$DATA_NAME" "$AUGWORK/$DATA_NAME"        # share the raw object
+  [ "$WORK" = "$AUGWORK" ] || ln -sf "$WORK/$DATA_NAME" "$AUGWORK/$DATA_NAME"   # share the raw object (skip if same dir)
   # The canonical augmentation needs RawCounts + the external-validation split. The prep
   # stage already produced these dataset-level files (they're in $WORK); reuse them so the
   # shared branch doesn't have to re-extract or re-split (and so step0b doesn't die looking
