@@ -1,15 +1,20 @@
 #!/usr/bin/env bash
 # Turnkey reproduction driver.
 #
-#   reproduce.sh <model> <cohort> <demographic>
+#   reproduce.sh <model> <cohort> <demographic> [stage]
 #     model       : scfoundation | geneformer | scgpt
 #     cohort      : ild | crc | aida
 #     demographic : ethnicity | sex | age
+#     stage       : all (default) | prep | embed | down
 #
 # Runs one workflow end to end inside the container: fetches the raw data, wires up
 # the model checkpoint + working paths so the (path-hardcoded) step scripts run
 # unmodified, then executes step0a -> step0b (scDesign3, CPU) -> step2a (embed, GPU)
 # -> step3a..step9 (downstream, CPU). Outputs land under $DATA_ROOT.
+#
+# The optional stage lets each phase run on the right resource (GPU only for embed):
+# on HPC, submit `... prep` to a CPU partition and `... embed` to a GPU partition.
+# Omit it (or pass `all`) to run everything in one process, e.g. for local Docker.
 #
 # Env knobs:
 #   DATA_ROOT   where data/outputs live and get bind-mounted as /data (default /data)
@@ -17,15 +22,23 @@
 #   MODELS_DIR  where baked weights live (default /opt/models)
 set -euo pipefail
 
-MODEL="${1:?usage: reproduce.sh <model> <cohort> <demographic>}"
-COHORT="${2:?usage: reproduce.sh <model> <cohort> <demographic>}"
-DEMO="${3:?usage: reproduce.sh <model> <cohort> <demographic>}"
+MODEL="${1:?usage: reproduce.sh <model> <cohort> <demographic> [stage]}"
+COHORT="${2:?usage: reproduce.sh <model> <cohort> <demographic> [stage]}"
+DEMO="${3:?usage: reproduce.sh <model> <cohort> <demographic> [stage]}"
+# Optional stage so phases can run on the right partition (GPU only where needed):
+#   prep  = fetch + step0a/step0c/step0b augmentation   (CPU, long)
+#   embed = step2a                                       (GPU)
+#   down  = step3a..step9 downstream                     (CPU)
+#   all   = everything in one process (default)
+STAGE="${4:-all}"
+case "$STAGE" in all|prep|embed|down) ;; *) echo "unknown stage '$STAGE' (all|prep|embed|down)" >&2; exit 1 ;; esac
 DATA_ROOT="${DATA_ROOT:-/data}"
 SCFM_HOME="${SCFM_HOME:-/opt/scfm}"
 MODELS_DIR="${MODELS_DIR:-/opt/models}"
 
 say(){ echo; echo "########## $* ##########"; }
 die(){ echo "ERROR: $*" >&2; exit 1; }
+want(){ [ "$STAGE" = all ] || [ "$STAGE" = "$1" ]; }
 
 # ---- 1. model -> conda env + repo dir name + checkpoint wiring -----------------
 case "$MODEL" in
@@ -107,6 +120,7 @@ runstep(){
     && echo ">>> $label OK" || die "$label FAILED"
 }
 
+if want prep; then
 # ---- step0 prep: the two model-agnostic dataset artifacts step0b needs ----
 # step0a -> RawCounts;  step0c -> seeded (RANDOM_STATE=42) external-validation split.
 # step0c hardcodes an absolute BASE (== $DATA_ROOT/$PREPREL), and step0a is cwd-relative,
@@ -162,13 +176,18 @@ else
   cp "$AUGWORK"/*_Pilot_*.h5ad "$WORK"/ 2>/dev/null || die "no *_Pilot_* conditions produced"
   echo ">>> STEP 0b scdesign3 (shared) OK"
 fi
+fi  # end: want prep
 
-# step2a embed (GPU)
-runstep "STEP 2a embed"      "$ENV"           python  "step2a*.py" 1
+# step2a embed (GPU) — the only stage that needs a GPU
+if want embed; then
+  runstep "STEP 2a embed"    "$ENV"           python  "step2a*.py" 1
+fi
 # downstream (CPU)
-for s in step3a step3b step4 step4a step4b step5 step6 step7 step8 step9; do
-  runstep "STEP ${s#step}"   "$ENV"           python  "${s}[!0-9]*.py"
-done
+if want down; then
+  for s in step3a step3b step4 step4a step4b step5 step6 step7 step8 step9; do
+    runstep "STEP ${s#step}" "$ENV"           python  "${s}[!0-9]*.py"
+  done
+fi
 
 say "COMPLETE  $MODEL / $COHORT / $DEMO   ($(date +%T))"
 echo "  outputs under: $WORK"
