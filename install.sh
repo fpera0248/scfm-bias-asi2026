@@ -75,6 +75,16 @@ if want scgpt310 && [ "$SUFFIX" != ".full" ]; then
   conda run -n scgpt310 pip install "scgpt==0.2.1"
 fi
 
+# Extra step 1b: pin numpy<2 in scgpt310. Its torch (2.1.2+cuXXX) was built against the
+# numpy 1.x C-ABI; the env otherwise resolves to numpy 2.0.2, whose changed ABI makes
+# torch fail to initialize its numpy bridge ("_ARRAY_API not found") so *every*
+# torch.from_numpy raises "Numpy is not available" — the scGPT embed dies at step2a.
+# Runs for both slim and --full builds (the pinned pip set installs 2.0.2; we override it).
+if want scgpt310; then
+  echo "=== pinning numpy==1.26.4 in scgpt310 (torch built against numpy 1.x) ==="
+  conda run -n scgpt310 pip install --no-deps "numpy==1.26.4"
+fi
+
 # Extra step 2: scDesign3 (source) + zellkonverter (Bioconductor) into scdesign3_env.
 # zellkonverter provides the R<->AnnData (.h5ad) bridge that step0b uses; it relies on a
 # basilisk-managed Python env, which we pre-create here so it's baked into the image and
