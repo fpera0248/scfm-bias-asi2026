@@ -31,6 +31,10 @@ set -euo pipefail
 # image's own conda so `reproduce` works from any shell, with no --cleanenv needed.
 unset CONDA_EXE CONDA_PYTHON_EXE CONDA_SHLVL CONDA_PREFIX CONDA_DEFAULT_ENV \
       CONDA_PROMPT_MODIFIER MAMBA_ROOT_PREFIX MAMBA_EXE _CE_CONDA _CE_M 2>/dev/null || true
+# Also ignore the caller's Python user-site (~/.local): apptainer bind-mounts $HOME by
+# default, so a reviewer's ~/.local packages can otherwise shadow the env's (e.g. a stray
+# tokenizers/numpy), breaking imports with a version the env didn't pin.
+export PYTHONNOUSERSITE=1
 if [ -f /opt/conda/etc/profile.d/conda.sh ]; then
   export PATH="/opt/conda/bin:$PATH"
   . /opt/conda/etc/profile.d/conda.sh

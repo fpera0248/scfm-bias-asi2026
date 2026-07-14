@@ -85,6 +85,15 @@ if want scgpt310; then
   conda run -n scgpt310 pip install --no-deps "numpy==1.26.4"
 fi
 
+# Extra step 1c: pin tokenizers<0.22 in geneformer310. Its transformers==4.49.0 requires
+# tokenizers>=0.21,<0.22, but the env otherwise resolves to tokenizers==0.22.2, so
+# transformers' dependency_versions_check hard-fails at `import geneformer` (which imports
+# transformers) before the embed can start. Runs for both slim and --full builds.
+if want geneformer310; then
+  echo "=== pinning tokenizers==0.21.0 in geneformer310 (transformers 4.49 needs <0.22) ==="
+  conda run -n geneformer310 pip install --no-deps "tokenizers==0.21.0"
+fi
+
 # Extra step 2: scDesign3 (source) + zellkonverter (Bioconductor) into scdesign3_env.
 # zellkonverter provides the R<->AnnData (.h5ad) bridge that step0b uses; it relies on a
 # basilisk-managed Python env, which we pre-create here so it's baked into the image and
