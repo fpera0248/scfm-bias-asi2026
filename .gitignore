@@ -8,6 +8,8 @@
 *.tsv
 # ...but keep R/conda package manifests (env specs, not data)
 !Rpackages_*.csv
+# ...and the scGPT Ensembl->symbol gene map (static asset the scGPT embed needs)
+!scGPT/gene_info.csv
 *.parquet
 *.feather
 *.npy

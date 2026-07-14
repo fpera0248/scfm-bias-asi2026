@@ -121,7 +121,10 @@ case "$MODEL" in
     [ -e "$DATA_ROOT/Geneformer/geneformer_repo" ] || ln -s "$MODELS_DIR/Geneformer" "$DATA_ROOT/Geneformer/geneformer_repo" ;;
   scgpt)
     mkdir -p "$DATA_ROOT/scGPT"
-    [ -e "$DATA_ROOT/scGPT/scGPT_human" ] || ln -s "$MODELS_DIR/scGPT_human" "$DATA_ROOT/scGPT/scGPT_human" ;;
+    [ -e "$DATA_ROOT/scGPT/scGPT_human" ] || ln -s "$MODELS_DIR/scGPT_human" "$DATA_ROOT/scGPT/scGPT_human"
+    # scGPT vocab is keyed by gene symbol but the data uses Ensembl IDs; step2a needs the
+    # Ensembl->symbol map at /data/scGPT/gene_info.csv. Baked in the repo (COPY . /opt/scfm).
+    [ -f "$SCFM_HOME/scGPT/gene_info.csv" ] && ln -sf "$SCFM_HOME/scGPT/gene_info.csv" "$DATA_ROOT/scGPT/gene_info.csv" || true ;;
   scfoundation) : ;;  # loads via modelgenerator from the baked HF cache; no path needed
 esac
 
