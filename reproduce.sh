@@ -186,12 +186,15 @@ else
   runstep "STEP 0c validation" "$ENV"           python  "step0c*external_validation*.py"
 fi
 
-# step0b scDesign3 augmentation. scDesign3 is model-agnostic and runs once per
-# (cohort, demographic); some model workflows (e.g. Geneformer/scGPT on AIDA) don't
-# carry their own augmentation .R and instead embed the shared conditions. If this
-# workflow has the .R, run it in place; otherwise run the canonical scFoundation
-# augmentation and copy its (identically-named) condition files in.
-if ls "$SRC_WF"/step0b_scdesign3_*augmentation*.R >/dev/null 2>&1; then
+# step0b scDesign3 augmentation. The paper uses ONE shared augmentation per (cohort,
+# demographic): scDesign3 is model-agnostic, so the augmented/upsampled pilots are
+# generated once — in the scFoundation workflow — and embedded by ALL three models
+# (Methods 2.3: "one shared pipeline ... each dataset variant is embedded through three
+# frozen foundation models"). So only scFoundation runs the augmentation here; geneformer
+# and scGPT always embed those shared conditions. A per-model step0b left in a geneformer/
+# scGPT dir is a stale copy that produces a DIFFERENT pilot (different cell counts) and
+# would NOT reproduce the paper — so we ignore it and use the shared branch.
+if [ "$MODEL" = scfoundation ] && ls "$SRC_WF"/step0b_scdesign3_*augmentation*.R >/dev/null 2>&1; then
   runstep "STEP 0b scdesign3" scdesign3_env Rscript "step0b_scdesign3_*augmentation*.R"
 else
   say "STEP 0b scdesign3 (shared — running canonical scFoundation augmentation)"
@@ -225,9 +228,12 @@ else
 fi
 fi  # end: want prep
 
-# step2a embed (GPU) — the only stage that needs a GPU
+# embed (GPU). step2a embeds the four pilots. step3d (geneformer/scGPT only) embeds the
+# shared external-validation set into *_<model>.h5ad, which step4 downstream needs;
+# scFoundation embeds the validation inside step2a and has no step3d (glob skips cleanly).
 if want embed; then
-  runstep "STEP 2a embed"    "$ENV"           python  "step2a*.py" 1
+  runstep "STEP 2a embed"      "$ENV"           python  "step2a*.py" 1
+  runstep "STEP 3d embed-val"  "$ENV"           python  "step3d*embed*validation*.py" 1
 fi
 # downstream (CPU)
 if want down; then
