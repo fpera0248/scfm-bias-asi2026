@@ -85,13 +85,16 @@ if want scgpt310; then
   conda run -n scgpt310 pip install --no-deps "numpy==1.26.4"
 fi
 
-# Extra step 1c: pin tokenizers<0.22 in geneformer310. Its transformers==4.49.0 requires
-# tokenizers>=0.21,<0.22, but the env otherwise resolves to tokenizers==0.22.2, so
-# transformers' dependency_versions_check hard-fails at `import geneformer` (which imports
-# transformers) before the embed can start. Runs for both slim and --full builds.
+# Extra step 1c: pin transformers-4.49-compatible deps in geneformer310. The env's
+# transformers==4.49.0 enforces its runtime dep versions at `import geneformer` (via
+# transformers' dependency_versions_check), but the --no-deps pinned-set replay let two
+# transitive deps drift out of range, hard-failing the import before embed can start:
+#   tokenizers      0.22.2  -> needs >=0.21,<0.22   (defect #6)
+#   huggingface-hub 1.11.0  -> needs >=0.26.0,<1.0  (defect #7)
+# Pin both back into range. Runs for both slim and --full builds.
 if want geneformer310; then
-  echo "=== pinning tokenizers==0.21.0 in geneformer310 (transformers 4.49 needs <0.22) ==="
-  conda run -n geneformer310 pip install --no-deps "tokenizers==0.21.0"
+  echo "=== pinning tokenizers + huggingface-hub in geneformer310 (transformers 4.49 ranges) ==="
+  conda run -n geneformer310 pip install --no-deps "tokenizers==0.21.0" "huggingface-hub<1.0"
 fi
 
 # Extra step 2: scDesign3 (source) + zellkonverter (Bioconductor) into scdesign3_env.
