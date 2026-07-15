@@ -112,8 +112,8 @@ if want scdesign3_env; then
     # commits; the seeded augmentation only reproduces the paper synthetic-cell counts
     # (BalancedAugmented = 10,762 on ILD ethnicity) at this SHA. Unpinned main produces
     # ~10,906-10,913 instead (defect #10). force=TRUE so it always installs THIS commit
-    # (never skipped if some other scDesign3 slipped in); upgrade="never" so deps don't
-    # drift. Then verify the SHA actually landed and FAIL the build if not.
+    # (never skipped if some other scDesign3 slipped in); upgrade="never" keeps deps
+    # from drifting. Then verify the SHA actually landed and FAIL the build if not.
     devtools::install_github("SONGDONGYUAN1994/scDesign3@4370074cc5392ddd7821e66e1e1c1d1181f21d3d",
                              force=TRUE, upgrade="never")
     sha <- utils::packageDescription("scDesign3")$RemoteSha
