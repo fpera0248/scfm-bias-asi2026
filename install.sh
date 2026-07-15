@@ -108,10 +108,19 @@ if want scdesign3_env; then
   conda run -n scdesign3_env Rscript -e '
     if (!requireNamespace("BiocManager", quietly=TRUE))
       install.packages("BiocManager", repos="https://cloud.r-project.org")
-    # Pinned to the exact commit used for the paper (version 1.5.0 spans many
-    # commits; the seeded augmentation is only bit-reproducible at this SHA).
-    if (!requireNamespace("scDesign3", quietly=TRUE))
-      devtools::install_github("SONGDONGYUAN1994/scDesign3@4370074cc5392ddd7821e66e1e1c1d1181f21d3d")
+    # scDesign3 pinned to the EXACT commit used for the paper. version 1.5.0 spans many
+    # commits; the seeded augmentation only reproduces the paper synthetic-cell counts
+    # (BalancedAugmented = 10,762 on ILD ethnicity) at this SHA. Unpinned main produces
+    # ~10,906-10,913 instead (defect #10). force=TRUE so it always installs THIS commit
+    # (never skipped if some other scDesign3 slipped in); upgrade="never" so deps don't
+    # drift. Then verify the SHA actually landed and FAIL the build if not.
+    devtools::install_github("SONGDONGYUAN1994/scDesign3@4370074cc5392ddd7821e66e1e1c1d1181f21d3d",
+                             force=TRUE, upgrade="never")
+    sha <- utils::packageDescription("scDesign3")$RemoteSha
+    cat("scDesign3 RemoteSha:", if (is.null(sha)) "<none>" else sha, "\n")
+    if (is.null(sha) || substr(sha, 1, 10) != "4370074cc5")
+      stop("scDesign3 pin did not take (RemoteSha=", sha,
+           ") — augmentation would not reproduce the paper")
     bioc <- c("zellkonverter", "scran", "scuttle", "SingleCellExperiment", "BiocParallel")
     need <- bioc[!vapply(bioc, requireNamespace, logical(1), quietly=TRUE)]
     if (length(need)) BiocManager::install(need, update=FALSE, ask=FALSE)
