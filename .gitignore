@@ -10,6 +10,10 @@
 !Rpackages_*.csv
 # ...and the scGPT Ensembl->symbol gene map (static asset the scGPT embed needs)
 !scGPT/gene_info.csv
+# ...and the paper's exact scDesign3 BalancedAugmented pilots (stochastic step, shipped
+# for bit-exact reproduction — see reproduce.sh / CONTAINER.md)
+!pilots/
+!pilots/*.h5ad
 *.parquet
 *.feather
 *.npy

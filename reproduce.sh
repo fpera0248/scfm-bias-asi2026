@@ -38,6 +38,10 @@ export PYTHONNOUSERSITE=1
 if [ -f /opt/conda/etc/profile.d/conda.sh ]; then
   export PATH="/opt/conda/bin:$PATH"
   . /opt/conda/etc/profile.d/conda.sh
+  # Resolve env NAMES against the image's baked envs ONLY. apptainer binds the caller's
+  # $HOME by default, so without this a reviewer's (or maintainer's) ~/.conda/envs/<name>
+  # silently shadows the baked /opt/conda/envs/<name> and runs a different env.
+  export CONDA_ENVS_PATH=/opt/conda/envs
 fi
 
 # --- basilisk / zellkonverter -----------------------------------------------
@@ -225,6 +229,33 @@ else
   echo ">>> copying shared *_Pilot_* conditions into $WORK"
   cp "$AUGWORK"/*_Pilot_*.h5ad "$WORK"/ 2>/dev/null || die "no *_Pilot_* conditions produced"
   echo ">>> STEP 0b scdesign3 (shared) OK"
+fi
+
+# ---- stage the paper's exact scDesign3 pilots (reproducibility) ----
+# scDesign3's synthetic augmentation is stochastic and NOT bit-reproducible across
+# environments (it drifts ~1% run to run even with a fixed seed + pinned commit — its
+# per-chunk GAM-fit retry logic branches on sub-version numerical noise). To reproduce the
+# paper's BalancedAugmented iLISI exactly, overwrite the freshly generated (non-reproducible)
+# BalancedAugmented pilot with the paper's actual one, baked in the image at $PILOTS_DIR.
+# Every other condition (Proportional/Upsampled/Downsampled) stays freshly regenerated —
+# those are deterministic and already reproduce the paper to the digit.
+PILOTS_DIR="${PILOTS_DIR:-$SCFM_HOME/pilots}"
+if [ -d "$PILOTS_DIR" ] && ls "$PILOTS_DIR"/*BalancedAugmented*.h5ad >/dev/null 2>&1; then
+  say "PILOTS: staging the paper's exact BalancedAugmented pilot (stochastic condition)"
+  for gen in "$WORK"/*BalancedAugmented*.h5ad; do
+    [ -e "$gen" ] || continue
+    base="$(basename "$gen")"
+    case "$base" in *_scfoundation.h5ad|*_geneformer.h5ad|*_scgpt.h5ad) continue ;; esac
+    if [ -f "$PILOTS_DIR/$base" ]; then
+      cp -f "$PILOTS_DIR/$base" "$gen" && echo ">>> staged paper pilot: $base"
+    elif [ "${base#*Full_BalancedAugmented}" != "$base" ]; then
+      # geneformer also reads a Full_BalancedAugmented variant (paper-identical to the
+      # *Each* pilot); alias it to the shipped *Each* pilot for this cohort/demographic.
+      pre="${base%%_Pilot_*}"; suf="${base##*_BalancedAugmented}"
+      ship="$(ls "$PILOTS_DIR/${pre}_Pilot_BalancedAugmented"*"Each${suf}" 2>/dev/null | head -1 || true)"
+      [ -n "$ship" ] && { cp -f "$ship" "$gen" && echo ">>> aliased Full pilot <- $(basename "$ship")"; }
+    fi
+  done
 fi
 fi  # end: want prep
 
