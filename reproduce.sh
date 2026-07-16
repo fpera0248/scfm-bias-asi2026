@@ -66,6 +66,16 @@ DATA_ROOT="${DATA_ROOT:-/data}"
 SCFM_HOME="${SCFM_HOME:-/opt/scfm}"
 MODELS_DIR="${MODELS_DIR:-/opt/models}"
 
+# scanpy/numba (JIT cache) and matplotlib need WRITABLE cache dirs, but the image filesystem
+# is read-only. Point them at the data bind (always writable) so imports work in ANY run mode
+# — including --no-home / --containall / no --writable-tmpfs. Without this, `import scanpy`
+# crashes with "cannot cache function ... no locator available" and matplotlib fails on a
+# read-only config dir. (defect #12)
+export NUMBA_CACHE_DIR="${NUMBA_CACHE_DIR:-$DATA_ROOT/.cache/numba}"
+export MPLCONFIGDIR="${MPLCONFIGDIR:-$DATA_ROOT/.cache/mpl}"
+export XDG_CACHE_HOME="${XDG_CACHE_HOME:-$DATA_ROOT/.cache/xdg}"
+mkdir -p "$NUMBA_CACHE_DIR" "$MPLCONFIGDIR" "$XDG_CACHE_HOME" 2>/dev/null || true
+
 say(){ echo; echo "########## $* ##########"; }
 die(){ echo "ERROR: $*" >&2; exit 1; }
 want(){ [ "$STAGE" = all ] || [ "$STAGE" = "$1" ]; }
