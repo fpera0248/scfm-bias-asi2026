@@ -71,11 +71,17 @@ MODELS_DIR="${MODELS_DIR:-/opt/models}"
 # — including --no-home / --containall / no --writable-tmpfs. Without this, `import scanpy`
 # crashes with "cannot cache function ... no locator available" and matplotlib fails on a
 # read-only config dir. (defect #12)
-# NB: do NOT set XDG_CACHE_HOME here — HuggingFace resolves its cache via it when HF_HOME is
-# unset, and redirecting it would make scFoundation miss its baked HF weights.
 export NUMBA_CACHE_DIR="${NUMBA_CACHE_DIR:-$DATA_ROOT/.cache/numba}"
 export MPLCONFIGDIR="${MPLCONFIGDIR:-$DATA_ROOT/.cache/mpl}"
-mkdir -p "$NUMBA_CACHE_DIR" "$MPLCONFIGDIR" 2>/dev/null || true
+# scFoundation's step2a pulls genbio-ai/scFoundation from the HF Hub. fetch_weights.sh pre-warms
+# that cache at BUILD time under root's home (~/.cache/huggingface), but at RUNTIME the (non-root,
+# --no-home) user can't reach root's cache, so HF re-downloads the multi-GB checkpoint. With no
+# writable HF cache pointed at real disk, that download lands on the small --writable-tmpfs overlay
+# and dies with "OSError: [Errno 28] No space left on device". Point HF_HOME at the (huge) data
+# bind so the download succeeds; harmless for geneformer/scGPT (they load local /opt/models
+# checkpoints, not the Hub). Setting HF_HOME (not XDG_CACHE_HOME) keeps NUMBA/MPL caches separate.
+export HF_HOME="${HF_HOME:-$DATA_ROOT/.cache/huggingface}"
+mkdir -p "$NUMBA_CACHE_DIR" "$MPLCONFIGDIR" "$HF_HOME" 2>/dev/null || true
 
 say(){ echo; echo "########## $* ##########"; }
 die(){ echo "ERROR: $*" >&2; exit 1; }
