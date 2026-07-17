@@ -102,11 +102,11 @@ case "$COHORT" in
     DATA_URL="https://datasets.cellxgene.cziscience.com/c3d9262e-0dc5-4eca-bf20-56e6d96d0306.h5ad"
     DATA_NAME="InterstitialLungDisease.h5ad" ;;
   crc)
-    WFREL="${MDIR}/augmented_CRC/${DEMO}_${MODEL}_workflow"
+    WFREL="${MDIR}/augmented_CRC/${DEMO}_${MDIR}_workflow"
     DATA_URL="https://datasets.cellxgene.cziscience.com/66cadf3b-4c71-4930-8add-fa748745704d.h5ad"
     DATA_NAME="ColorectalCancer_Epithelial.h5ad" ;;
   aida)
-    WFREL="${MDIR}/augmented_AIDA/${DEMO}_${MODEL}_workflow"
+    WFREL="${MDIR}/augmented_AIDA/${DEMO}_${MDIR}_workflow"
     DATA_URL="https://datasets.cellxgene.cziscience.com/f89a12c2-7a3b-415b-ab87-bbc550fe17f4.h5ad"
     DATA_NAME="AIDA_phase1_v2.h5ad" ;;
   *) die "unknown cohort '$COHORT' (ild|crc|aida)" ;;
@@ -280,7 +280,17 @@ fi
 # downstream (CPU)
 if want down; then
   for s in step3a step3b step4 step4a step4b step5 step6 step7 step8 step9; do
-    runstep "STEP ${s#step}" "$ENV"           python  "${s}[!0-9]*.py"
+    # step9 is model-local visualization. Its bare prefix (step9[!0-9]*.py) is ambiguous:
+    # geneformer workflows also ship cross-model aggregators step9_combine_umaps_*.py that
+    # sort BEFORE the real step9_visualizations_<model>_<demo>.py, so runstep's head -1 would
+    # pick a combine script that reads absent scFoundation embeddings and die. Select the
+    # per-model visualization script explicitly. (scfoundation/scgpt each have exactly one
+    # step9_visualizations_*.py, so this is a no-op for them.)
+    if [ "$s" = step9 ]; then
+      runstep "STEP 9" "$ENV"           python  "step9_visualizations*.py"
+    else
+      runstep "STEP ${s#step}" "$ENV"           python  "${s}[!0-9]*.py"
+    fi
   done
 fi
 
