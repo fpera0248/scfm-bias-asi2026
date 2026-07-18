@@ -68,7 +68,7 @@ cat(sprintf("Using N_CORES=%d (serial) for scDesign3 to avoid OOM\n", N_CORES))
 # CONFIGURATION
 # ============================================================
 
-INPUT_H5AD      <- "AIDA_RawCounts_ETHNICITY.h5ad"
+INPUT_H5AD      <- "AIDA_RawCounts_ETHNICITY_900k.h5ad"  # [FIX] match step0a OUTPUT_FILE + rest of chain (step0c/step2a); was "AIDA_RawCounts_ETHNICITY.h5ad" -> FileNotFoundError
 VALIDATION_H5AD <- "AIDA_Ethnicity_External_Validation_12500.h5ad"
 OUTPUT_BASE     <- "AIDA_Ethnicity_Pilot"
 CKPTDIR         <- "checkpoints_ethnicity_v6"
