@@ -1,0 +1,167 @@
+cff-version: 1.2.0
+message: "If you use this code or reproduce our results, please cite the paper (preferred-citation below). If you build on the models, datasets, or methods this work depends on, please also cite them (references below)."
+title: "Demographic Bias in Single-Cell Foundation Models — reproduction release"
+abstract: "Pipeline code, pinned environments, and prebuilt containers to reproduce the ASI 2026 paper measuring demographic bias in scFoundation, Geneformer, and scGPT across the ILD, CRC, and AIDA cohorts, with scDesign3 synthetic augmentation as a mitigation."
+type: software
+authors:
+  - family-names: "Peralta Castro"
+    given-names: "Fernando"
+    affiliation: "Moravian University"
+    email: "fernando_peralta_castro@brown.edu"
+  - family-names: "Zhang"
+    given-names: "Jiaqi"
+    affiliation: "Brown University"
+  - family-names: "Singh"
+    given-names: "Ritambhara"
+    affiliation: "Brown University"
+repository-code: "https://github.com/fpera0248/scfm-bias-asi2026"
+url: "https://github.com/fpera0248/scfm-bias-asi2026"
+keywords:
+  - single-cell RNA sequencing
+  - foundation models
+  - algorithmic fairness
+  - demographic bias
+  - data augmentation
+  - benchmarking
+  - health disparities
+
+preferred-citation:
+  type: conference-paper
+  title: "Demographic Bias in Single-Cell Foundation Models: Evaluation and Mitigation Across Models and Cohorts"
+  authors:
+    - family-names: "Peralta Castro"
+      given-names: "Fernando"
+    - family-names: "Zhang"
+      given-names: "Jiaqi"
+    - family-names: "Singh"
+      given-names: "Ritambhara"
+  year: 2026
+  month: 6
+  collection-title: "17th ACM International Conference on Bioinformatics, Computational Biology and Health Informatics (BCB Companion '26)"
+  conference:
+    name: "4th Workshop on Advances in Systems Immunology (ASI 2026), at ACM-BCB 2026"
+    city: "Rende"
+    country: "IT"
+  publisher:
+    name: "Association for Computing Machinery"
+  doi: "10.1145/3807502.3833077"
+  isbn: "979-8-4007-2652-1"
+  license: "CC-BY-4.0"
+
+# Papers this work uses: the three foundation models we audit, the augmentation
+# method, the mixing metric, the integration baseline, the three cohorts, and the
+# closest prior work. Author lists are abbreviated to the first author (see the
+# paper for full author lists).
+references:
+  - type: article
+    title: "Large-scale foundation model on single-cell transcriptomics"
+    authors:
+      - family-names: "Hao"
+        given-names: "M."
+    journal: "Nature Methods"
+    volume: 21
+    start: 1481
+    end: 1491
+    year: 2024
+    notes: "scFoundation — audited model."
+  - type: article
+    title: "scGPT: toward building a foundation model for single-cell multi-omics using generative AI"
+    authors:
+      - family-names: "Cui"
+        given-names: "H."
+    journal: "Nature Methods"
+    volume: 21
+    start: 1470
+    end: 1480
+    year: 2024
+    notes: "scGPT — audited model."
+  - type: article
+    title: "Transfer learning enables predictions in network biology"
+    authors:
+      - family-names: "Theodoris"
+        given-names: "C. V."
+    journal: "Nature"
+    volume: 618
+    start: 616
+    end: 624
+    year: 2023
+    notes: "Geneformer — audited model."
+  - type: article
+    title: "scDesign3 generates realistic in silico data for multimodal single-cell and spatial omics"
+    authors:
+      - family-names: "Song"
+        given-names: "D."
+    journal: "Nature Biotechnology"
+    volume: 42
+    start: 247
+    end: 252
+    year: 2024
+    notes: "scDesign3 — synthetic augmentation method."
+  - type: article
+    title: "Benchmarking atlas-level data integration in single-cell genomics"
+    authors:
+      - family-names: "Luecken"
+        given-names: "M. D."
+    journal: "Nature Methods"
+    volume: 19
+    start: 41
+    end: 50
+    year: 2022
+    notes: "scIB / iLISI — mixing metric."
+  - type: article
+    title: "Fast, sensitive and accurate integration of single-cell data with Harmony"
+    authors:
+      - family-names: "Korsunsky"
+        given-names: "I."
+    journal: "Nature Methods"
+    volume: 16
+    start: 1289
+    end: 1296
+    year: 2019
+    notes: "Harmony — integration baseline."
+  - type: article
+    title: "Cell type-specific and disease-associated eQTL in the human lung"
+    authors:
+      - family-names: "Natri"
+        given-names: "H. M."
+    journal: "Nature Genetics"
+    volume: 56
+    start: 595
+    end: 604
+    year: 2024
+    doi: "10.1038/s41588-024-01702-0"
+    notes: "Interstitial lung disease (ILD) cohort."
+  - type: article
+    title: "Progressive plasticity during colorectal cancer metastasis"
+    authors:
+      - family-names: "Moorman"
+        given-names: "A."
+    journal: "Nature"
+    volume: 637
+    start: 947
+    end: 954
+    year: 2025
+    doi: "10.1038/s41586-024-08560-0"
+    notes: "Colorectal cancer (CRC) cohort."
+  - type: article
+    title: "Asian diversity in human immune cells"
+    authors:
+      - family-names: "Kock"
+        given-names: "K. H."
+    journal: "Cell"
+    volume: 188
+    start: 2288
+    end: 2308
+    year: 2025
+    notes: "Asian Immune Diversity Atlas (AIDA) cohort."
+  - type: article
+    title: "Biases in machine-learning models of human single-cell data"
+    authors:
+      - family-names: "Willem"
+        given-names: "T."
+    journal: "Nature Cell Biology"
+    volume: 27
+    start: 384
+    end: 392
+    year: 2025
+    notes: "Closest prior work on bias in single-cell ML."

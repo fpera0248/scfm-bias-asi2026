@@ -200,3 +200,45 @@ The scripts are per-model copies, not a plugin interface. To audit a new model t
 
 - Ethnicity values are cased inconsistently across cohorts. Lowercase-normalize before any per-group count, or a group splits into two buckets.
 - `"nan"` (synthetic cells) and `"unknown"` (age workflow) are always exclusions, never a group.
+
+## Citation
+
+If you use this code or reproduce our results, please cite the paper:
+
+> Peralta Castro, F., Zhang, J., & Singh, R. (2026). *Demographic Bias in Single-Cell Foundation Models: Evaluation and Mitigation Across Models and Cohorts.* In 17th ACM International Conference on Bioinformatics, Computational Biology and Health Informatics (BCB Companion '26) — 4th Workshop on Advances in Systems Immunology (ASI 2026), Rende (CS), Italy. ACM. https://doi.org/10.1145/3807502.3833077
+
+```bibtex
+@inproceedings{peraltacastro2026demographic,
+  author    = {Peralta Castro, Fernando and Zhang, Jiaqi and Singh, Ritambhara},
+  title     = {Demographic Bias in Single-Cell Foundation Models: Evaluation and Mitigation Across Models and Cohorts},
+  year      = {2026},
+  booktitle = {17th ACM International Conference on Bioinformatics, Computational Biology and Health Informatics (BCB Companion '26)},
+  publisher = {Association for Computing Machinery},
+  address   = {New York, NY, USA},
+  location  = {Rende (CS), Italy},
+  doi       = {10.1145/3807502.3833077},
+  isbn      = {979-8-4007-2652-1}
+}
+```
+
+A machine-readable [`CITATION.cff`](CITATION.cff) is included, so GitHub shows a **"Cite this repository"** button (APA/BibTeX export) in the sidebar.
+
+### Papers this work builds on
+
+Please also cite the models, datasets, and methods you rely on. The full reference list is in the paper; the works this repository directly uses are:
+
+**Foundation models (audited)**
+- scFoundation — Hao et al., *Large-scale foundation model on single-cell transcriptomics.* Nature Methods 21:1481–1491, 2024.
+- scGPT — Cui et al., *scGPT: toward building a foundation model for single-cell multi-omics using generative AI.* Nature Methods 21:1470–1480, 2024.
+- Geneformer — Theodoris et al., *Transfer learning enables predictions in network biology.* Nature 618:616–624, 2023.
+
+**Datasets (CZ CELLxGENE; each under its own license)**
+- ILD — Natri et al., *Cell type-specific and disease-associated eQTL in the human lung.* Nature Genetics 56:595–604, 2024. doi:10.1038/s41588-024-01702-0
+- CRC — Moorman et al., *Progressive plasticity during colorectal cancer metastasis.* Nature 637:947–954, 2025. doi:10.1038/s41586-024-08560-0
+- AIDA — Kock et al., *Asian diversity in human immune cells.* Cell 188:2288–2308, 2025.
+
+**Methods and baselines**
+- scDesign3 (synthetic augmentation) — Song et al., *scDesign3 generates realistic in silico data for multimodal single-cell and spatial omics.* Nature Biotechnology 42:247–252, 2024.
+- scIB / iLISI (mixing metric) — Luecken et al., *Benchmarking atlas-level data integration in single-cell genomics.* Nature Methods 19:41–50, 2022.
+- Harmony (integration baseline) — Korsunsky et al., *Fast, sensitive and accurate integration of single-cell data with Harmony.* Nature Methods 16:1289–1296, 2019.
+- Related prior work — Willem et al., *Biases in machine-learning models of human single-cell data.* Nature Cell Biology 27:384–392, 2025.
