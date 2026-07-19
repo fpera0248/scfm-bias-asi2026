@@ -95,6 +95,7 @@
 docker run --gpus all -v "$PWD/data":/data \
     ghcr.io/fpera0248/scfm-geneformer:latest \
     reproduce geneformer aida ethnicity</pre>
+      <p class="muted"><b>Heads-up — the first pull is slow.</b> Each image is <b>~13–15&nbsp;GB</b> (it bundles the model, its weights, and the scDesign3 R environment), so budget a few minutes for the one-time <code>docker pull</code>. On HPC the slow part is Apptainer <b>building the <code>.sif</code></b> from the layers — tens of minutes, and over an hour on shared/Lustre scratch (point <code>APPTAINER_TMPDIR</code>/<code>APPTAINER_CACHEDIR</code> at local/SSD scratch to speed it up). This is one-time image prep, not the reproduction run.</p>
       <div class="grid3">
         <div class="kv"><b>model</b><code>scfoundation</code> · <code>geneformer</code> · <code>scgpt</code></div>
         <div class="kv"><b>cohort</b><code>ild</code> · <code>crc</code> · <code>aida</code></div>

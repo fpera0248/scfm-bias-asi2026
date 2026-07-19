@@ -20,6 +20,8 @@ docker run --gpus all -v "$PWD/data":/data \
     reproduce <model> <cohort> <demographic>
 ```
 
+> **The first pull is slow — these images are large.** Each bundles a foundation model **plus its weights and the scDesign3 R environment**, so they run **~13–15 GB**. Budget time for the initial `docker pull` (several minutes on a fast connection, longer on a slow one); it's a one-time download that's then cached. On **HPC with Apptainer** the slow part is *building the `.sif` from the OCI layers* — the squashfs conversion can take **tens of minutes, and over an hour on shared/Lustre scratch** (it's much faster pointing `APPTAINER_TMPDIR`/`APPTAINER_CACHEDIR` at local/SSD scratch). This is one-time image-prep overhead, not the reproduction run itself.
+
 - `<model>` — `scfoundation` | `geneformer` | `scgpt`
 - `<cohort>` — `ild` | `crc` | `aida`
 - `<demographic>` — `ethnicity` | `sex` | `age`  *(AIDA and CRC are sex-balanced, so no `sex`)*
