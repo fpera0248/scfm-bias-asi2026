@@ -74,8 +74,28 @@ image's `/opt/conda` itself, so no `--cleanenv` is needed.
 
 ## What's turnkey vs. what needs new code
 
-**Turnkey — the paper's nine model×cohort combinations.** `reproduce <model> <cohort> <demographic>`
-runs any of them end to end with nothing to edit.
+**Verified turnkey — ethnicity across all three cohorts × all three models (36 conditions).**
+`reproduce <model> <cohort> ethnicity` runs end to end for `ild` / `crc` / `aida` and each
+reproduces the paper's iLISI (the four in-scope conditions: Proportional / BalancedAugmented /
+BalancedUpsampled / Downsampled) with nothing to edit. This is the path that was validated
+end-to-end. The stochastic BalancedAugmented condition is made exact by the shipped pilots in
+`pilots/` (scDesign3 synthesis is not bit-reproducible — see the Notes below); every other
+condition regenerates deterministically.
+
+**Not yet verified turnkey — the `sex` / `age` demographics and the CRC *full-prep* path.**
+The step scripts for these combinations exist, but they weren't validated in the container:
+the `sex`/`age` workflows use a staged (multi-part) step0b the driver doesn't yet wire, and
+CRC's `step0a` is a shared top-level extractor rather than a per-model one, so a default
+full-cohort `reproduce … crc …` run reaches step0b without its RawCounts input. Running these
+needs driver wiring plus a live prep run to confirm; treat them as "needs new code" for now.
+
+**Downstream classification needs full data, not tiny pilots.** The iLISI/integration metrics
+(the paper's headline result) run on the pilots and reproduce exactly. The *downstream*
+learning-curve / robustness stages (`step4a`/`step4b`+) train per-group classifiers, which can
+raise `ValueError: this solver needs samples of at least 2 classes` when a rebalanced pilot is
+small enough that a group collapses to one class. That is post-iLISI and does not affect any
+reported integration number — run those stages on the full cohort outputs, not the shipped
+pilots.
 
 **Needs new code — this is a reproduction harness for these 3 datasets and 3 models, not a
 general plug-in framework:**
@@ -146,6 +166,10 @@ bash install.sh --full        # inside: build all four, fully pinned
 # Notes
 
 - scGPT runs without flash-attention (not a dependency of `scgpt==0.2.1`).
+- The `scgpt310` env pins `numpy==1.26.4`: its torch (2.1.2) was built against numpy 1.x,
+  so a numpy 2.x would break `torch.from_numpy` with `_ARRAY_API not found`. The
+  `geneformer310` env similarly pins `tokenizers<0.22` + `huggingface-hub<1.0` (transformers
+  4.49 requires them). These pins live in `install.sh` and are baked into the images.
 - scFoundation weights auto-download via `modelgenerator` (HF `genbio-ai/scFoundation`);
   the build pre-warms that cache.
 - `scdesign3_env` installs scDesign3 pinned to the exact commit used for the paper
@@ -154,10 +178,14 @@ bash install.sh --full        # inside: build all four, fully pinned
 
 ## Runtime gotchas (Apptainer)
 
-- **Redirecting HOME:** Apptainer refuses `--env HOME=...`. If your home is read-only or
-  over quota, redirect it with `--home /some/writable/dir:/root` instead. Scientific tools
-  (scanpy, numba, matplotlib) write caches under HOME, so this prevents mid-run write
-  failures. Also set `MPLCONFIGDIR`, `NUMBA_CACHE_DIR`, `XDG_CACHE_HOME` to writable paths.
+- **Cache dirs are handled for you:** scientific tools (scanpy/numba, matplotlib) and the
+  HuggingFace hub write caches that fail on the read-only image. `reproduce` already points
+  `NUMBA_CACHE_DIR`, `MPLCONFIGDIR`, and `HF_HOME` at writable paths under `/data`, so imports
+  work in any run mode (`--no-home`, `--containall`, no `--writable-tmpfs`) with nothing to
+  set yourself. (`XDG_CACHE_HOME` is deliberately *not* redirected — it would send HF's cache
+  off the baked scFoundation weights.) If you invoke a step script by hand outside `reproduce`,
+  set those three yourself, or redirect a read-only/over-quota HOME with
+  `--home /some/writable/dir:/root` (Apptainer refuses `--env HOME=...`).
 - **scdesign3 / basilisk:** the R `zellkonverter` bridge uses a basilisk-managed conda env.
   The image bakes it at `/opt/basilisk` and `reproduce` already points `BASILISK_EXTERNAL_DIR`
   there — **do not set it yourself.** The only thing you must add is **`--writable-tmpfs`** on
@@ -168,5 +196,8 @@ bash install.sh --full        # inside: build all four, fully pinned
   on a compute node, can't build one — the run dies with `use_condaenv … Unable to locate`.
 - **step0b is CPU-only and long:** scDesign3 fits per-gene GAMs + a copula serially
   (`N_CORES=1`, deliberate for memory safety). On a full cohort it can run many hours and
-  needs ~150–180 GB RAM. Run it on a CPU partition with a long walltime; reserve the GPU
-  only for the embedding/downstream steps.
+  peak RAM is cohort-dependent: ~125 GB measured on ILD (and similar on CRC), while the
+  largest cohort (AIDA, ~1.2 M cells) transiently peaks near 190 GB during the step0a
+  raw-count extraction that precedes it. Budget ~128 GB for ILD/CRC and ~300 GB for AIDA.
+  Run it on a CPU partition with a long walltime; reserve the GPU only for the
+  embedding/downstream steps.

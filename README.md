@@ -26,7 +26,7 @@ docker run --gpus all -v "$PWD/data":/data \
 
 `reproduce` downloads the cohort from CZ CELLxGENE, wires the baked model checkpoint into the paths the scripts expect, and runs the full chain (extract → scDesign3 augment → embed → benchmark → downstream), writing outputs and figures under `/data`. On HPC, use Apptainer: `apptainer run --nv -B /your/data:/data <image>.sif reproduce <model> <cohort> <demographic>`.
 
-That one command reproduces any of the **nine model×cohort combinations** in the paper. **Full details — image list, GPU vs. CPU, and the boundary of what's turnkey vs. what needs new code — are in [CONTAINER.md](CONTAINER.md).**
+That one command reproduces any of the **nine model×cohort combinations** on the ethnicity axis (the main-text results), each validated end to end in the container. The `sex`/`age` supplementary axes and the CRC full-prep path exist in the scripts but aren't yet wired for a turnkey run. **Full details — image list, GPU vs. CPU, and the exact boundary of what's verified-turnkey vs. what needs new code — are in [CONTAINER.md](CONTAINER.md).**
 
 Everything below is for **understanding the method or adapting it to your own data/models** — you do not need it to reproduce our results.
 

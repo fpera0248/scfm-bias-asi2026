@@ -289,6 +289,12 @@ docker run --gpus all -v "$PWD/data":/data \
     <p><b>Geneformer holds the highest worst-group cell-type macro-F1 on 5 of 6 cohort-axis combinations</b>, ranked on the proportional pilot (the setting that preserves natural imbalance and reveals intrinsic robustness). On ILD ethnicity, Geneformer reaches 0.732 (Hispanic or Latin) vs scGPT 0.695 and scFoundation 0.049 (Native American). <b>scFoundation is the weakest on every combination</b>, 0.08–0.67 below the next model.</p>
     <p>The gap is large enough that <b>model choice dominates strategy choice</b>: switching scFoundation → Geneformer improves worst-group macro-F1 by 0.56–0.71 across the six combinations — more than any rebalancing strategy delivers within a single model. The same ranking holds when predicting disease status, so it is not specific to cell-type labels.</p>
     <p>The mechanism is architectural: Geneformer encodes each cell as a <b>rank-ordered gene sequence</b>, and relative gene order is more stable across donors than absolute counts. scFoundation's read-depth-aware pretraining normalizes sequencing depth but not the demographic-covariate imbalance in its corpus.</p>
+
+    <figure>
+      <img src="images/ethnicity/figure3_cross_model_heatmap.png" alt="Cross-model worst-group disease-prediction accuracy heatmap">
+      <figcaption><b>Worst-group disease-prediction accuracy</b> (logistic regression; gold box = best strategy per model) across the three models and four rebalancing strategies, shown for ILD and CRC on both the ethnicity and age axes. Geneformer leads scFoundation on nearly every cell, and the ranking mirrors the cell-type recovery result — so the model gap is not an artifact of cell-type labels but holds for disease-status prediction too.</figcaption>
+    </figure>
+
     <div class="qbox"><b>Q2 answer.</b> Geneformer is the most equity-robust of the three (highest worst-group F1 on 5/6 combinations); scFoundation is weakest on every one. Model choice tends to dominate strategy choice for equity outcomes.</div>
   </div>
 </section>
